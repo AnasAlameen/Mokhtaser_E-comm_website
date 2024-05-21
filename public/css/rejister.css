@@ -1,0 +1,85 @@
+body {
+  font-family: Arial;
+  background-color: #f2f2f2;
+  font-style: oblique;
+  font-size: large;
+   
+}
+
+.container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 5px;
+}
+.activity_type{
+  border-radius: 13px;
+  width: 100%;
+  height: 30px;
+  margin-bottom: 20px;
+
+
+}
+.city{
+  border-radius: 13px;
+  width: 100%;
+  height: 30px;
+  margin-bottom: 20px;
+
+}
+input[type="radio"]
+{
+
+  font-size: medium;
+
+  
+}
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"] {
+  padding: 8px;
+  width: 97.5%;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 13px;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background-color: #069a8e;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+button[type="button"] {
+  width: 100%;
+  padding: 10px;
+  align-self: center;
+  background-color: #069a8e;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  font-size: large;
+}
+
+
+button[type="submit"]:hover {
+  background-color: #069a8e;
+}

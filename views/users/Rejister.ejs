@@ -1,0 +1,74 @@
+<%- include('../includes/shop/head.ejs') %>
+
+<link rel="stylesheet"  href="/css/UserRigister.css">
+</head>
+
+<%- include('../includes/users/generlaNavgation.ejs') %>
+
+
+
+<form method="post" id="all_user_data" action="/Rejister/User/Check">
+  <h2>إنشاء حساب مستخدم</h2>
+
+
+  <label> الاسم الاول:</label>
+  <input type="text" name="first_name" id="first_name">
+  <label> الاسم الاخير:</label>
+  <input type="text" name="last_name" id="last_name">
+
+  <label>البريد الإلكتروني :</label>
+  <input type="email" name="email" id="email">
+
+
+  <label>رقم الهاتف :</label>
+  <input type="text" name="phone" id="phone">
+  <label>المدينة :</label>
+  <select name="city" class="city" id="city">
+    <option value="01">زليتن</option>
+    <option value="02">مصراتة</option>
+    <option value="03">طرابلس</option>
+    <option value="04">الخمس</option>
+    <option value="05">سبها</option>
+    <option value="06">بنغازي</option>
+    <option value="07">سرت</option>
+    <option value="08">بن وليد</option>
+    <option value="09">الزاوية</option>
+    <option value="10">زوارة</option>
+
+
+
+    <!-- وأضف باقي مدن ليبيا هنا -->
+  </select>
+
+  <!-- حقل تاريخ الميلاد -->
+  <label>تاريخ الميلاد :</label>
+  <input type="date" name="birthdate" id="birthdate">
+
+  <!--
+  <label>الجنس:</label>
+  <input type="radio" name="gender" value="1">ذكر
+  <input type="radio" name="gender" value="2">أنثى
+   حقل الجنس -->
+  <label>كلمة المرور :</label>
+  <input type="password" name="password" id="password">
+
+
+  <label>العنوان:</label>
+  <input type="text" name="address" id="address">
+  <div id="map" style="height: 400px;"></div>
+
+
+  <input type="hidden" id="longitude" name="longitude">
+  <input type="hidden" id="latitude" name="latitude">
+
+  <!-- زر تحديد الموقع -->
+  <button type="button" onclick="getUserLocation()">تحديد الموقع</button>
+
+
+  <button type="submit">إنشاء الحساب</button>
+
+</form>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJ3phAQVBfelG8E7PmauVNs01qkWT8euw&callback=initMap" async defer></script>
+<script src="/js/Map.js"></script>
+<%- include('../includes/shop/end.ejs') %>

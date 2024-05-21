@@ -1,0 +1,211 @@
+body {
+    font-family: Arial;
+    background-color: #f2f2f2;
+  }
+  
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+  }
+  
+  h1 {
+    text-align: center;
+    color: #069a8e;
+  }
+  
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  
+  button {
+    width: 100%;
+    background-color: #069a8e;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: 2px solid transparent; /* إضافة إطار شفاف */
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* إضافة تأثير التحول */
+  }
+  .selected_images {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 15px;
+    background-color: beige;
+    border: 1px solid #ccc;
+    margin-bottom: none;
+  }
+  .product-image{
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 15px;
+    background-color: beige;
+    border: 1px solid #ccc;
+    margin-bottom: none;
+  }
+  .display-container{
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 15px;
+    background-color: white;
+    border: 1px solid #ccc;
+    margin-bottom: none;
+    text-align: left;
+    font-size:8;
+  }
+  
+  .saved_images.save_colors {
+    width: 20%;
+    background-color: #069a8e;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    align-items: center;
+  }
+  
+  .image {
+    background-color: white;
+  }
+  
+  .colorsContainer {
+    width: 100%;
+    height: 20%;
+    background-color: #ccc;
+  }
+  
+  .input-box {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  .color-btn {
+    width: 50px; /* حدد العرض حسب احتياجاتك */
+    height: 50px; /* حدد الارتفاع حسب احتياجاتك */
+    border: none;
+    border-radius: 50%;
+    margin: 5px;
+    cursor: pointer;
+  }
+  
+  .color-btn.red {
+    background-color: red;
+  }
+  
+  .color-btn.blue {
+    background-color: blue;
+  }
+  
+  .color-btn.green {
+    background-color: green;
+  }
+  .color-btn.yellow {
+    background-color: yellow;
+  }
+  .color-btn.black {
+    background-color: black;
+  }
+  .color-btn.white {
+    background-color: white;
+  }
+  .color-btn.gray {
+    background-color: gray;
+  }
+  .color-btn.brown {
+    background-color: brown;
+  }
+  .color-btn.pink {
+    background-color: pink;
+  }
+  .color-btn.purple {
+    background-color: purple;
+  }
+  .color-btn.cyan {
+    background-color: cyan;
+  }
+  .color-btn.teal {
+    background-color: teal;
+  }
+  button:hover {
+    background-color: #058774;
+  }
+  
+  .hide {
+    display: none;
+  }
+  .media-box {
+    border: 1px solid #ccc;
+    padding: 10px;
+    position: relative;
+    text-align: center;
+  }
+  
+  .add-media {
+    cursor: pointer;
+    padding: 20px;
+    border: 2px dashed #ccc;
+    background-color: #f8f8f8;
+    transition: background-color 0.2s;
+  }
+  
+  .add-media:hover {
+    background-color: #e8e8e8;
+  }
+  
+  .add-media i {
+    font-size: 12px;
+    display: block;
+    margin-bottom: 5px;
+  }
+  .edit-button,
+.delete-button {
+    width: 50px;
+    padding: 10px;
+    margin: 5px;
+    background-color: #069a8e;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+.delete-button {
+  background-color: red;
+}
+.display-container label {
+  border: 1px solid #ccc; /* تعيين حدود بسمك 1 بيكسل ولون رمادي */
+  padding: 10px; /* إضافة هامش داخلي للعنصر */
+  display: block; /* جعل العنصر عنصر مستقل عن بقية النصوص */
+  border-radius: 4px; /* تدوير زوايا الحدود */
+}
+
+.edit-button:hover,
+.delete-button:hover {
+    background-color: #058774;
+}

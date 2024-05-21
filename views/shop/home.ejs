@@ -1,0 +1,47 @@
+<%- include('../includes/shop/head.ejs') %>
+
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/head.css">
+
+</head>
+<%- include('../includes/shop/navgation.ejs') %>
+
+    <main>
+        <section id="hero" style="background-image: url('https://images.pexels.com/photos/4065876/pexels-photo-4065876.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');">
+            <h2>عالم التسوق بين يديك</h2>
+            <form id="searchForm" >
+            <input type="text" id="search_inputs" name="keyword" placeholder="ابحث عن المنتجات المميزة">
+            <button type="submit" id="search_button">بحث</button>
+        </form>
+        
+        </section>
+        
+     <!--   <section id="search-results">
+            <h2 id="h2">نتائج البحث</h2>
+            <ul id="search-results-list"></ul>
+        </section>-->
+        <section id="featured-jobs">
+            <h2>عروض مميزة</h2>
+            <ul>
+                <% products.forEach(product => { %>
+                    <li>
+                        <a href="http://localhost:3000/shop/prdoduct/detlas?product_id=<%= product.id %>">
+                            <img src="/<%= product.image_url.replace(/\\/g, '/') %>" />
+                            <h3><%= product.id %></h3>
+                            <h3><%= product.ProductName %></h3>
+                            <p><%= product.Discrption %></p>
+                            <p><%= product.Prise %></p>
+                        </a>
+                    </li>
+                <% }) %>
+                                  
+            </ul>
+        </section>
+        <section id="latest-jobs">
+            <h2>آخر المنتجات</h2>
+            <ul>
+      
+            </ul>
+        </section>
+    </main>
+    <%- include('../includes/shop/end.ejs') %>
