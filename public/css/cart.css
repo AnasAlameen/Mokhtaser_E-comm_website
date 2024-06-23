@@ -1,0 +1,75 @@
+:root {
+  --accent-color: hsl(30, 100%, 50%);
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    direction: rtl;
+    padding-top: 80px; /* تعديل المسافة العلوية لتناسب الهيدر الثابت */
+  }
+  
+  .product-description {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    
+  }
+  .d-flex p{
+    margin: 20px;
+    
+  }
+.h6{
+  
+    font-size: large;
+    align-items: center;
+}
+.form-check-input{
+    margin-left: 10px;
+}
+  .product-description.expanded {
+    -webkit-line-clamp: unset;
+  }
+  
+  .product-description::after {
+    content: " ...";
+    display: inline;
+  }
+  
+  .product-image {
+    width: 130px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin: 10px;
+  }
+  
+  .quantity-input {
+    width: 60px;
+  }
+  
+  .card-header {
+    color: #fff;
+  }
+  
+  .card-header h3 {
+    margin: 0;
+  }
+  
+  .checkout button {
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s;
+  }
+  
+  .checkout button:hover {
+    background-color: #218838;
+  }
+  

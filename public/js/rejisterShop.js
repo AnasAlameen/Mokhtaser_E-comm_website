@@ -6,6 +6,14 @@ function showalert() {
         timer: 99999,
     });
 }
+document.getElementById('show-map-btn').addEventListener('click', function() {
+    var mapContainer = document.getElementById('map-container');
+    if (mapContainer.style.display === 'none') {
+      mapContainer.style.display = 'block';
+    } else {
+      mapContainer.style.display = 'none';
+    }
+  });
 
 document.getElementById("all").addEventListener("submit", function (event) {
     event.preventDefault(); // لمنع الإرسال التقليدي للنموذج

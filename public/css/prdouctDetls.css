@@ -1,3 +1,4 @@
+/* إعادة ضبط التصفير والتنسيق الأساسي */
 * {
   padding: 0;
   margin: 0;
@@ -6,19 +7,22 @@
 
 body {
   font-family: sans-serif;
-  background: #fff;
+  background: #f7f7f7;
   text-align: left;
 }
 
+/* تنسيق الحاوية */
 .container {
   max-width: 75%;
   margin: auto;
-  height: 80vh;
+  padding: 20px;
   margin-top: 5%;
   background: white;
-  box-shadow: 5px 5px 10px 3px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }
 
+/* تنسيق الأعمدة */
 .left, .right {
   width: 50%;
   padding: 30px;
@@ -30,90 +34,74 @@ body {
   flex-wrap: wrap;
 }
 
-.colorsContainer {
-  width: 100%;
-  height: 20%;
-  background-color: #ccc;
-}
-
-.input-box {
-  width: 50%;
-  padding: 12px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-}
-
-
-
-.hide {
-  display: none;
-
-}
-
-
+/* تنسيق الصور الرئيسية */
 .main_image {
   width: 100%;
-  height:80%;
+  height: auto;
+  margin-bottom: 20px;
 }
+
 .main_image img {
   width: 100%;
-  height:80%;
+  height: 500px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 10px;
 }
+
+.option {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 10px 0;
+  margin: 10px 0;
+}
+
 .option img {
   width: 75px;
   height: 75px;
   padding: 10px;
-  
+  margin: 5px;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  transition: border 0.3s;
+  flex: 0 0 auto;
 }
-.option img:hover {
 
+.option img:hover, .option img.selected-thumbnail {
   cursor: pointer;
   border: 2px solid #000;
-  
 }
+
+.option img:hover, .option img.selected-thumbnail {
+  cursor: pointer;
+  border: 2px solid #000;
+}
+
+/* تنسيق العمود الأيمن */
 .right {
   padding: 50px 100px 50px 50px;
   text-align: right;
 }
-.left{
- height: auto;
-}
 
-h3 {
+h2 {
   color: black;
-  margin: 20px 0 20px 0;
+  margin: 20px 0;
   font-size: 25px;
-
-}
-
-h5,
-p,
-small {
-  color: rgb(56, 55, 55);
 }
 
 h4 {
   text-align: left;
-
-
   color: red;
 }
 
 p {
-  margin: 20px 0 50px 0;
+  margin: 20px 0;
   line-height: 25px;
+  color: rgb(56, 55, 55);
 }
 
-h5 {
-  font-size: 15px;
-}
-
-label,
-.add span,
-.color span {
+label, .add span, .color span {
   width: 25px;
   height: 25px;
   background: #000;
@@ -121,40 +109,52 @@ label,
   margin: 20px 10px 20px 0;
 }
 
+/* تنسيق اللون */
 .color span:nth-child(2) {
-  background: #EDEDED;
+  background: #ededed;
 }
 
 .color span:nth-child(3) {
-  background: #D5D6D8;
+  background: #d5d6d8;
 }
 
 .color span:nth-child(4) {
-  background: #EFE0DE;
+  background: #efe0de;
 }
 
 .color span:nth-child(5) {
-  background: #AB8ED1;
+  background: #ab8ed1;
 }
 
 .color span:nth-child(6) {
-  background: #F04D44;
+  background: #f04d44;
 }
 
-
-
-/*button {
+/* تنسيق الأزرار */
+button {
   width: 100%;
   padding: 10px;
   border: none;
   outline: none;
   background: #C1908B;
   color: white;
-  margin-top: 20%;
+  margin-top: 20px;
   border-radius: 30px;
-}*/
+  cursor: pointer;
+  transition: background 0.3s;
+}
 
-@media only screen and (max-width:768px) {
+button:hover {
+  background: #a8756d;
+}
+
+button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+/* تنسيق العرض في الشاشات الصغيرة */
+@media only screen and (max-width: 768px) {
   .container {
     max-width: 90%;
     margin: auto;
@@ -163,15 +163,20 @@ label,
 
   .left, .right {
     width: 100%;
-    
+    padding: 20px;
   }
 
   .container {
     flex-direction: column;
   }
+
+  .right {
+    padding: 20px;
+  }
 }
 
-@media only screen and (max-width:511px) {
+/* تنسيق العرض في الشاشات الصغيرة جدا */
+@media only screen and (max-width: 511px) {
   .container {
     max-width: 100%;
     height: auto;
@@ -184,68 +189,141 @@ label,
 
   img {
     width: 100%;
-    height: 100%;
+    height: auto;
   }
 
- 
-  .option img:hover{
+  .option img:hover {
     display: flex;
     flex-wrap: wrap;
-    
   }
-  
 }
-.selected-thumbnail {
-  border: 2px solid black;
+
+.optione img {
+  width: 75px;
+  height: 75px;
+  padding: 10px;
+  margin: 5px;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  transition: border 0.3s;
 }
-.detals{
-  align-items: right;
+
+.optione img:hover, .option img.selected-thumbnail {
+  cursor: pointer;
+  border: 2px solid #000;
+}
+
+/* تنسيق التفاصيل */
+.detals {
   background-color: white;
   width: 100%;
   height: auto;
   margin-top: 20px;
   flex-wrap: wrap;
-
-
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  flex-wrap: wrap; 
 }
-.detals label{
-  width: 222px  ;
-  height: auto  ;
+
+.detals label {
+  width: auto;
+  height: auto;
   background-color: white;
   border: 1px solid #069a8e;
   size: 20px;
   padding: 10px;
   color: #000;
   border-radius: 20px;
-  
-
-
-
-  
-  
+  margin: 5px;
 }
-.plus
-{
+
+/* تنسيق زر العدد */
+.plus {
   width: 100%;
+  margin-top: 20px;
+  align-self: center;
 }
 
-
-.plus .number{
-  
-
-  
+.plus .number {
   border: 1px solid black;
   width: 25%;
   border-radius: 20px;
   text-align: center;
-  margin-top: 55px;
-  margin-right: 50%;
-  margin-left: 40%;
-
-
-  
+  margin-top: 20px;
 }
-.grid {
 
+/* تنسيق الشبكة */
+.grid {
   align-items: center;
+}
+
+/* إخفاء العناصر */
+.hide {
+  display: none;
+}
+
+/* تنسيق الصور الجانبية */
+.side-images {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.side-images img {
+  width: 75px;
+  height: 75px;
+  margin: 10px;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  transition: border 0.3s;
+}
+
+.side-images img:hover, .side-images img.selected-thumbnail {
+  cursor: pointer;
+  border: 2px solid #000;
+}
+
+.size-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.save{
+  background-color: green;
+}
+button:disabled {
+  background-color: transparent;
+  color: #ccc;
+  cursor: not-allowed;
+}
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+}
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }

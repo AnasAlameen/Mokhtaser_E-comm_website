@@ -1,18 +1,99 @@
-<header>
-    <h1>مختصر</h1>
+<body>
 
-    <nav>
-        <ul>
-            <li><a href="http://localhost:3000/shop/home"><i class="fas fa-sign-out-alt"></i> الصفحة الرئيسية</a></li>
-            <li><a href="http://localhost:3000/shop/orders"><i class="fas fa-user"></i> الطلبيات</a></li>
-            <li><a href="http://localhost:3000/admin/add_product"><i class="fas fa-briefcase"></i>اضافة منتج جديد</a></li>
-            <li><a href="http://localhost:3000/shop/prdoducts"><i class="fas fa-briefcase"></i>  كل المنتاجات</a></li>
-            <li><a href="http://localhost:3000/shop/profile"><i class="fas fa-briefcase"></i> الملف الشخصي</a></li>
-            <li><a href="http://localhost:3000/LogOut"><i class="fas fa-briefcase"></i>LogOut</a></li>
+   <header class="header">
+      <div class="header__container containerr">
+         <div class="header__toggle" id="header-toggle">
+            <i class="ri-menu-line"></i>
+         </div>
+      </div>
+      <div class="searchForm">
+         <button type="submit" id="search_button" class="search-Button">بحث</button>
+         <input type="text" id="search_inputs" class="search-Input" name="keyword" placeholder="ابحث عن المنتجات المميزة">
 
+      </div>
+      <a href="http://localhost:3000/user/Home" class="header__logo">
+         <img src="/imjs/hh.png" alt="Logo">
+      </a>
+   </header>
 
+   <div class="sidebar" id="sidebar">
+      <nav class="sidebar__container">
+         <div class="sidebar__logo">
+               <img src="/imjs/hh.png" alt="Logo" class="sidebar__logo-img">  <i class="namet">الأمين</i>
 
+         </div>
+         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+         <div class="sidebar__content">
+            <div class="sidebar__list">
+               <a href="http://localhost:3000/user/Home" class="sidebar__link active-link">
+                  <i class="ri-home-5-line"></i>
+                  <span class="sidebar__link-name">الرئسية</span>
+                  <span class="sidebar__link-floating">Home</span>
+               </a>
+               <a href="http://localhost:3000/cart/orders" class="sidebar__link">
+                  <i class="ri-compass-3-line"></i>
+                  <span class="sidebar__link-name">تاريخ الطلبيات</span>
+                  <span class="sidebar__link-floating">Explore</span>
+               </a>
+               <a href="http://localhost:3000/shop/profile" class="sidebar__link">
+                  <i class="ri-video-line"></i>
+                  <span class="sidebar__link-name">الملف الشخصي</span>
+                  <span class="sidebar__link-floating">Shorts</span>
+               </a>
+               <a href="/admin/add_product" class="sidebar__link">
+                  <i class="ri-add-box-line"></i>
+                  <span class="sidebar__link-name">اضافة منتج جديد</span>
+                  <span class="sidebar__link-floating">Subscription</span>
+               </a>
+            </div>
+            <h3 class="sidebar__title">
+               <span>Library</span>
+            </h3>
+            <div class="sidebar__list">
+               <a href="/LogOut" class="sidebar__link">
+                  <i class="ri-logout-box-r-line"></i>
+                  <span class="sidebar__link-name">LogOut</span>
+                  <span class="sidebar__link-floating">LogOut</span>
+               </a>
+            </div>
+            <h3 class="sidebar__title">
+               <span>General</span>
+            </h3>
+            <div class="sidebar__list">
+               <a href="#" class="sidebar__link">
+                  <i class="ri-notification-2-line"></i>
+                  <span class="sidebar__link-name">Notifications</span>
+                  <span class="sidebar__link-floating">Notifications</span>
+               </a>
+               <a href="#" class="sidebar__link">
+                  <i class="ri-settings-3-line"></i>
+                  <span class="sidebar__link-name">Settings</span>
+                  <span class="sidebar__link-floating">Settings</span>
+               </a>
+               <a href="#" class="sidebar__link">
+                  <i class="ri-logout-box-r-line"></i>
+                  <span class="sidebar__link-name">Logout</span>
+                  <span class="sidebar__link-floating">Logout</span>
+               </a>
+            </div>
+            <div class="sidebar__account">
+               <img src="/" alt="Profile" class="sidebar__perfil">
+               <div class="sidebar__names">
+                  <h3 class="sidebar__name">Will Lens</h3>
+                  <span class="sidebar__email">willens@email.com</span>
+               </div>
+               <i class="ri-arrow-right-s-line"></i>
+            </div>
+         </div>
+      </nav>
+   </div>
 
-        </ul>
-    </nav>
-</header>
+   <script>
+      document.getElementById('header-toggle').addEventListener('click', function() {
+         document.getElementById('sidebar').classList.toggle('show-sidebar');
+      });
+
+      function closeNav() {
+         document.getElementById('sidebar').classList.remove('show-sidebar');
+      }
+   </script>

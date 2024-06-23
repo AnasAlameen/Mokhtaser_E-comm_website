@@ -1,5 +1,7 @@
-<%- include('../includes/head.ejs') %>
+<%- include('./includes/shop/head.ejs') %>
 
-    <%- include('../includes/navigation.ejs') %>
+<%- include('./includes/users/generlaNavgation') %>
     <h1>Page Not Found!</h1>
-    <%- include('../includes/end.ejs') %>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <%- include('./includes/shop/end.ejs') %>

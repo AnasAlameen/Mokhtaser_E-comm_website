@@ -1,0 +1,60 @@
+<%- include('../../includes/shop/head.ejs') %>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/add_product.css">
+</head>
+<%- include('../../includes/shop/navgation.ejs') %>
+
+<form id="all" method="post" enctype="multipart/form-data" action="/admin/edit_product">
+  <input type="hidden" name="_csrf" id="l" value="<%= csrfToken %>">
+  <input type="hidden" name="productId" value="<%= product.id %>">
+
+  <div class="container">
+    <h1>تعديل منتج</h1>
+    
+    <input id="product-name" name="productName" placeholder="اسم المنتج" value="<%= product.ProductName %>" required>
+    <textarea id="product-description" name="productDescription" placeholder="وصف المنتج" required><%= product.Discrption %></textarea>
+
+    <h3>الصور الحالية</h3>
+    <div id="current-images" class="image-container">
+      <% imageURLs.forEach((url, index) => { %>
+        <div class="image-item">
+          <img src="/<%= url.replace(/\\/g, '/').replace('public/', '') %>" alt="Product Image" width="100">
+          <button type="button" class="delete-image" data-url="<%= url %>">×</button>
+        </div>
+      <% }) %>
+    </div>
+    <button type="button" id="add-images">اختر الصور الجديدة</button>
+    <div class="selected_images hide" id="selected_images">
+      <input class="images" type="file" multiple name="images" id="ProductImages" accept="image/*">
+      <button type="button" id="save_the_image">حفظ</button>
+    </div>
+
+    <h3>التوليفات الحالية</h3>
+    <div id="current-combinations" class="combination-container">
+      <% Object.keys(combinations).forEach((colorId) => { %>
+        <div class="combination-item">
+          <h4>اللون: <%= combinations[colorId].color %></h4>
+          <img src="/<%= combinations[colorId].image.replace(/\\/g, '/').replace('public/', '') %>" alt="Color Image" width="100">
+          <ul>
+            <% combinations[colorId].relatedVariants.forEach((variant, index) => { %>
+              <li>
+                <p>الحجم: <%= variant.value %></p>
+                <p>الكمية: <%= variant.qty %></p>
+                <p>السعر: <%= variant.price %></p>
+                <button type="button" class="delete-option" data-color-id="<%= colorId %>" data-index="<%= index %>">×</button>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+      <% }) %>
+    </div>
+
+    <button type="button" id="add-combination">أضف توليفة جديدة</button>
+    <section class="product-combination hide" id="new-combination">
+      <!-- يمكنك إضافة الحقول لتوليفات جديدة هنا -->
+    </section>
+
+    <button type="submit">حفظ التغييرات</button>
+  </div>
+</form>

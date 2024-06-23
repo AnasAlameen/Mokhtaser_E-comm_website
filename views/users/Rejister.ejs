@@ -1,74 +1,92 @@
-<%- include('../includes/shop/head.ejs') %>
+  <%- include('../includes/shop/head.ejs') %>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/UserRigister.css">
+  </head>
+  <%- include('../includes/users/generlaNavgation.ejs') %>
 
-<link rel="stylesheet"  href="/css/UserRigister.css">
-</head>
+  <form method="post" id="all_user_data" action="/Rejister/User/Check"  enctype="multipart/form-data">
+    <div class="container mt-5">
+      <h2 class="text-center mb-4">إنشاء حساب مستخدم</h2>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="first_name">الاسم الأول:</label>
+          <input type="text" class="form-control rounded-input" id="first_name" name="first_name" required />
+        </div>
+        <div class="form-group col-md-6">
+          <label for="last_name">الاسم الأخير:</label>
+          <input type="text" class="form-control rounded-input" id="last_name" name="last_name" required />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="email">البريد الإلكتروني:</label>
+        <input type="email" class="form-control rounded-input" id="email" name="email" required />
+      </div>
+      <div class="form-group">
+        <label for="phone">رقم الهاتف:</label>
+        <input type="text" class="form-control rounded-input" id="phone" name="phone" required />
+      </div>
 
-<%- include('../includes/users/generlaNavgation.ejs') %>
+      <div class="form-group">
+        <label for="birthdate">تاريخ الميلاد:</label>
+        <input type="date" class="form-control rounded-input" id="birthdate" name="birthdate" required />
+      </div>
+      <div class="form-group">
+        <div class="form-group">
+          <label for="personalImage">الصورة الشخصية:</label>
+          <input type="file" class="form-control-file" name="personalImage" id="personalImage" accept="image/*" required>
+          
+        </div>
+        <label for="password">كلمة المرور:</label>
+        <input type="password" class="form-control rounded-input" id="password" name="password" required />
+      </div>
+      
+      <input type="hidden" id="longitude" name="longitude">
+      <input type="hidden" id="latitude" name="latitude">
 
+      <!-- زر إظهار الخريطة -->
+      <button type="button" class="btn btn-info btn-block" id="show-map-btn">إظهار الخريطة</button>
+      
+      <div id="map-container" class="mt-4" style="display: none;">
+        <div class="form-group">
+          <label for="city">المدينة:</label>
+          <select id="city" name="city" class="form-control rounded-input" required>
+            <option value="01">زليتن</option>
+            <option value="02">مصراتة</option>
+            <option value="03">طرابلس</option>
+            <option value="04">الخمس</option>
+            <option value="05">سبها</option>
+            <option value="06">بنغازي</option>
+            <option value="07">سرت</option>
+            <option value="08">بن وليد</option>
+            <option value="09">الزاوية</option>
+            <option value="10">زوارة</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="address">العنوان:</label>
+          <input type="text" class="form-control rounded-input" id="address" name="address">
+        </div>
+        <button type="button" class="btn btn-secondary btn-block" onclick="getUserLocation()">تحديد الموقع</button>
+        <div id="map" style="height: 400px; width: 100%;" class="mt-2"></div>
+      </div>
 
+      <button type="submit" class="btn btn-accent btn-block" id="submit">إنشاء الحساب</button>
+    </div>
+  </form>
 
-<form method="post" id="all_user_data" action="/Rejister/User/Check">
-  <h2>إنشاء حساب مستخدم</h2>
-
-
-  <label> الاسم الاول:</label>
-  <input type="text" name="first_name" id="first_name">
-  <label> الاسم الاخير:</label>
-  <input type="text" name="last_name" id="last_name">
-
-  <label>البريد الإلكتروني :</label>
-  <input type="email" name="email" id="email">
-
-
-  <label>رقم الهاتف :</label>
-  <input type="text" name="phone" id="phone">
-  <label>المدينة :</label>
-  <select name="city" class="city" id="city">
-    <option value="01">زليتن</option>
-    <option value="02">مصراتة</option>
-    <option value="03">طرابلس</option>
-    <option value="04">الخمس</option>
-    <option value="05">سبها</option>
-    <option value="06">بنغازي</option>
-    <option value="07">سرت</option>
-    <option value="08">بن وليد</option>
-    <option value="09">الزاوية</option>
-    <option value="10">زوارة</option>
-
-
-
-    <!-- وأضف باقي مدن ليبيا هنا -->
-  </select>
-
-  <!-- حقل تاريخ الميلاد -->
-  <label>تاريخ الميلاد :</label>
-  <input type="date" name="birthdate" id="birthdate">
-
-  <!--
-  <label>الجنس:</label>
-  <input type="radio" name="gender" value="1">ذكر
-  <input type="radio" name="gender" value="2">أنثى
-   حقل الجنس -->
-  <label>كلمة المرور :</label>
-  <input type="password" name="password" id="password">
-
-
-  <label>العنوان:</label>
-  <input type="text" name="address" id="address">
-  <div id="map" style="height: 400px;"></div>
-
-
-  <input type="hidden" id="longitude" name="longitude">
-  <input type="hidden" id="latitude" name="latitude">
-
-  <!-- زر تحديد الموقع -->
-  <button type="button" onclick="getUserLocation()">تحديد الموقع</button>
-
-
-  <button type="submit">إنشاء الحساب</button>
-
-</form>
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJ3phAQVBfelG8E7PmauVNs01qkWT8euw&callback=initMap" async defer></script>
-<script src="/js/Map.js"></script>
-<%- include('../includes/shop/end.ejs') %>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJ3phAQVBfelG8E7PmauVNs01qkWT8euw&callback=initMap" async defer></script>
+  <script src="/js/Map.js"></script>
+  <script>
+    document.getElementById('show-map-btn').addEventListener('click', function() {
+      var mapContainer = document.getElementById('map-container');
+      if (mapContainer.style.display === 'none') {
+        mapContainer.style.display = 'block';
+      } else {
+        mapContainer.style.display = 'none';
+      }
+    });
+  </script>
+  <%- include('../includes/shop/end.ejs') %>

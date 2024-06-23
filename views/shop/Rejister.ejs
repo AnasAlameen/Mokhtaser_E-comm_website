@@ -1,70 +1,91 @@
 <%- include('../includes/shop/head.ejs') %>
-<link rel="stylesheet" href="/css/head.css">
-<link rel="stylesheet" href="/css/rejister.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/UserRigister.css">
 </head>
 <%- include('../includes/shop/navgationGeneral.ejs') %>
-<form id="all" method="post" enctype="multipart/form-data">
-  <div class="container">
-    <h2>انشاء حساب بائع</h2>
-    <label for="first_name">الاسم الأول:</label>
-    <input type="text" id="first_name" name="first_name" required />
 
-    <label for="last_name">الاسم الأخير:</label>
-    <input type="text" id="last_name" name="last_name" required />
-
-    <label for="email">البريد الإلكتروني :</label>
-    <input type="email" id="email" name="email" required />
-
-    <label for="password">كلمة المرور :</label>
-    <input type="password" id="password" name="password" required />
-
-    <label for="phone">رقم الهاتف :</label>
-    <input type="tel" id="phone" name="phone" required />
-
-    <label for="company_name">اسم الشركة (المتجر) :</label>
-    <input type="text" id="company_name" name="company_name" />
-
-    <label for="activity_type">نوع النشاط :</label>
-    <select id="activity_type" name="activity_type" class="activity_type" required>
-      <option value="10">ملابس رجال</option>
-      <option value="20">ملابس اطفال</option>
-      <option value="30">الصحة</option>
-    </select>
-
-    <label>هل يوجد متجر ع ارض الواقع؟:</label>
-    <input type="radio" name="plase" value="91" /> لايوجد متجر بامكان الناس زيارته
-    <input type="radio" name="plase" value="92" /> يوجد متجر بامكان الناس زيارته
-
-    <label for="city">المدينة:</label>
-    <select id="city" name="city" class="city" required>
-      <option value="" disabled selected>اختر المدينة</option>
-      <option value="01">مدينة 1</option>
-      <option value="02">مدينة 2</option>
-      <option value="03">مدينة 3</option>
-      <!-- أضف المزيد من المدن حسب الحاجة -->
-    </select>
-
-    <label for="license_number">رقم الترخيص:</label>
-    <input type="text" id="license_number" name="license_number" />
-
-    <label for="address">العنوان (قم بوصف العنوان):</label>
-    <input type="text" id="address" name="address">
+<form method="post" id="all_seller_data" action="/Rejister/Check" enctype="multipart/form-data">
+  <div class="container mt-5">
+    <h2 class="text-center mb-4">إنشاء حساب بائع</h2>
+    <div class="form-row">
+      <div class="form-group col-md-6">
+        <label for="first_name">الاسم الأول:</label>
+        <input type="text" class="form-control rounded-input" id="first_name" name="first_name" required />
+      </div>
+      
+      <div class="form-group col-md-6">
+        <label for="last_name">الاسم الأخير:</label>
+        <input type="text" class="form-control rounded-input" id="last_name" name="last_name" required />
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="email">البريد الإلكتروني:</label>
+      <input type="email" class="form-control rounded-input" id="email" name="email" required />
+    </div>
+    <div class="form-group">
+      <label for="password">كلمة المرور:</label>
+      <input type="password" class="form-control rounded-input" id="password" name="password" required />
+    </div>
+    <div class="form-group">
+      <label for="phone">رقم الهاتف:</label>
+      <input type="tel" class="form-control rounded-input" id="phone" name="phone" required />
+    </div>
+    <div class="form-group">
+      <label for="company_name">اسم الشركة (المتجر):</label>
+      <input type="text" class="form-control rounded-input" id="company_name" name="company_name" />
+    </div>
+    <div class="form-group">
+      <label for="activity_type">نوع النشاط:</label>
+      <select id="activity_type" name="activity_type" class="form-control rounded-input" required>
+        <option value="Men Clothes">ملابس رجال</option>
+        <option value="Children Clothes">ملابس أطفال</option>
+        <option value="Health and care">الصحة</option>
+      </select>
+    </div>
+ 
+    <div class="form-group image">
+      <label for="personalImage">الصورة الشخصية:</label>
+      <input type="file" class="form-control-file rounded-input" name="personalImage" id="personalImage" accept="image/*" required>
+    </div>
+    <div class="form-group">
+      <label for="license_number">رقم الترخيص:</label>
+      <input type="text" class="form-control rounded-input" id="license_number" name="license_number" />
+    </div>
 
     <input type="hidden" id="longitude" name="longitude">
     <input type="hidden" id="latitude" name="latitude">
 
-    <!-- زر تحديد الموقع -->
-    <button type="button" onclick="getUserLocation()">تحديد الموقع ع الخريطة</button>
-
-    <div id="map" style="height: 400px; width: 100%"></div>
-
-    <!-- يمكنك إضافة المزيد من الحقول هنا حسب متطلبات التسجيل -->
-    <button type="submit" id="submit">إرسال</button>
+    <!-- زر إظهار الخريطة -->
+    <button type="button" class="btn btn-info btn-block" id="show-map-btn">إظهار الخريطة</button>
     
+    <div id="map-container" class="mt-4" style="display: none;">
+      <div class="form-group">
+        <label for="city">المدينة:</label>
+        <select id="city" name="city" class="form-control rounded-input" required>
+          <option value="" disabled selected>اختر المدينة</option>
+          <option value="Zliten">مدينة 1</option>
+          <option value="Tripoli">مدينة 2</option>
+          <option value="Misrata">مدينة 3</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="address">العنوان:</label>
+        <input type="text" class="form-control rounded-input" id="address" name="address">
+      </div>
+      <button type="button" class="btn btn-secondary btn-block" onclick="getUserLocation()">تحديد الموقع</button>
+      <div id="map" style="height: 400px; width: 100%;" class="mt-2"></div>
+    </div>
+
+    <button type="submit" class="btn btn-accent btn-block" id="submit">إنشاء الحساب</button>
   </div>
 </form>
 
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJ3phAQVBfelG8E7PmauVNs01qkWT8euw&callback=initMap" async defer></script>
 <script src="/js/Map.js"></script>
 <script src="/js/rejisterShop.js"></script>
+
+
 <%- include('../includes/shop/end.ejs') %>

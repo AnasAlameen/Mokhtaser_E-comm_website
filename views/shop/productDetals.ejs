@@ -1,0 +1,87 @@
+<%- include('../includes/shop/head.ejs') %>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/css/prdouctDetls.css">
+<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+</head>
+<%- include('../includes/SHOP/navgation.ejs') %>
+<form id="all" enctype="multipart/form-data">
+  <section>
+    <div class="container mx-auto flex flex-wrap justify-between">
+      <div class="left w-full lg:w-1/2 p-4">
+        <div class="main_image">
+          <img src="/<%= imageURLs[0].replace(/\\/g, '/').replace('public/', '') %>" name="main" class="slide w-full h-auto" />
+        </div>
+        <div class="option flex flex-wrap mt-4">
+          <% imageURLs.forEach(imageUrl => { %>
+            <img src="/<%= imageUrl.replace(/\\/g, '/').replace('public/', '') %>" alt="Product Image" />
+          <% }) %>
+        </div>
+      </div>
+      <div class="right w-full lg:w-1/2 p-4 text-right">
+        <% if (product.ProductName && product.Prise && product.Discrption) { %>
+        <h2 class="text-2xl font-bold mb-4"><%= product.ProductName %></h2>
+        <p class="Discrption"><%= product.Discrption %></p>
+        <h4 id="productPrice" class="text-xl text-red-500 mb-4"><small>$</small><%= product.Prise %></h4>
+        <% } else { %>
+        <p>Image does not exist</p>
+        <% } %>
+
+        <div class="mt-4 mb-6">
+          <div id="text_sm" class="text-sm bg-gray-200 p-2">
+            اللون: أخضر أحمر المقاس: XL XXL ...
+          </div>
+        </div>
+
+        <div id="main" class="hide">
+          <div optione flex flex-wrap mt-4>
+            <% combinations.forEach(combination => { %>
+              <div class="color-image inline-block text-center m-2">
+                <img src="/<%= combination.image.replace(/\\/g, '/').replace('public/', '') %>" alt="<%= combination.color %>" class="w-24 h-24 p-2 cursor-pointer" data-qty="<%= combination.qty %>" data-color="<%= combination.color %>" data-id="<%= combination.colorId %>" data-vartionId="<%= combination.colorId %>" data-price="<%= combination.price %>" />
+              </div>
+            <% }) %>
+          </div>
+
+          <!-- Size Options -->
+          <div class="detals mt-4" id="details1">
+            <% combinations.forEach(combination => { %>
+              <% combination.sizes.forEach(size => { %>
+                <label class="label2 inline-block bg-white border border-green-500 text-black py-2 px-4 rounded-full text-center cursor-pointer mb-2 size-option" data-OptionId="<%= size.id %>" data-color-id="<%= combination.colorId %>" data-price="<%= size.price %>" data-qty="<%= size.qty %>"><%= size.size %></label>
+              <% }) %>
+            <% }) %>
+          </div>
+          
+          <!-- Quantity Input -->
+          <div class="plus mt-4 flex justify-center">
+            <input type="number" id="number" class="number w-1/4 border border-black rounded-full text-center py-2" value="1" />
+          </div>
+        </div>
+
+        <!-- Toggle Details Link -->
+        <div class="mt-6">
+          <a href="#" id="details" class="text-blue-600 hover:underline text-sm">عرض التفاصيل ></a>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex space-x-4 my-6">
+          <button class="flex-1 bg-red-500 text-white py-2 px-4 rounded" id="addTo">
+            حذف
+          </button>
+          <button class="flex-1 bg-green-500 text-white py-2 px-4 rounded" id="buyNow">تعديل
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+  <input type="hidden" name="_csrf" id="l" value="<%= csrfToken %>">
+</form>
+<script src="/js/prdouctDetls.js"></script>
+
+<%- include('../includes/shop/end.ejs') %>

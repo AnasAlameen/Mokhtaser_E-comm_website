@@ -1,9 +1,84 @@
 <%- include('../includes/shop/head.ejs') %>
-<link rel="stylesheet" href="/css/head.css">
-  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="/css/OrderPage.css">
+<title>الطلبيات</title>
 </head>
-
 <%- include('../includes/shop/navgation.ejs') %>
 
+<div class="container">
+    <h2>الطلبيات</h2>
+    <% if (Object.keys(groupedProducts).length === 0) { %>
+        <p class="text-center">لا توجد طلبيات تحتاج إلى تجهيز</p>
+    <% } else { %>
+        <% Object.keys(groupedProducts).forEach(userId => { %>
+            <div class="user-section">
+                <h3 class="h5"><%= "المستخدم " + userId %></h3>
+                <div class="product-list">
+                    <% groupedProducts[userId].products.forEach((product, index) => { %>
+                        <div class="product" data-product-id="<%= product.id %>">
+                            <img src="/images/<%= product.image_url.split('\\').pop() %>" alt="Product Image" />
+                            <div class="product-details">
+                                <h3 class="h6"><%= product.ProductName %></h3>
+                                <p class="product-description"><%= product.Discrption %></p>
+                                <p class="p1">الكمية: <%= product.Qwnatity %></p>
+                                <p id="Prise_<%= product.ProductId %>">السعر: $<%= product.Prise %></p>
+                                <p>VOCId: <%= product.VOCId %></p>
+                                <p>VOId: <%= product.VOId %></p>
+                                <p>اللون: <%= groupedProducts[userId].colors[index] %></p>
+                                <p>اللون: <%= groupedProducts[userId].options[index] %></p>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
+
+                <div class="shipping-info hide" id="shipping-info-<%= userId %>">
+                    <div class="order-details">
+                        <h5>المنتجات:</h5>
+                        <ul>
+                            <% let total = 0; %>
+                            <% groupedProducts[userId].products.forEach((product, index) => { %>
+                                <li><%= product.ProductName %></li>
+                                <p class="hide"><%= total += product.Prise %></p>
+                            <% }) %>
+                        </ul>
+                    </div>
+                    <div class="order-details">
+                        <h5>تفاصيل الطلب:</h5>
+                        <% const userDitalis = groupedProducts[userId].products[0] %>
+                        <p>اسم المستلم: <%= userDitalis.FirstName %> <%= userDitalis.LastName %></p>
+                        <p>رقم هاتف المستلم: <%= userDitalis.Phone %></p>
+                        <p>رقم هاتف المتجر: <%= userDitalis.PhoneNum %></p>
+                        <h5>بيانات الشحن:</h5>
+                        <% const location = groupedProducts[userId].locationQuery[0] || {}; %>
+                        <p>المدينة: <%= location.City || 'غير متاح' %></p>
+                        <p>المنطقة: <%= location.area || 'غير متاح' %></p>
+                        <p>سعر التوصيل: <%= location.deliveryPrice ? "$" + location.deliveryPrice : 'غير متاح' %></p>
+                        <p>الاجمالي: <%= total %></p>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button class="btn btn-primary btn-toggle-details" onclick="toggleDetails('<%= userId %>')">عرض تفاصيل الطلبية</button>
+                    <button class="btn btn-success btn-prepare hide" id="prepare-button-<%= userId %>" 
+                        data-product-ids="<%= groupedProducts[userId].products.map(product => product.id).join(',') %>" 
+                        onclick="markAsPrepared('<%= userId %>')">تم التجهيز</button>
+                    <button class="btn btn-primary btn-print hide" id="print-button-<%= userId %>" onclick="printShippingInfo('<%= userId %>')">طباعة</button>
+                </div>
+            </div>
+        <% }) %>
+    <% } %>
+    <div class="checkout">
+        <button id="print-all-shipping-info">طباعة جميع بيانات الشحن</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/js/print.js"></script>
 <%- include('../includes/shop/end.ejs') %>
+

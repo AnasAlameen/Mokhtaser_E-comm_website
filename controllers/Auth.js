@@ -15,8 +15,10 @@ exports.getSinIn = (req, res, next) => {
     path: "users/SingIn",
   });
 };
+
 exports.postRejister = async (req, res, next) => {
-  console.log(req.body); // Log the entire request body to debug
+  console.log(req.body); // طباعة محتويات body للتأكد من استقبالها
+  console.log(req.files); // طباعة محتويات files للتأكد من استقبالها
   const {
     first_name,
     last_name,
@@ -27,23 +29,28 @@ exports.postRejister = async (req, res, next) => {
     activity_type,
     city,
     license_number,
-    address, // Updated to match the form field name
+    address,
     latitude,
     longitude,
   } = req.body;
+
+  const personalImage = req.files["personalImage"]
+    ? req.files["personalImage"][0].path
+    : null;
+
   let Check1 = "select * from users where Email=?";
   let [CheckEmail] = await db.execute(Check1, [email]);
-  if (CheckEmail) {
-    let Check = "select * from sellers where Emile=?";
-    let [CheckEmil] = await db.execute(Check, [email]);
-
-    if (CheckEmil.length > 0) {
-      console.log("The user already exists");
-      res.status(409).send("The user already exists"); // Send a conflict status if the user exists
+  let Check2 = "select * from sellers where Emile=?";
+  let [CheckEmail2] = await db.execute(Check2, [email]);
+  if (CheckEmail.length > 0) {
+    res.status(409).send("The user already exists"); // إذا كان المستخدم موجود بالفعل
+  } else {
+    if (CheckEmail2.length > 0) {
+      res.status(409).send("The user already exists"); // إذا كان المستخدم موجود بالفعل
     } else {
       let hashPassword = await bcrypt.hash(password, 12);
       let [add, fields] = await db.execute(
-        "INSERT INTO sellers (FirstName, LastName, Emile, PhoneNum, CompanyName, Catagori, Password, creationDate, license_number) VALUES (?, ?, ?, ?, ?, ?, ?, now(), ?)",
+        "INSERT INTO sellers (FirstName, LastName, Emile, PhoneNum, CompanyName, Catagori, Password, creationDate, license_number, url) VALUES (?, ?, ?, ?, ?, ?, ?, now(), ?, ?)",
         [
           first_name,
           last_name,
@@ -53,6 +60,7 @@ exports.postRejister = async (req, res, next) => {
           activity_type,
           password,
           license_number,
+          personalImage,
         ]
       );
       const ShopId = add.insertId;
@@ -61,67 +69,66 @@ exports.postRejister = async (req, res, next) => {
         [ShopId, city, address, longitude, latitude]
       );
       console.log("New user created");
-      res.status(201).json({ message: "User created", redirectUrl: "/SingIn" }); // Send JSON response with redirect URL
+      res.status(201).redirect("/SingIn");
     }
-  } else {
-    res.status(409).send("The user already exists"); // Send a conflict status if the user exists
   }
 };
+
 exports.CheckSingIn = async (req, res, next) => {
   const { email, password } = req.body;
+  console.log(req.body);
 
-  let Check = "SELECT * FROM sellers WHERE Emile = ?";
-  let [CheckEmil] = await db.execute(Check, [email]);
+  try {
+    // Check if the email exists in sellers
+    let Check = "SELECT * FROM sellers WHERE Emile = ? and Password=?";
+    let [CheckEmil] = await db.execute(Check, [email, password]);
 
-  if (CheckEmil.length > 0) {
-    // Check if user exists before accessing user object
-    const user = CheckEmil[0];
-    console.log("check", CheckEmil[0]);
-    console.log("user", CheckEmil[0].Emile, "pas", CheckEmil[0].Password); // Log user details for verification
-
-    const isMatch = await bcrypt.compare(password, CheckEmil[0].Password);
-    // if (isMatch) {
-    req.session.isLoggedIn = true;
-    req.session.userId = user.id;
-    req.session.username = user.FirstName;
-    req.session.role="store"
-    // ... store session data
-    res.status(201).redirect("/shop/home");
-    /*} else {
-      console.log("Password incorrect");
-      res
-        .status(401)
-        .json({ message: "Password incorrect", redirectUrl: "/LogIn" });
-   // }*/
-  } else {
-    req.session.isLoggedIn = true;
-    req.session.userId = user.id;
-    req.session.username = user.FirstName;
-    req.session.role="user"
-    let Check = "SELECT * FROM users WHERE Email = ?";
-    let [CheckEmil] = await db.execute(Check, [email]);
     if (CheckEmil.length > 0) {
-      // Check if user exists before accessing user object
       const user = CheckEmil[0];
-      console.log("check", CheckEmil[0]);
-      console.log("user", CheckEmil[0].Email, "pas", CheckEmil[0].Password); // Log user details for verification
-  
-      const isMatch = await bcrypt.compare(password, CheckEmil[0].Password);
-      // if (isMatch) {
+      const isMatch = await bcrypt.compare(password, user.Password);
+
+      //  if (isMatch) {
       req.session.isLoggedIn = true;
       req.session.userId = user.id;
       req.session.username = user.FirstName;
-      // ... store session data
-      res.status(201).redirect("/user");
-    }else{
-      console.log("The user does not exist");
-      res.status(409).send("The user does not exist");
+      req.session.role = "store";
+      return res.status(201).redirect("/shop/home");
+      // } else {
+      return res
+        .status(401)
+        .json({ message: "Password incorrect", redirectUrl: "/LogIn" });
+      console.log("ksdiohfo");
+      // }
+    } else {
+      // Check if the email exists in users
+      Check = "SELECT * FROM users WHERE Email = ? and Password=?";
+      [CheckEmil] = await db.execute(Check, [email, password]);
+
+      if (CheckEmil.length > 0) {
+        const user = CheckEmil[0];
+        const isMatch = await bcrypt.compare(password, user.Password);
+
+        // if (isMatch) {
+        req.session.isLoggedIn = true;
+        req.session.userId = user.id;
+        req.session.username = user.FirstName;
+        req.session.role = "user";
+        console.log("hhhhhh");
+
+        return res.status(201).redirect("/user/Home");
+        //   } else {
+        //return res.status(401).json({ message: "Password incorrect", redirectUrl: "/LogIn" });
+        // }
+      }
     }
 
-    
+    console.log("The user does not exist");
+    res.status(409).send("The user does not exist OR PASSORD RONG");
+  } catch (error) {
+    console.error("Error during sign-in:", error);
+    res.status(500).json({ error: "Error during sign-in" });
   }
 };
-
 exports.LogOut = (req, res, next) => {
   req.session.destroy((err) => {
     res.redirect("http://localhost:3000/SingIn");
@@ -134,6 +141,8 @@ exports.getRejisterUser = (req, res, next) => {
   });
 };
 exports.postRegisterUser = async (req, res, next) => {
+  console.log(req.body);
+  console.log(req.files);
   const {
     latitude,
     longitude,
@@ -147,24 +156,25 @@ exports.postRegisterUser = async (req, res, next) => {
     first_name,
   } = req.body;
 
+  const personalImage = req.files["personalImage"]
+    ? req.files["personalImage"][0].path
+    : null;
+
   try {
-    // Check if the email already exists in the sellers table
-    let checkSellerQuery = "SELECT * FROM sellers WHERE Emile = ?";
-    let [checkSeller] = await db.execute(checkSellerQuery, [email]);
+    let checkUserQuery = "SELECT * FROM users WHERE Email = ?";
+    let [checkUser] = await db.execute(checkUserQuery, [email]);
 
-    if (checkSeller.length > 0) {
-      res.status(409).send("The user already exists in sellers");
+    let Check2 = "select * from sellers where Emile=?";
+    let [CheckEmail2] = await db.execute(Check2, [email]);
+    if (checkUser.length > 0) {
+      res.status(409).send("The user already exists in users");
     } else {
-      // Check if the email already exists in the users table
-      let checkUserQuery = "SELECT * FROM users WHERE Email = ?";
-      let [checkUser] = await db.execute(checkUserQuery, [email]);
-
-      if (checkUser.length > 0) {
+      if (CheckEmail2.length > 0) {
         res.status(409).send("The user already exists in users");
       } else {
-        // Insert the new user into the users table
+        let hashPassword = await bcrypt.hash(password, 12);
         let insertUserQuery =
-          "INSERT INTO users (Password, birth_date, Phone, Email, LastName, FirstName, JoinDate) VALUES (?, ?, ?, ?, ?, ?, now())";
+          "INSERT INTO users (Password, birth_date, Phone, Email, LastName, FirstName, JoinDate, url) VALUES (?, ?, ?, ?, ?, ?, now(), ?)";
         let [userResult] = await db.execute(insertUserQuery, [
           password,
           birthdate,
@@ -172,11 +182,11 @@ exports.postRegisterUser = async (req, res, next) => {
           email,
           last_name,
           first_name,
+          personalImage,
         ]);
 
         const userId = userResult.insertId;
 
-        // Insert the user's location into the location table
         let insertLocationQuery =
           "INSERT INTO location (UserId, City, area, longtiud, lasttiud) VALUES (?, ?, ?, ?, ?)";
         await db.execute(insertLocationQuery, [
@@ -186,13 +196,8 @@ exports.postRegisterUser = async (req, res, next) => {
           longitude,
           latitude,
         ]);
-
-        res
-          .status(201)
-          .send("User added successfully. Redirecting to Sign In...");
-
-        // Use setTimeout to allow the client to read the message before redirecting
-          res.redirect("/SignIn");
+        res.status(201).redirect("http://localhost:3000/SingIn");
+        console.log(":d");
       }
     }
   } catch (error) {

@@ -1,146 +1,103 @@
-
 <%- include('../../includes/shop/head.ejs') %>
-
-  <link rel="stylesheet" href="/css/add_product.css">
-  <link rel="stylesheet" href="/css/head.css">
-
-
-
-  
+<link rel="stylesheet" href="/css/add_product.css">
 </head>
-
 <%- include('../../includes/shop/navgation.ejs') %>
-<form id ="all" method="post"  enctype="multipart/form-data">
-    
 
-  <div class="container" >
+<form id="all" method="post" action="/admin/Post_add_product" enctype="multipart/form-data">
+  <input type="hidden" name="_csrf" id="l" value="<%= csrfToken %>">
+
+  <div class="container">
     <h1>إضافة منتج جديد</h1>
     
-    <input id="product-name" placeholder="اسم المنتج">
-    
-    <textarea id="product-description" placeholder="وصف المنتج"></textarea>
+    <input id="product-name" name="ProductName" placeholder="اسم المنتج" required>
+    <textarea id="product-description" name="ProductDiscrption" placeholder="وصف المنتج" required></textarea>
+    <input type="number" id="product-price" name="PrdustPrise" placeholder="السعر" required>
+    <input type="number" id="product-quantity" name="ProductQuantity" placeholder="الكمية المتوفرة" required>
 
-    <input type="number" id="product-price" placeholder="السعر">
-
-    <input type="number" id="product-quantity" placeholder="الكمية المتوفرة">
-
-    <select id="product-category">
-      <label for="company-type">اختر التصنيف</label>
+    <select id="product-category" name="SubCategorie" required>
+      <option value="" disabled selected>اختر التصنيف</option>
       <option value="1">ملابس رجال</option>
-        <option value="2">ملابس اطفال</option>
-        <option value="3">موضة و تجميل</option>
-        <option value="4">ملابس نسائية</option>
-      </select>
+      <option value="2">ملابس أطفال</option>
+      <option value="3">موضة و تجميل</option>
+      <option value="4">ملابس نسائية</option>
+    </select>
 
     <button type="button" id="add-images">اختر الصور</button>
-   
-    <div class="selected_images" id="selected_images">
-
-      <input class ="images"type="file" required multiple name="image" id="ProductImages" accept="image/*" >
-
-     
-      <button type="button" id="save_the_image">حفظ </button>
-
-
+    <div class="selected_images hide" id="selected_images">
+      <input class="images" type="file" multiple name="image1" id="ProductImages" accept="image/*" required>
+      <button type="button" id="save_the_image">حفظ</button>
     </div>
 
- 
-  <button type="button" id="add-colors">اختر الألوان</button>
- <section class="product-image " id="colors">
-      
-    <input class ="image"type="file" name="image2"   id="ColorImage" accept="image/*" ><br><br>
-    
-    <div id="color_container" class="selected-colorsContainer">
-    <button class="color-btn red" data-color="red"></button>
-    <button class="color-btn blue" data-color="blue"></button>
-    <button class="color-btn green" data-color="green"></button>
-    <button class="color-btn yellow" data-color="yellow"></button>
-    <button class="color-btn black" data-color="black"></button>
-    <button class="color-btn white" data-color="white"></button>
-    <button class="color-btn gray" data-color="gray"></button>
-    <button class="color-btn brown" data-color="brown"></button>
-    <button class="color-btn orange" data-color="orange"></button>
-    <button class="color-btn pink" data-color="pink"></button>
-    <button class="color-btn purple" data-color="purple"></button>
-    <button class="color-btn cyan" data-color="cyan"></button>
-    <button class="color-btn teal" data-color="teal"></button>
+    <button type="button" id="add-colors">اختر الألوان</button>
+    <section class="product-image hide" id="colors">
+      <input class="image" type="file" name="image2" id="ColorImage" accept="image/*">
+      <div id="color_container" class="selected-colorsContainer">
+        <!-- أزرار الألوان -->
+        <div class="color_containertop">
+          <button class="color-btn red" data-color="red"></button>
+          <button class="color-btn blue" data-color="blue"></button>
+          <button class="color-btn green" data-color="green"></button>
+          <button class="color-btn yellow" data-color="yellow"></button>
+          <button class="color-btn black" data-color="black"></button>
+          <button class="color-btn white" data-color="white"></button>
+          <button class="color-btn gray" data-color="gray"></button>
+          <button class="color-btn brown" data-color="brown"></button>
+          <button class="color-btn orange" data-color="orange"></button>
+          <button class="color-btn pink" data-color="pink"></button>
+          <button class="color-btn purple" data-color="purple"></button>
+          <button class="color-btn cyan" data-color="cyan"></button>
+          <button class="color-btn teal" data-color="teal"></button>
+        </div>
+        <input type="text" id="colorr" placeholder="اكتب اللون اذا لم تجده في الأعلى" class="input-box">
+        <input type="number" id="color_quantity" placeholder="الكمية الخاصة بهذا اللون" class="input-box">
+        <input type="number" id="color-price" placeholder="السعر الخاص بهذا اللون" class="input-box">
+      </div>
 
-    <div class="display-container" id="display-container"></div>
-    <select id="TYPE_OF" required>
-      <label for="company-type">اختر التصنيف</label>
-      <option value="NaN">اختر التصنيف  </option>
-      <option value="size">xl xxl ...  </option>
-      <option value="weight">الوزن </option>
-      <option value="dimantion">الابعاد </option>
-      <option value="shoze_size">حجم الحذاء </option>
-      <option value="metters">امتار </option>
+      <div class="display-container" id="display-container">
+        <!-- عرض المقاسات الخاصة بكل لون -->
+      </div>
+      <button type="button" id="colorSize" class="colorSizeButton">اختر المقاسات</button>
 
-        
+      <div class="color_containerButtom hide" id="color_containerButtom">
+        <select id="TYPE_OF" name="DimensionsType">
+            <option value="" disabled selected>اختر التصنيف</option>
+            <option value="size">xl xxl ...</option>
+            <option value="weight">الوزن</option>
+            <!-- باقي التصنيفات -->
+          </select>
+          <input id="meger" name="DimensionsMeger" placeholder="القياس">
+          <input type="number" id="Size_color_quantity" name="quantity" placeholder="الكمية" class="input-box">
+          <input type="number" id="variation_color_prise" name="price" placeholder="السعر" class="input-box">
+          <button type="button" id="save-variation">احفظ المقاس</button>
+     </div>
 
-      </select>
-      <input id="meger" placeholder="القياس" required>
+     <button type="button" id="nextColor">اختر اللون التالي</button>
+     <button type="button" id="save_colors">حفظ كل الألوان</button>
 
-    <!-- عرض اللون الأخير المضاف -->
-    <div id="latest-color-display"></div>
+    </section>
 
-    <!-- مربع لعرض جميع الألوان المختارة -->
+    <button type="button" id="add-sizes">اختر الأحجام</button>
+    <div id="sizes-section" class="hide">
+      <div class="color_containerButtom">
+        <select id="SIZE_TYPE" name="DimensionsType">
+            <option value="" disabled selected>اختر التصنيف</option>
+            <option value="size">xl xxl ...</option>
+            <option value="weight">الوزن</option>
+            <!-- باقي التصنيفات -->
+        </select>
+        <input id="size" name="Size" placeholder="القياس">
+        <input type="number" id="size-quantity" name="quantity" placeholder="الكمية" class="input-box">
+        <input type="number" id="size-price" name="price" placeholder="السعر" class="input-box">
+        <button type="button" id="save-size">احفظ الحجم</button>
+      </div>
+    </div>
+
     <div id="all-colors-display"></div>
 
-
-
-    <input type="text" id="qua" placeholder="الكمية" class="input-box">
-
-    <button class="next-color" id="nextColor">احفظ واختار التالي</button>
-
-    <button class="save_colors"  id="save_colors">حفظ كل الالوان</button>
-    
-    </div>
-       
- </section>
- 
- <!-- أزرار التعديل والحذف -->
-
-
-
-  <div id="all-colors-display"></div>
-
-<!--
-
-    <button id="add_dimensions">إضافة مقاسات</button>
-      <div class="add_dimensions"id="add-dimensions">
-        <select id="TYPE_OF" required>
-          <label for="company-type">اختر التصنيف</label>
-          <option value="size">xl xxl ...  </option>
-          <option value="weight">الوزن </option>
-          <option value="dimantion">الابعاد </option>
-          <option value="shoze_size">حجم الحذاء </option>
-          <option value="metters">امتار </option>
-
-            
-    
-          </select>
-          <input id="meger" placeholder="القياس" required>
-
-        <input type="num" name="name" id="dimensions_value" required>
-
-        <button class="next-Num" id="nextNum">التالي</button>
-        <button class="saveDimensions" id="saveDimensions" >حفظ</button>
-
-
-
-
-
-      </div>
-      -->
-      <button type="button" id="save-product" class="save">حفظ</button>
-      
-      <button id="cancel-product">إلغاء</button>
-
-    </div>
+    <button type="submit" id="save-product" class="save">حفظ</button>
+    <button type="button" id="cancel-product">إلغاء</button>
+  </div>
 </form>
-
-
-
 
 <%- include('../../includes/shop/end.ejs') %>
 <script src="/js/product2.js"></script>
