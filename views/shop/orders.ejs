@@ -24,10 +24,12 @@
                                 <p class="product-description"><%= product.Discrption %></p>
                                 <p class="p1">الكمية: <%= product.Qwnatity %></p>
                                 <p id="Prise_<%= product.ProductId %>">السعر: $<%= product.Prise %></p>
-                                <p>VOCId: <%= product.VOCId %></p>
-                                <p>VOId: <%= product.VOId %></p>
+                                <% if(groupedProducts[userId].colors[index]){ %>
                                 <p>اللون: <%= groupedProducts[userId].colors[index] %></p>
-                                <p>اللون: <%= groupedProducts[userId].options[index] %></p>
+                                <% } %>
+                                <% if(groupedProducts[userId].options[index]){ %>
+                                <p>المقاس: <%= groupedProducts[userId].options[index] %></p>
+                                <% } %>
                             </div>
                         </div>
                     <% }) %>

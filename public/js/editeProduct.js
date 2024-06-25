@@ -1,165 +1,100 @@
+// scripts/editProduct.js
+
 document.addEventListener('DOMContentLoaded', () => {
-    const selectedImagesDiv = document.getElementById("selected_images");
-    const saveImageBtn = document.getElementById("save_the_image");
-    const addImageBtn = document.getElementById("add-images");
-    const combinationsCont = document.getElementById("combinations");
-    const addCombinationBtn = document.getElementById("add-combination");
-    const saveCombinationBtn = document.getElementById("save-combination");
-    const displayContainer = document.getElementById("all-combinations-display");
-    const saveProductBtn = document.getElementById("save-product");
-    const form = document.getElementById("all");
-  
-    let combinations = {};
-    let formData = new FormData();
-    const deletedImages = [];
-    const deletedCombinations = [];
-  
-    addImageBtn.addEventListener("click", () => {
-      selectedImagesDiv.classList.remove("hide");
-    });
-  
-    saveImageBtn.addEventListener("click", () => {
-      selectedImagesDiv.classList.add("hide");
-      handleImageUpload("ProductImages", formData, "image1");
-    });
-  
-    addCombinationBtn.addEventListener("click", () => {
-      combinationsCont.classList.remove("hide");
-    });
-  
-    saveCombinationBtn.addEventListener("click", (event) => {
-      event.preventDefault();
-      saveCombinationDetails();
-    });
-  
-    saveProductBtn.addEventListener("click", (event) => {
-      event.preventDefault();
-      saveProductDetails();
-    });
-  
-    document.getElementById("cancel-product").addEventListener("click", (event) => {
-      event.preventDefault();
-      form.reset();
-    });
-  
-    function handleImageUpload(inputId, formData, fieldName) {
-      const imageInputs = document.getElementById(inputId);
-      if (imageInputs.files.length > 0) {
-        for (let i = 0; i < imageInputs.files.length; i++) {
-          formData.append(fieldName, imageInputs.files[i]);
-        }
-        Swal.fire("تم الحفظ!", "تم الحفظ", "success");
-      } else {
-        Swal.fire("لم يتم اختيار اي صورة", "الرجاء اختيار صور", "warning");
-      }
-    }
-  
-    function saveCombinationDetails() {
-      const colorId = document.getElementById("combination-variant").value;
-      const sizeValue = document.getElementById("combination-value").value;
-      const sizeQuantity = parseInt(document.getElementById("combination-quantity").value);
-      const sizePrice = parseInt(document.getElementById("combination-price").value);
-  
-      if (colorId && sizeValue && !isNaN(sizeQuantity) && !isNaN(sizePrice)) {
-        if (!combinations[colorId]) {
-          combinations[colorId] = {
-            color: document.querySelector(`#combination-variant option[value="${colorId}"]`).textContent,
-            sizes: []
-          };
-        }
-        combinations[colorId].sizes.push({
-          size: sizeValue,
-          qty: sizeQuantity,
-          price: sizePrice
-        });
-  
-        updateCombinationDisplay();
-        combinationsCont.classList.add("hide");
-        Swal.fire("تم حفظ التوليفة", "اختر توليفة جديدة", "success");
-      } else {
-        Swal.fire("لم يتم ادخال بيانات التوليفة بشكل صحيح", "الرجاء ملء جميع الحقول", "warning");
-      }
-    }
-  
-    function updateCombinationDisplay() {
-      displayContainer.innerHTML = "";
-      Object.keys(combinations).forEach((colorId) => {
-        const color = combinations[colorId];
-        color.sizes.forEach((size, index) => {
-          let combinationItem = document.createElement("div");
-          combinationItem.innerHTML = `
-            <label>اللون: ${color.color}, الحجم: ${size.size}, الكمية: ${size.qty}, السعر: ${size.price}</label>
-            <button class="edit-button" data-color-id="${colorId}" data-index="${index}">تعديل</button>
-            <button class="delete-button" data-color-id="${colorId}" data-index="${index}">×</button>
-          `;
-          displayContainer.appendChild(combinationItem);
-        });
-      });
-    }
-  
-    function saveProductDetails() {
-      const ProductName = document.getElementById("product-name").value;
-      const ProductDescription = document.getElementById("product-description").value;
-      const ProductPrice = document.getElementById("product-price").value;
-      const productCategory = document.getElementById("product-category").value;
-  
-      formData.append("combinations", JSON.stringify(combinations));
-      formData.append("ProductPrice", ProductPrice);
-      formData.append("ProductDescription", ProductDescription);
-      formData.append("ProductName", ProductName);
-      formData.append("ProductCategory", productCategory);
-      
-      const formObject = {};
-      formData.forEach((value, key) => {
-        formObject[key] = value;
-      });
-  
-      fetch("/admin/Post_add_product", {
-        method: "POST",
-        body: formData,
-        headers: {
-          "CSRF-Token": document.querySelector('input[name="_csrf"]').value,
-        },
-      })
-      .then(res => res.json())
-      .then(data => console.log(data))
-      .catch(error => console.error('Error:', error));
-  
-      Swal.fire("تم الحفظ!", "تم حفظ المنتج الجديد بنجاح", "success");
-    }
-  
-    document.querySelectorAll('.delete-image').forEach(button => {
-      button.addEventListener('click', () => {
-        const url = button.getAttribute('data-url');
-        deletedImages.push(url);
-        button.parentElement.remove();
-      });
-    });
-  
-    document.querySelectorAll('.delete-option').forEach(button => {
-      button.addEventListener('click', () => {
-        const colorId = button.getAttribute('data-color-id');
-        const index = button.getAttribute('data-index');
-        combinations[colorId].sizes.splice(index, 1);
-        if (combinations[colorId].sizes.length === 0) {
-          delete combinations[colorId];
-        }
-        updateCombinationDisplay();
-      });
-    });
-  
-    saveProductBtn.addEventListener('click', () => {
-      const deletedImagesInput = document.createElement('input');
-      deletedImagesInput.type = 'hidden';
-      deletedImagesInput.name = 'deletedImages';
-      deletedImagesInput.value = JSON.stringify(deletedImages);
-      form.appendChild(deletedImagesInput);
-  
-      const deletedCombinationsInput = document.createElement('input');
-      deletedCombinationsInput.type = 'hidden';
-      deletedCombinationsInput.name = 'deletedCombinations';
-      deletedCombinationsInput.value = JSON.stringify(deletedCombinations);
-      form.appendChild(deletedCombinationsInput);
+  const form = document.getElementById('edit-product-form');
+  const addColorBtn = document.getElementById('add-color-btn');
+  const addSizeBtn = document.getElementById('add-size-btn');
+  const colorsSection = document.getElementById('colors-section');
+  const sizesSection = document.getElementById('sizes-section');
+
+  addColorBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    const colorItem = document.createElement('div');
+    colorItem.classList.add('color-item', 'p-3', 'border', 'mb-2');
+    colorItem.innerHTML = `
+      <label class="form-label">Color: <input type="text" class="form-control" data-type="color-name"></label>
+      <label class="form-label">Quantity: <input type="number" class="form-control" data-type="color-quantity"></label>
+      <label class="form-label">Price: <input type="number" class="form-control" data-type="color-price"></label>
+      <button class="remove-color-btn btn btn-danger mt-2">Remove</button>
+    `;
+    colorsSection.insertBefore(colorItem, addColorBtn);
+    colorItem.querySelector('.remove-color-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      colorItem.remove();
     });
   });
-  
+
+  addSizeBtn.addEventListener('click', (event) => {
+    event.preventDefault();
+    const sizeItem = document.createElement('div');
+    sizeItem.classList.add('size-item', 'p-3', 'border', 'mb-2');
+    sizeItem.innerHTML = `
+      <label class="form-label">Size: <input type="text" class="form-control" data-type="size-value"></label>
+      <label class="form-label">Quantity: <input type="number" class="form-control" data-type="size-quantity"></label>
+      <label class="form-label">Price: <input type="number" class="form-control" data-type="size-price"></label>
+      <button class="remove-size-btn btn btn-danger mt-2">Remove</button>
+    `;
+    sizesSection.insertBefore(sizeItem, addSizeBtn);
+    sizeItem.querySelector('.remove-size-btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      sizeItem.remove();
+    });
+  });
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData();
+    formData.append('_csrf', document.querySelector('input[name="_csrf"]').value);
+    formData.append('ProductName', document.getElementById('product-name').value);
+    formData.append('ProductDiscrption', document.getElementById('product-description').value);
+    formData.append('PrdustPrise', document.getElementById('product-price').value);
+    formData.append('SubCategorie', document.getElementById('product-category').value);
+
+    const colors = [];
+    document.querySelectorAll('.color-item').forEach(item => {
+      const color = {
+        name: item.querySelector('[data-type="color-name"]').value,
+        quantity: parseInt(item.querySelector('[data-type="color-quantity"]').value),
+        price: parseInt(item.querySelector('[data-type="color-price"]').value)
+      };
+      colors.push(color);
+    });
+    formData.append('colors', JSON.stringify(colors));
+
+    const sizes = [];
+    document.querySelectorAll('.size-item').forEach(item => {
+      const size = {
+        DimensionsType: 'size',
+        size: item.querySelector('[data-type="size-value"]').value,
+        quantity: parseInt(item.querySelector('[data-type="size-quantity"]').value),
+        price: parseInt(item.querySelector('[data-type="size-price"]').value)
+      };
+      sizes.push(size);
+    });
+    formData.append('sizes', JSON.stringify(sizes));
+
+    // Handling images
+    const images = document.getElementById('product-images').files;
+    for (let i = 0; i < images.length; i++) {
+      formData.append('image1', images[i]);
+    }
+
+    try {
+      const response = await fetch(`/edit-product/${productId}`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert('Product updated successfully!');
+      } else {
+        alert('Error updating product: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error updating product');
+    }
+  });
+});

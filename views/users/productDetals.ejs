@@ -59,10 +59,15 @@
 
           <div class="detals mt-4" id="details1">
             <% if (typeof combinations !== 'undefined' && combinations.length > 0) { %>
+              <% const seenMegement = new Set(); %>
+
               <% combinations.forEach(combination => { %>
                 <% combination.sizes.forEach(size => { %>
-                  <label class="label2 inline-block bg-white border border-green-500 text-black py-2 px-4 rounded-full text-center cursor-pointer mb-2 size-option" data-OptionId="<%= size.id %>" data-color-id="<%= combination.colorId %>" data-price="<%= size.price %>" data-qty="<%= size.qty %>"><%= size.size %></label>
-                <% }) %>
+                  <% if(!seenMegement.has(size.size)){%>
+                    <label class="label2 inline-block bg-white border border-green-500 text-black py-2 px-4 rounded-full text-center cursor-pointer mb-2 size-option" data-OptionId="<%= size.id %>" data-color-id="<%= combination.colorId %>" data-price="<%= size.price %>" data-qty="<%= size.qty %>"><%= size.size %></label>
+                 <% seenMegement.add(size.size) %>
+                    <% } %>
+                  <% }) %>
               <% }) %>
             <% } %>
           </div>

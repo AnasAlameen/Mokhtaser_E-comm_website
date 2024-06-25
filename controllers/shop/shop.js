@@ -14,11 +14,15 @@ exports.getproductDetals = async (req, res, next) => {
     const [imageResults] = await db.execute(imageQuery, [productId]);
     const imageURLs = imageResults.map((row) => row.url);
 
+    console.log("Image URLs:", imageURLs);
+
     // جلب تفاصيل المنتج
     const productQuery =
       "SELECT `SellerId`, `id`, `Prise`, `Discrption`, `ProductName`, `solid` FROM products WHERE id = ?";
     const [productResults] = await db.execute(productQuery, [productId]);
     const product = productResults[0];
+
+    console.log("Product Details:", product);
 
     // جلب صورة الألوان المتاحة
     const variantImageQuery = `
@@ -30,15 +34,19 @@ exports.getproductDetals = async (req, res, next) => {
     `;
     const [variantImageResults] = await db.execute(variantImageQuery, [productId]);
 
+    console.log("Variant Image Results:", variantImageResults);
+
     // جلب خيارات الأحجام المتاحة
     const variantOptionsQuery = `
       SELECT vo.id, vo.value as size, vo.qty, vo.prise, r.parent_option_id as color_id, r.child_option_id as option_id
       FROM variants v
       INNER JOIN variant_options vo ON v.id = vo.VariantsId
-      INNER JOIN variant_relations r ON vo.id = r.child_option_id
+      LEFT JOIN variant_relations r ON vo.id = r.child_option_id
       WHERE v.product_id = ? AND v.VariantsType != 'color'
     `;
     const [variantOptionsResults] = await db.execute(variantOptionsQuery, [productId]);
+
+    console.log("Variant Options Results:", variantOptionsResults);
 
     // تنظيم بيانات الألوان والأحجام
     const colorImages = {};
@@ -96,9 +104,9 @@ exports.getproductDetals = async (req, res, next) => {
         sizes: sizeOptions[0] || []
       }];
 
-    if (view === 'user') {
-      console.log("Combinations:", combinations);
+    console.log("Combinations:", combinations);
 
+    if (view === 'user') {
       res.render("users/productDetals", {
         pageTitle: "تفاصيل المنتج ",
         path: "users/productDetals",
@@ -109,8 +117,6 @@ exports.getproductDetals = async (req, res, next) => {
         productId: productId,
       });
     } else {
-      console.log("Combinations:", combinations);
-
       res.render("shop/productDetals", {
         pageTitle: "تفاصيل المنتج",
         path: "shop/productDetals",
@@ -126,6 +132,7 @@ exports.getproductDetals = async (req, res, next) => {
     next(err);
   }
 };
+
 
 
 exports.getShopeHomePage = async (req, res, next) => {

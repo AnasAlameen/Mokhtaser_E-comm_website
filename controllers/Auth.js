@@ -92,6 +92,7 @@ exports.CheckSingIn = async (req, res, next) => {
       req.session.userId = user.id;
       req.session.username = user.FirstName;
       req.session.role = "store";
+      req.session.Categori=user.Catagori;
       return res.status(201).redirect("/shop/home");
       // } else {
       return res

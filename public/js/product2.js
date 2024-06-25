@@ -330,12 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    sizes.push({
-      DimensionsType: sizeType,
-      size: size,
-      quantity: sizeQuantity,
-      price: sizePrice,
-    });
 
     // تحديث الكمية الخاصة بالمنتج
     productQuantityElement.value = productQuantity - sizeQuantity;

@@ -96,6 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
           sizeLabels.forEach((label) => label.classList.add("disabled"));
           sizes.forEach((size) => size.classList.remove("disabled"));
 
+
           // إخفاء المقاسات التي نفذت كمياتها
           sizes.forEach((size) => {
             if (parseInt(size.getAttribute("data-qty")) <= 0) {
