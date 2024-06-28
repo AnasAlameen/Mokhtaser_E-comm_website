@@ -1,80 +1,284 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Edit Product</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-  <link rel="stylesheet" href="/styles/editProduct.css">
+<%- include('../../includes/shop/head.ejs') %>
+<link rel="stylesheet" href="/css/add_product.css">
+</head>
+<%- include('../../includes/shop/navgation.ejs') %>
+
+    <style>
+        :root {
+            --accent-color: hsl(30, 100%, 50%);
+            --bg-color: #f2f2f2;
+            --font-family: Arial, sans-serif;
+            --text-color: black;
+            --input-bg: #fff;
+            --input-border: #ccc;
+            --input-radius: 4px;
+            --button-bg: var(--accent-color);
+            --button-hover-bg: black;
+            --button-text-color: white;
+            --button-border: transparent;
+            --container-max-width: 800px;
+            --container-bg: #fff;
+            --container-padding: 20px;
+            --container-radius: 5px;
+            --container-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            --image-size: 100px;
+            --delete-btn-bg: transparent;
+            --delete-btn-color: red;
+            --delete-btn-size: 20px;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            direction: rtl;
+            text-align: right;
+        }
+
+        .container {
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            padding: var(--container-padding);
+            background-color: var(--container-bg);
+            border-radius: var(--container-radius);
+            box-shadow: var(--container-shadow);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid var(--input-border);
+            border-radius: var(--input-radius);
+            box-sizing: border-box;
+            background-color: var(--input-bg);
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--button-bg);
+            color: var(--button-text-color);
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: 2px solid var(--button-border);
+            border-radius: var(--input-radius);
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--button-hover-bg);
+        }
+
+        .image-container,
+        .variant-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .image-item,
+        .variant-item {
+            position: relative;
+            display: inline-block;
+        }
+
+        .image-item img,
+        .variant-item img {
+            border-radius: var(--input-radius);
+            width: var(--image-size);
+            height: var(--image-size);
+            object-fit: cover;
+        }
+
+        .image-item .delete-image,
+        .variant-item .delete-variant {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: var(--delete-btn-bg);
+            color: var(--delete-btn-color);
+            border: none;
+            border-radius: 50%;
+            width: var(--delete-btn-size);
+            height: var(--delete-btn-size);
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 20px;
+            text-align: center;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .color-item {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: var(--input-radius);
+            background-color: #f9f9f9;
+            position: relative;
+        }
+
+        .color-item label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .related-variants {
+            margin-top: 10px;
+            padding-left: 15px;
+        }
+
+        .size-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: var(--input-radius);
+            background-color: #ffffff;
+        }
+
+        .delete-color,
+        .edit-color {
+            background-color: var(--button-bg);
+            color: var(--button-text-color);
+            padding: 5px 10px;
+            margin-top: 10px;
+            border: 1px solid var(--button-border);
+            border-radius: var(--input-radius);
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+            display: block;
+            width: fit-content;
+            position: absolute;
+            top: 10px;
+        }
+
+        .delete-color {
+            right: 10px;
+        }
+
+        .edit-color {
+            right: 60px;
+        }
+
+        .delete-color:hover,
+        .edit-color:hover {
+            background-color: var(--button-hover-bg);
+        }
+
+        .display-container {
+            margin-top: 20px;
+        }
+
+        .color-edit-fields {
+            margin-top: 10px;
+        }
+
+        .color-edit-fields input {
+            margin-bottom: 5px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container mx-auto my-5">
-    <h1 class="text-2xl font-bold mb-4">Edit Product</h1>
-    <form id="edit-product-form" enctype="multipart/form-data">
-      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-      <div class="mb-4">
-        <label for="product-name" class="form-label">Product Name:</label>
-        <input type="text" class="form-control" id="product-name" name="ProductName" value="<%= product.ProductName %>">
-      </div>
-      <div class="mb-4">
-        <label for="product-description" class="form-label">Description:</label>
-        <textarea class="form-control" id="product-description" name="ProductDiscrption"><%= product.Discrption %></textarea>
-      </div>
-      <div class="mb-4">
-        <label for="product-price" class="form-label">Price:</label>
-        <input type="number" class="form-control" id="product-price" name="PrdustPrise" value="<%= product.Prise %>">
-      </div>
-      <div class="mb-4">
-        <label for="product-category" class="form-label">Category:</label>
-        <input type="text" class="form-control" id="product-category" name="SubCategorie" value="<%= product.SubCategorie %>">
-      </div>
-      <div class="mb-4">
-        <label class="form-label">Images:</label>
-        <input type="file" class="form-control" id="product-images" name="image1" multiple>
-        <div id="current-images" class="mt-2">
-          <% imageURLs.forEach(url => { %>
-            <img src="/<%= url %>" class="w-20 h-20 inline-block">
-          <% }) %>
-        </div>
-      </div>
-      <div id="colors-section" class="mb-4">
-        <h3 class="text-xl font-bold mb-2">Colors</h3>
-        <% Object.keys(combinations).forEach(key => { %>
-          <div class="color-item p-3 border mb-2">
-            <label class="form-label">Color: <input type="text" class="form-control" value="<%= combinations[key].color %>" data-type="color-name"></label>
-            <label class="form-label">Quantity: <input type="number" class="form-control" value="<%= combinations[key].qty %>" data-type="color-quantity"></label>
-            <label class="form-label">Price: <input type="number" class="form-control" value="<%= combinations[key].price %>" data-type="color-price"></label>
-            <img src="/<%= combinations[key].image %>" class="w-20 h-20 inline-block">
-            <div>
-              <h4 class="text-lg font-semibold mt-2">Related Sizes:</h4>
-              <% combinations[key].relatedVariants.forEach(variant => { %>
-                <div class="size-item p-2 border mb-1">
-                  <label class="form-label">Size: <input type="text" class="form-control" value="<%= variant.value %>" data-type="size-value"></label>
-                  <label class="form-label">Quantity: <input type="number" class="form-control" value="<%= variant.qty %>" data-type="size-quantity"></label>
-                  <label class="form-label">Price: <input type="number" class="form-control" value="<%= variant.price %>" data-type="size-price"></label>
+    <%- include('../../includes/shop/navgation.ejs') %>
+
+    <form id="all" method="post" action="/admin/Post_add_product" enctype="multipart/form-data">
+        <input type="hidden" name="_csrf" id="l" value="<%= csrfToken %>">
+        <div class="container">
+            <h1>تعديل تفاصيل منتج</h1>
+            <input id="product-name" name="ProductName" placeholder="اسم المنتج" required value="<%= product.ProductName %>">
+            <textarea id="product-description" name="ProductDiscrption" placeholder="وصف المنتج" required><%= product.Discrption %></textarea>
+            <input type="number" id="product-price" name="PrdustPrise" placeholder="السعر" value="<%= product.Prise %>" required>
+            <button type="button" id="add-images">تعديل الصور</button>
+            <div class="selected_images hide" id="selected_images">
+                <label for="product-images" class="form-label">صور المنتج:</label>
+                <div id="product-images" class="image-container">
+                    <% imageURLs.forEach((url, index) => { %>
+                        <div class="image-item">
+                            <img src="/images/<%= url.url.split('\\').pop() %>" alt="Product Image <%= index + 1 %>">
+                            <button type="button" class="delete-image" data-url="<%= url.url %>" id="<%= url.id %>">X</button>
+                        </div>
+                    <% }) %>
                 </div>
-              <% }) %>
+                <input class="images" type="file" multiple name="image1" id="ProductImages" accept="image/*" required>
+                <button type="button" id="save_the_image">حفظ</button>
             </div>
-          </div>
-        <% }) %>
-        <button id="add-color-btn" class="btn btn-primary mt-2">Add Color</button>
-      </div>
-      <div id="sizes-section" class="mb-4">
-        <h3 class="text-xl font-bold mb-2">Sizes</h3>
-        <% sizes.forEach(size => { %>
-          <div class="size-item p-3 border mb-2">
-            <label class="form-label">Size: <input type="text" class="form-control" value="<%= size.value %>" data-type="size-value"></label>
-            <label class="form-label">Quantity: <input type="number" class="form-control" value="<%= size.qty %>" data-type="size-quantity"></label>
-            <label class="form-label">Price: <input type="number" class="form-control" value="<%= size.prise %>" data-type="size-price"></label>
-          </div>
-        <% }) %>
-        <button id="add-size-btn" class="btn btn-primary mt-2">Add Size</button>
-      </div>
-      <button type="submit" class="btn btn-success">Save</button>
+            <button type="button" id="add-colors">تعديل الألوان</button>
+            <section class="product-image hide" id="colors">
+                <div class="display-container" id="display-container">
+                    <% Object.keys(combinations).forEach(key => { %>
+                        <div class="color-item p-3 border mb-2" data-id="<%= key %>">
+                            <button type="button" class="delete-color" data-id="<%= key %>">X</button>
+                            <label class="form-label font-semibold mt-2">لون: <%= combinations[key].color %></label>
+                            <h4 class="text-lg font-semibold mt-2">المقاسات المتصلة:</h4>
+                            <% combinations[key].relatedVariants.forEach(variant => { %>
+                                <div class="size-item p-2 border mb-1" data-id="<%= variant.id %>">
+                                    <label class="form-label">مقاس: <%= variant.value %></label>
+                                    <label class="form-label">كمية: <%= variant.qty %></label>
+                                    <label class="form-label">سعر: <%= variant.price %></label>
+                                </div>
+                            <% }) %>
+                            <button type="button" class="edit-color">تعديل</button>
+                            <div class="color-edit-fields hide">
+                                <input type="text" value="<%= combinations[key].color %>" class="edit-color-input">
+                                <input type="number" value="<%= combinations[key].qty %>" class="edit-color-quantity">
+                                <input type="number" value="<%= combinations[key].prise %>" class="edit-color-price">
+                                <button type="button" class="save-edit-color">حفظ</button>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+                <div id="color_container" class="selected-colorsContainer">
+                    <div class="color_containertop">
+                        <button class="color-btn red" data-color="red"></button>
+                        <button class="color-btn blue" data-color="blue"></button>
+                        <button class="color-btn green" data-color="green"></button>
+                        <button class="color-btn yellow" data-color="yellow"></button>
+                        <button class="color-btn black" data-color="black"></button>
+                        <button class="color-btn white" data-color="white"></button>
+                        <button class="color-btn gray" data-color="gray"></button>
+                        <button class="color-btn brown" data-color="brown"></button>
+                        <button class="color-btn orange" data-color="orange"></button>
+                        <button class="color-btn pink" data-color="pink"></button>
+                        <button class="color-btn purple" data-color="purple"></button>
+                        <button class="color-btn cyan" data-color="cyan"></button>
+                        <button class="color-btn teal" data-color="teal"></button>
+                    </div>
+                    <input type="text" id="colorr" placeholder="اكتب اللون اذا لم تجده في الأعلى" class="input-box">
+                    <input type="number" id="color_quantity" placeholder="الكمية الخاصة بهذا اللون" class="input-box">
+                    <input type="number" id="color-price" placeholder="السعر الخاص بهذا اللون" class="input-box">
+                </div>
+                <button type="button" id="colorSize" class="colorSizeButton">اختر المقاسات</button>
+                <div class="color_containerButtom hide" id="color_containerButtom">
+                    <select id="TYPE_OF" name="DimensionsType">
+                        <option value="" disabled selected>اختر التصنيف</option>
+                        <option value="size">xl xxl ...</option>
+                        <option value="weight">الوزن</option>
+                    </select>
+                    <input id="meger" name="DimensionsMeger" placeholder="القياس">
+                    <input type="number" id="Size_color_quantity" name="quantity" placeholder="الكمية" class="input-box">
+                    <input type="number" id="variation_color_prise" name="price" placeholder="السعر" class="input-box">
+                    <button type="button" id="save-variation">احفظ المقاس</button>
+                </div>
+                <button type="button" id="nextColor">اختر اللون التالي</button>
+                <button type="button" id="save_colors">حفظ كل الألوان</button>
+            </section>
+            <div id="all-colors-display"></div>
+            <button type="submit" id="save-product" class="save">حفظ</button>
+            <button type="button" id="cancel-product">إلغاء</button>
+        </div>
     </form>
-  </div>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="/js/editeProduct.js"></script>
+
+    <script src="/js/editeProduct.js"></script>
 </body>
 </html>

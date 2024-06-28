@@ -168,7 +168,7 @@
     <ul>
       <% products.forEach(product => { %>
         <li>
-          <a href="http://localhost:3000/admin/Edite_Product?product_id=<%= product.id %>">
+          <a href="http://localhost:3000/shop/prdoduct/detlas?product_id=<%= product.id %>&view=<%= role  %>">
             <img src="../images/<%= product.image_url.split('\\').pop() %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
             <h3><%= product.ProductName %></h3>
             <p><%= product.Discrption %></p>

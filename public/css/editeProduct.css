@@ -1,0 +1,196 @@
+:root {
+    --accent-color: hsl(30, 100%, 50%);
+    --bg-color: #f2f2f2;
+    --font-family: Arial, sans-serif;
+    --text-color: black;
+    --input-bg: #fff;
+    --input-border: #ccc;
+    --input-radius: 4px;
+    --button-bg: var(--accent-color);
+    --button-hover-bg: black;
+    --button-text-color: white;
+    --button-border: transparent;
+    --container-max-width: 800px;
+    --container-bg: #fff;
+    --container-padding: 20px;
+    --container-radius: 5px;
+    --container-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    --image-size: 100px;
+    --delete-btn-bg: transparent;
+    --delete-btn-color: red;
+    --delete-btn-size: 20px;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    direction: rtl;
+    text-align: right;
+}
+
+.container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: var(--container-padding);
+    background-color: var(--container-bg);
+    border-radius: var(--container-radius);
+    box-shadow: var(--container-shadow);
+}
+
+h1 {
+    text-align: center;
+    color: var(--text-color);
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid var(--input-border);
+    border-radius: var(--input-radius);
+    box-sizing: border-box;
+    background-color: var(--input-bg);
+}
+
+button {
+    width: 100%;
+    background-color: var(--button-bg);
+    color: var(--button-text-color);
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: 2px solid var(--button-border);
+    border-radius: var(--input-radius);
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+button:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.image-container,
+.variant-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.image-item,
+.variant-item {
+    position: relative;
+    display: inline-block;
+}
+
+.image-item img,
+.variant-item img {
+    border-radius: var(--input-radius);
+    width: var(--image-size);
+    height: var(--image-size);
+    object-fit: cover;
+}
+
+.image-item .delete-image,
+.variant-item .delete-variant {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: var(--delete-btn-bg);
+    color: var(--delete-btn-color);
+    border: none;
+    border-radius: 50%;
+    width: var(--delete-btn-size);
+    height: var(--delete-btn-size);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 20px;
+    text-align: center;
+}
+
+.hide {
+    display: none;
+}
+
+.color-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: var(--input-radius);
+}
+
+.related-variants {
+    margin-top: 10px;
+}
+
+.size-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: var(--input-radius);
+}
+
+.display-container {
+    margin-top: 20px;
+}
+.color-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: var(--input-radius);
+    background-color: #f9f9f9;
+    position: relative;
+}
+
+.color-item label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.related-variants {
+    margin-top: 10px;
+    padding-left: 15px;
+}
+
+.size-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: var(--input-radius);
+    background-color: #ffffff;
+}
+
+.delete-color,
+.edit-color {
+    background-color: var(--button-bg);
+    color: var(--button-text-color);
+    padding: 5px 10px;
+    margin-top: 10px;
+    border: 1px solid var(--button-border);
+    border-radius: var(--input-radius);
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    display: block;
+    width: fit-content;
+    position: absolute;
+    top: 10px;
+}
+
+.delete-color {
+    right: 10px;
+}
+
+.edit-color {
+    right: 60px;
+}
+
+.delete-color:hover,
+.edit-color:hover {
+    background-color: var(--button-hover-bg);
+}
+
+.display-container {
+    margin-top: 20px;
+}

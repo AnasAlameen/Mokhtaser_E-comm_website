@@ -190,10 +190,9 @@ exports.getEditProductPage = async (req, res, next) => {
     const product = productResults[0];
 
     const [imageResults] = await db.execute(
-      "SELECT url FROM product_images WHERE productId = ?",
+      "SELECT url,id FROM product_images WHERE productId = ?",
       [productId]
     );
-    const imageURLs = imageResults.map((row) => row.url);
 
     const [variantResults] = await db.execute(
       `
@@ -217,6 +216,8 @@ exports.getEditProductPage = async (req, res, next) => {
     );
 
     const combinations = {};
+    const sizes = [];
+
     variantResults.forEach((row) => {
       if (row.variant_type === "color") {
         if (!combinations[row.option_id]) {
@@ -226,14 +227,19 @@ exports.getEditProductPage = async (req, res, next) => {
             relatedVariants: [],
           };
         }
-      } else {
-        if (!combinations[row.variant_id]) {
-          combinations[row.variant_id] = {
-            size: row.option_value,
-            qty: row.option_qty,
-            price: row.option_price,
-          };
-        }
+
+        Object.keys(combinations).forEach((key) => {
+          console.log(combinations[key] + " sizes");
+        });
+      } else if (row.variant_type === "size") {
+        sizes.push({
+          value: row.option_value,
+          qty: row.option_qty,
+          price: row.option_price,
+        });
+        sizes.forEach((element) => {
+          console.log(sizes[element] + "sizes");
+        });
       }
     });
 
@@ -254,8 +260,9 @@ exports.getEditProductPage = async (req, res, next) => {
     res.render("shop/admin/editeProduct", {
       pageTitle: "تعديل المنتج",
       product: product,
-      imageURLs: imageURLs,
+      imageURLs: imageResults,
       combinations: combinations,
+      sizes: sizes,
       csrfToken: req.csrfToken(),
     });
   } catch (error) {
