@@ -21,6 +21,8 @@ exports.Post_Product = async (req, res, next) => {
   } = req.body;
 
   console.log(req.body);
+  console.log(req.files);
+
   console.log("add");
 
   try {
@@ -37,13 +39,25 @@ exports.Post_Product = async (req, res, next) => {
       console.error("Error parsing JSON:", error);
       return res.status(400).json({ message: "Invalid JSON format" });
     }
+    let SubCategorieId;
+    console.log(seller_id+ " seller_id")
+    console.log(MainCatagori+ " MainCatagori")
+ 
 
     // إدخال المنتج في جدول products
     let [add, fields] = await db.execute(
-      "INSERT INTO products (SellerId, ProductName, Discrption, Prise, CrationDate) VALUES (?, ?, ?, ?, now())",
-      [seller_id, ProductName, ProductDiscrption, PrdustPrise]
+      "INSERT INTO products (SellerId, ProductName, Discrption, Prise, CrationDate,categorie) VALUES (?, ?, ?, ?, now(),?)",
+      [seller_id, ProductName, ProductDiscrption, PrdustPrise, SubCategorie]
     );
     const productId = add.insertId;
+       // إدخال الفئة الفرعية في جدول categories
+       if (SubCategorie) {
+        let [categorie] = await db.execute(
+          "INSERT INTO categories (product_id, MainCategorie,SubCategorie) VALUES (?,?, ?)",
+          [productId, MainCatagori, SubCategorie]
+        );
+        SubCategorieId = categorie.insertId;
+      }
 
     // إدخال صور المنتج في جدول product_images
     if (req.files["image1"]) {
@@ -55,14 +69,6 @@ exports.Post_Product = async (req, res, next) => {
           [file.path, productId]
         );
       }
-    }
-
-    // إدخال الفئة الفرعية في جدول categories
-    if (SubCategorie) {
-      await db.execute(
-        "INSERT INTO categories (product_id, MainCategorie,SubCategorie) VALUES (?,?, ?)",
-        [productId, MainCatagori, SubCategorie]
-      );
     }
 
     // استخدام مجموعات للتأكد من أن المتغيرات ليست مكررة
@@ -207,10 +213,12 @@ exports.getEditProductPage = async (req, res, next) => {
 
     const [relationResults] = await db.execute(
       `
-      SELECT r.parent_option_id, r.child_option_id, o.value as child_option_value, o.qty as child_option_qty, o.prise as child_option_price
+      SELECT r.parent_option_id, o.id,r.child_option_id, o.value as child_option_value, o.qty as child_option_qty, o.prise as child_option_price,pv.VariantsType as variant_type
       FROM variant_relations r
       JOIN variant_options o ON r.child_option_id = o.id
-      WHERE r.parent_option_id IN (SELECT id FROM variant_options WHERE VariantsId = (SELECT id FROM variants WHERE product_id = ? AND VariantsType = 'color'))
+      JOIN variant_options po ON r.parent_option_id = po.id
+      JOIN variants pv ON po.VariantsId = pv.id
+      WHERE pv.product_id = ? AND pv.VariantsType = 'color'
     `,
       [productId]
     );
@@ -228,9 +236,7 @@ exports.getEditProductPage = async (req, res, next) => {
           };
         }
 
-        Object.keys(combinations).forEach((key) => {
-          console.log(combinations[key] + " sizes");
-        });
+      
       } else if (row.variant_type === "size") {
         sizes.push({
           value: row.option_value,
@@ -238,7 +244,6 @@ exports.getEditProductPage = async (req, res, next) => {
           price: row.option_price,
         });
         sizes.forEach((element) => {
-          console.log(sizes[element] + "sizes");
         });
       }
     });
@@ -251,6 +256,9 @@ exports.getEditProductPage = async (req, res, next) => {
               value: row.child_option_value,
               qty: row.child_option_qty,
               price: row.child_option_price,
+              id: row.id,
+
+              
             });
           }
         });
@@ -264,9 +272,216 @@ exports.getEditProductPage = async (req, res, next) => {
       combinations: combinations,
       sizes: sizes,
       csrfToken: req.csrfToken(),
+      productId: productId,
     });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error retrieving product data");
+  }
+};
+exports.postEdite_Products = async (req, res, next) => {
+  const {
+    ProductName,
+    PrdustPrise,
+    ProductDiscrption,
+    colors,
+    sizes,
+    add_new_size,
+    removedColors,
+    addedColorsVartion,
+    removedImages,
+    Product_id,
+  } = req.body;
+
+  console.log(req.body);
+  console.log("///////////////////////////");
+  console.log(req.files);
+  console.log("///////////////////////////");
+
+  try {
+    let parsedColors = [],
+      parsedSizes = [],
+      parsedAddedNewSize = [],
+      parsedRemovedColors = [],
+      parsedRemovedImages = [],
+      parsedaddedColorsVartion=[];
+
+    // تحويل JSON إلى كائنات
+    if (colors) parsedColors = JSON.parse(colors);
+    if (sizes) parsedSizes = JSON.parse(sizes);
+    if (addedColorsVartion) parsedaddedColorsVartion = JSON.parse(addedColorsVartion);
+    if (add_new_size) parsedAddedNewSize = JSON.parse(add_new_size);
+    if (removedColors) parsedRemovedColors = JSON.parse(removedColors);
+    if (removedImages) parsedRemovedImages = JSON.parse(removedImages);
+
+    const productId = Product_id;
+
+    // تحديث تفاصيل المنتج في جدول products
+    await db.execute(
+      "UPDATE products SET ProductName = ?, Discrption = ?, Prise = ? WHERE id = ?",
+      [ProductName, ProductDiscrption, PrdustPrise, productId]
+    );
+
+    // حذف الصور المحددة
+    for (const id of parsedRemovedImages) {
+      await db.execute("DELETE FROM product_images WHERE id = ?", [id]);
+    }
+
+    // إدخال صور جديدة في جدول product_images
+    if (req.files["image1"]) {
+      for (const file of req.files["image1"]) {
+        await db.execute(
+          "INSERT INTO product_images (url, productId) VALUES (?, ?)",
+          [file.path, productId]
+        );
+      }
+    }
+
+  // حذف الألوان المحددة
+if (parsedRemovedColors.length > 0) {
+  for (const colorId of parsedRemovedColors) {
+    // حذف الصفوف المرتبطة في جدول variant_relations باستخدام parent_option_id
+    await db.execute("DELETE FROM variant_relations WHERE parent_option_id = ?", [colorId]);
+
+    console.log(colorId + " diddididi");
+
+    // التحقق مرة أخرى من عدم وجود صفوف مرتبطة قبل محاولة حذف الصف في جدول variant_options
+    const [relatedRows] = await db.execute("SELECT * FROM variant_relations WHERE child_option_id = ?", [colorId]);
+
+    if (relatedRows.length === 0) {
+      // حذف الصفوف في جدول variant_options باستخدام VariantsId
+      await db.execute("DELETE FROM variant_options WHERE id = ?", [colorId]);
+    } else {
+      console.log(`لا يمكن حذف اللون ${colorId} لأنه لا يزال مرتبطًا بصفوف أخرى في جدول variant_relations.`);
+    }
+  }
+}
+
+if (parsedaddedColorsVartion.length > 0) {
+  for (const colorId of parsedaddedColorsVartion) {
+    await db.execute("DELETE FROM variant_relations WHERE child_option_id = ?", [colorId]);
+    await db.execute("DELETE FROM variant_options WHERE id = ?", [colorId]);
+  }
+}
+
+    // معالجة الألوان والمقاسات المضافة والمحذوفة
+    if (parsedColors.length > 0) {
+      await Promise.all(
+        parsedColors.map(async (color, index) => {
+          let colorVariantId;
+
+          let [existingColor] = await db.execute(
+            "SELECT id FROM variants WHERE product_id = ? AND VariantsType = 'color'",
+            [productId]
+          );
+
+          if (existingColor.length === 0) {
+            let [colorVariant] = await db.execute(
+              "INSERT INTO variants (product_id, VariantsType) VALUES (?, 'color')",
+              [productId]
+            );
+            colorVariantId = colorVariant.insertId;
+          } else {
+            colorVariantId = existingColor[0].id;
+          }
+
+          let [colorOption] = await db.execute(
+            "INSERT INTO variant_options (VariantsId, value, qty, prise) VALUES (?, ?, ?, ?)",
+            [colorVariantId, color.name, color.quantity, color.price]
+          );
+          let colorOptionId = colorOption.insertId;
+
+          // إدخال صورة اللون
+          if (req.files["image2"] && req.files["image2"][index]) {
+            let file = req.files["image2"][index];
+            await db.execute(
+              "INSERT INTO variant_images (variant_option_id, url) VALUES (?, ?)",
+              [colorOptionId, file.path]
+            );
+          }
+
+          // إدخال القياسات في جدول variants وجداول الربط
+          await Promise.all(
+            color.variations.map(async (variation) => {
+              let sizeVariantId;
+
+              let [existingSize] = await db.execute(
+                "SELECT id FROM variants WHERE product_id = ? AND VariantsType = ?",
+                [productId, variation.DimensionsType]
+              );
+
+              if (existingSize.length === 0) {
+                let [sizeVariant] = await db.execute(
+                  "INSERT INTO variants (product_id, VariantsType) VALUES (?, ?)",
+                  [productId, variation.DimensionsType]
+                );
+                sizeVariantId = sizeVariant.insertId;
+              } else {
+                sizeVariantId = existingSize[0].id;
+              }
+
+              let [sizeOption] = await db.execute(
+                "INSERT INTO variant_options (VariantsId, value, qty, prise) VALUES (?, ?, ?, ?)",
+                [
+                  sizeVariantId,
+                  variation.DimensionsMeger,
+                  variation.quantity,
+                  variation.price,
+                ]
+              );
+              let sizeOptionId = sizeOption.insertId;
+
+              // ربط المقاسات باللون في جدول variant_relations
+              await db.execute(
+                "INSERT INTO variant_relations (parent_option_id, child_option_id) VALUES (?, ?)",
+                [colorOptionId, sizeOptionId]
+              );
+            })
+          );
+        })
+      );
+    }
+
+    // إضافة المقاسات الجديدة
+    for (const size of parsedAddedNewSize) {
+      let [sizeVariant] = await db.execute(
+        "INSERT INTO variants (product_id, VariantsType) VALUES (?, ?)",
+        [productId, size.megermentUnit]
+      );
+
+      let sizeVariantId = sizeVariant.insertId;
+
+      let [sizeOption] = await db.execute(
+        "INSERT INTO variant_options (VariantsId, value, qty, prise) VALUES (?, ?, ?, ?)",
+        [
+          sizeVariantId,
+          size.megerment,
+          size.New_Size_color_quantity,
+          size.New_variation_color_prise,
+        ]
+      );
+
+      const sizeOptionId = sizeOption.insertId;
+
+      // التحقق من وجود parent_option_id قبل إدراج العلاقة
+      const [parentOption] = await db.execute(
+        "SELECT id FROM variant_options WHERE id = ?",
+        [size.id]
+      );
+
+      if (parentOption.length > 0) {
+        await db.execute(
+          "INSERT INTO variant_relations (parent_option_id, child_option_id) VALUES (?, ?)",
+          [size.id, sizeOptionId]
+        );
+      } else {
+        console.error(`Parent option ID ${size.id} not found.`);
+      }
+    }
+
+    res.status(200).json({ message: "Product updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error updating product" });
   }
 };

@@ -23,6 +23,8 @@ const upload = multer({
   router.get("/add_product", isAuth,isShop ,adminControls.getAddProductPage);
   router.post("/Post_add_product", isAuth,isShop,multable,adminControls.Post_Product);
   router.get("/Edite_Product", isAuth,adminControls.getEditProductPage);
+  router.post("/Post_Edite_Product", isAuth,multable,isShop,adminControls.postEdite_Products);
+
 
 
 exports.router = router;

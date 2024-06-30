@@ -1,86 +1,194 @@
 // editeProduct.js
 
-document.addEventListener('DOMContentLoaded', () => {
-  const addImagesButton = document.getElementById('add-images');
-  const addColorsButton = document.getElementById('add-colors');
-  const saveImageButton = document.getElementById('save_the_image');
-  const saveColorsButton = document.getElementById('save_colors');
-  const selectedImagesSection = document.getElementById('selected_images');
-  const colorsSection = document.getElementById('colors');
-  const colorContainerButtom = document.getElementById('color_containerButtom');
-  const colorSizeButton = document.getElementById('colorSize');
-  const displayContainer = document.getElementById('display-container');
-  const form = document.getElementById('all');
-  const nextColorButton = document.getElementById('nextColor');
-  const saveProductButton = document.getElementById('save-product');
+document.addEventListener("DOMContentLoaded", () => {
+  const addImagesButton = document.getElementById("add-images");
+  const addColorsButton = document.getElementById("add-colors");
+  const buttonSaveImg = document.getElementById("save_the_image");
+  const saveColorsButton = document.getElementById("save_colors");
+  const selectedImagesSection = document.getElementById("selected_images");
+  const colorsSection = document.getElementById("colors");
+  const colorContainerButtom = document.getElementById("color_containerButtom");
+  const colorSizeButton = document.getElementById("colorSize");
+  const displayContainer = document.getElementById("display-container");
+  const form = document.getElementById("all");
+  const nextColorButton = document.getElementById("nextColor");
+  const saveProductButton = document.getElementById("save-product");
+  const add_colorButtons = document.querySelectorAll(".add-size");
+  const addNewColorContainer = document.getElementById("addNewColorContainer");
+  const add_new_color_button = document.getElementById("add_new_color_button");
+  let color_id;
+  let size_edit_fields = document.getElementById("size-edit-fields");
+
   const addedImages = [];
   const removedImages = [];
   const addedColors = [];
+  const addedColorsVartion = [];
   const removedColors = [];
   let currentColor = {};
+  let colors = [];
+  let sizes = [];
+  let add_new_size = [];
+  let formData = new FormData();
 
-  addImagesButton.addEventListener('click', () => {
-    selectedImagesSection.classList.toggle('hide');
+  addImagesButton.addEventListener("click", () => {
+    selectedImagesSection.classList.toggle("hide");
   });
 
-  addColorsButton.addEventListener('click', () => {
-    colorsSection.classList.toggle('hide');
+  addColorsButton.addEventListener("click", () => {
+    colorsSection.classList.toggle("hide");
+    addNewColorContainer.classList.add("hide");
   });
 
-  saveImageButton.addEventListener('click', () => {
-    handleImageUpload('ProductImages', 'image1');
+  buttonSaveImg.addEventListener("click", (event) => {
+    event.preventDefault();
+    selectedImagesSection.classList.add("hide");
+    handleImageUpload("ProductImages", formData, "image1");
   });
 
-  saveColorsButton.addEventListener('click', () => {
+  saveColorsButton.addEventListener("click", () => {
     saveColorDetails(true);
   });
 
-  nextColorButton.addEventListener('click', (event) => {
+  nextColorButton.addEventListener("click", (event) => {
     event.preventDefault();
     saveColorDetails();
     clearColorDetails();
   });
 
+  add_colorButtons.forEach((btn) => {
+    btn.addEventListener("click", (event) => {
+      event.preventDefault();
+      size_edit_fields.classList.remove("hide");
+
+      const newFields = document.createElement("div");
+      newFields.innerHTML = `
+        <input type="text" id="megermentUnit" placeholder="وحدة القياس">
+        <input type="text" id="megerment" placeholder="القياس">
+        <input type="number" id="New_Size_color_quantity" placeholder="الكمية">
+        <input type="number" id="New_variation_color_prise" placeholder="السعر">
+        <button type="button" class="addVartion">اضافة القياس</button>
+      `;
+
+      color_id = btn.getAttribute("data-id");
+      console.log(color_id + "fdfsd");
+
+      size_edit_fields.appendChild(newFields);
+      console.log("Fields added");
+
+      // إضافة مستمع الحدث بعد إنشاء الحقول الجديدة
+      newFields
+        .querySelector(".addVartion")
+        .addEventListener("click", handleAddSizecolor);
+    });
+  });
+
+  add_new_color_button.addEventListener("click", (event) => {
+    event.preventDefault();
+
+    addNewColorContainer.classList.remove("hide");
+  });
+
   function handleImageDelete(event) {
-    const imageUrl = event.target.getAttribute('data-url');
+    const imageUrl = event.target.getAttribute("data-url");
     removedImages.push(imageUrl);
     event.target.parentElement.remove();
+    console.log(removedImages + "fdsf");
   }
 
   function handleColorDelete(event) {
     const colorElement = event.target.parentElement;
-    const colorId = colorElement.getAttribute('data-id');
+    const colorId = colorElement.getAttribute("data-id");
     removedColors.push(colorId);
     colorElement.remove();
+    console.log(removedColors + "kjjjj");
   }
 
-  document.querySelectorAll('.delete-image').forEach(button => {
-    button.addEventListener('click', handleImageDelete);
+  function handleColorVartionDelete(event) {
+    const colorElement = event.target.parentElement;
+    const colorId = colorElement.getAttribute("data-id");
+    addedColorsVartion.push(colorId);
+    colorElement.remove();
+    console.log(addedColorsVartion + "vartion");
+  }
+
+  function handleSizeDelete(event) {
+    const sizeId = event.target.getAttribute("data-id");
+    const colorElement = event.target.closest(".color-item");
+    const colorId = colorElement.getAttribute("data-id");
+    const color = addedColors.find((color) => color.id === colorId);
+    color.relatedVariants = color.relatedVariants.filter(
+      (variant) => variant.id !== sizeId
+    );
+    updateColorDisplay();
+  }
+
+  // function handleSizeEdit(event) {
+  //   const sizeId = event.target.getAttribute('data-id');
+  //   const colorElement = event.target.closest('.color-item');
+  //   const colorId = colorElement.getAttribute('data-id');
+  //   const color = addedColors.find(color => color.id === colorId);
+  //   const size = color.relatedVariants.find(variant => variant.id === sizeId);
+
+  //   const editFields = document.createElement('div');
+  //   editFields.classList.add('size-edit-fields');
+  //   editFields.innerHTML = `
+  //     <input type="text" value="${size.DimensionsMeger}" class="edit-size-meger">
+  //     <input type="number" value="${size.quantity}" class="edit-size-quantity">
+  //     <input type="number" value="${size.price}" class="edit-size-price">
+  //     <button type="button" class="save-edit-size" data-id="${size.id}">حفظ</button>
+  //     <button type="button" class="cancel-edit-size">إلغاء</button>
+  //   `;
+
+  //   size.element.appendChild(editFields);
+
+  //   editFields.querySelector('.save-edit-size').addEventListener('click', () => {
+  //     const newMeger = editFields.querySelector('.edit-size-meger').value;
+  //     const newQuantity = parseInt(editFields.querySelector('.edit-size-quantity').value);
+  //     const newPrice = parseInt(editFields.querySelector('.edit-size-price').value);
+
+  //     size.DimensionsMeger = newMeger;
+  //     size.quantity = newQuantity;
+  //     size.price = newPrice;
+
+  //     updateColorDisplay();
+  //   });
+
+  //   editFields.querySelector('.cancel-edit-size').addEventListener('click', () => {
+  //     editFields.remove();
+  //   });
+  // }
+
+  document.querySelectorAll(".delete-image").forEach((button) => {
+    button.addEventListener("click", handleImageDelete);
   });
 
-  document.querySelectorAll('.delete-color').forEach(button => {
-    button.addEventListener('click', handleColorDelete);
+  document.querySelectorAll(".delete-color").forEach((button) => {
+    button.addEventListener("click", handleColorDelete);
+  });
+  document.querySelectorAll(".delete-color_vartion").forEach((button) => {
+    button.addEventListener("click", handleColorVartionDelete);
   });
 
-  colorSizeButton.addEventListener('click', () => {
-    colorContainerButtom.classList.toggle('hide');
+  colorSizeButton.addEventListener("click", () => {
+    colorContainerButtom.classList.toggle("hide");
   });
 
-  document.querySelectorAll('.color-btn').forEach(button => {
-    button.addEventListener('click', (event) => {
-      const color = event.target.getAttribute('data-color');
+  document.querySelectorAll(".color-btn").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      const color = event.target.getAttribute("data-color");
       selectColor(color);
     });
   });
 
-  document.getElementById('save-variation').addEventListener('click', () => {
+  document.getElementById("save-variation").addEventListener("click", () => {
     saveVariationDetails();
   });
 
   function createColorElement(colorItem) {
-    const colorElement = document.createElement('div');
-    colorElement.classList.add('color-item');
-    colorElement.setAttribute('data-id', colorItem.id);
+    const colorElement = document.createElement("div");
+    colorElement.classList.add("color-item");
+    colorElement.setAttribute("data-id", colorItem.id);
     colorElement.innerHTML = `
       <label>لون: ${colorItem.color}</label>
       <h4>المقاسات المتصلة:</h4>
@@ -94,179 +202,258 @@ document.addEventListener('DOMContentLoaded', () => {
         <button type="button" class="save-edit-color">حفظ</button>
       </div>
     `;
-    colorElement.querySelector('.delete-color').addEventListener('click', handleColorDelete);
-    colorElement.querySelector('.edit-color').addEventListener('click', () => {
-      colorElement.querySelector('.color-edit-fields').classList.toggle('hide');
+    colorElement
+      .querySelector(".delete-color")
+      .addEventListener("click", handleColorDelete);
+    colorElement.querySelector(".edit-color").addEventListener("click", () => {
+      colorElement.querySelector(".color-edit-fields").classList.toggle("hide");
     });
-    colorElement.querySelector('.save-edit-color').addEventListener('click', () => {
-      const newColor = colorElement.querySelector('.edit-color-input').value;
-      const newQuantity = parseInt(colorElement.querySelector('.edit-color-quantity').value);
-      const newPrice = parseInt(colorElement.querySelector('.edit-color-price').value);
-      colorItem.color = newColor;
-      colorItem.quantity = newQuantity;
-      colorItem.price = newPrice;
-      updateColorDisplay();
-    });
+    colorElement
+      .querySelector(".save-edit-color")
+      .addEventListener("click", () => {
+        const newColor = colorElement.querySelector(".edit-color-input").value;
+        const newQuantity = parseInt(
+          colorElement.querySelector(".edit-color-quantity").value
+        );
+        const newPrice = parseInt(
+          colorElement.querySelector(".edit-color-price").value
+        );
+        colorItem.color = newColor;
+        colorItem.quantity = newQuantity;
+        colorItem.price = newPrice;
+        updateColorDisplay();
+      });
     return colorElement;
-  }
-
-  function generateUniqueId() {
-    return 'id-' + Math.random().toString(36).substr(2, 16);
   }
 
   function selectColor(color) {
     currentColor.name = color;
-    document.querySelectorAll('.color-btn').forEach(btn => btn.style.border = 'none');
-    event.target.style.border = '2px solid black';
+    document
+      .querySelectorAll(".color-btn")
+      .forEach((btn) => (btn.style.border = "none"));
+    event.target.style.border = "2px solid black";
   }
 
   function saveColorDetails(hideSection = false) {
-    const color = document.getElementById('colorr').value || currentColor.name;
-    const quantity = parseInt(document.getElementById('color_quantity').value);
-    const price = parseInt(document.getElementById('color-price').value);
-    const colorItem = {
-      color,
-      quantity,
-      price,
-      relatedVariants: []
-    };
-    addedColors.push(colorItem);
+    const colorQuantity = parseInt(
+      document.getElementById("color_quantity").value
+    );
+    const colorPrice = parseInt(document.getElementById("color-price").value);
 
-    console.log('add color'+ addedColors);
-    const colorElement = createColorElement(colorItem);
-    displayContainer.appendChild(colorElement);
+    if (isNaN(colorQuantity) || isNaN(colorPrice)) {
+      Swal.fire(
+        "الرجاء إدخال تفاصيل اللون",
+        "تأكد من إدخال الكمية والسعر",
+        "warning"
+      );
+      return;
+    }
+    currentColor.quantity = colorQuantity;
+    currentColor.price = colorPrice;
+    currentColor.variations = currentColor.variations || []; // تأكد من وجود خاصية variations
+
+    handleImageUpload("ColorImage", formData, "image2");
+
+    colors.push(currentColor);
+    console.log("Current Color:", currentColor);
+
+    Swal.fire("تم حفظ خيارات اللون", "اختر اللون التالي", "success");
+
+    updateColorDisplay();
+
+    // تصفير القيم بعد الحفظ الناجح
+    clearColorDetails();
 
     if (hideSection) {
-      colorsSection.classList.add('hide');
+      colorsSection.classList.add("hide");
     }
+  }
 
-    clearColorDetails();
+  function clearColorDetails() {
+    currentColor = {};
+    document.getElementById("color_quantity").value = "";
+    document.getElementById("color-price").value = "";
+    document.getElementById("ColorImage").value = "";
+    document.getElementById("TYPE_OF").value = "";
+    document.getElementById("colorr").value = "";
+    document
+      .querySelectorAll(".color-btn")
+      .forEach((btn) => (btn.style.border = "none"));
+  }
+
+  function updateColorDisplay() {
+    displayContainer.innerHTML = "";
+    colors.forEach((color, index) => {
+      let colorItem = document.createElement("div");
+      colorItem.innerHTML = `
+        <h3>Color: ${color.name}</h3>
+        <ul>
+          <li>Quantity: ${color.quantity}</li>
+          <li>Price: ${color.price}</li>
+          ${
+            color.variations
+              ? color.variations
+                  .map(
+                    (variation, vIndex) => `
+            <li>
+              Type: ${variation.DimensionsType}, 
+              Measure: ${variation.DimensionsMeger}, 
+              Quantity: ${variation.quantity}, 
+              Price: ${variation.price}
+              <button class="delete-variation" data-color-index="${index}" data-variation-index="${vIndex}">حذف</button>
+            </li>
+          `
+                  )
+                  .join("")
+              : ""
+          }
+        </ul>
+        <button class="delete-color" data-index="${index}">حذف اللون</button>
+      `;
+      displayContainer.appendChild(colorItem);
+    });
+
+    document.querySelectorAll(".edit-size").forEach((button) => {
+      button.addEventListener("click", handleSizeEdit);
+    });
+  }
+  function handleAddSizecolor() {
+    const New_Size_color_quantity = document.getElementById(
+      "New_Size_color_quantity"
+    );
+    const New_variation_color_prise = document.getElementById(
+      "New_variation_color_prise"
+    );
+    const megerment = document.getElementById("megerment");
+    const megermentUnit = document.getElementById("megermentUnit");
+    add_new_size.push({
+      New_Size_color_quantity: New_Size_color_quantity.value,
+      New_variation_color_prise: New_variation_color_prise.value,
+      megerment: megerment.value,
+      id: color_id,
+      megermentUnit: megermentUnit.value,
+    });
+    New_Size_color_quantity.value = "";
+    New_variation_color_prise.value = "";
+    console.log("new soxe " + add_new_size);
   }
 
   function saveVariationDetails() {
-    const DimensionsType = document.getElementById('TYPE_OF').value;
-    const DimensionsMeger = document.getElementById('meger').value;
-    const colorSizeQuantity = parseInt(document.getElementById('Size_color_quantity').value);
-    const colorPrice = parseInt(document.getElementById('variation_color_prise').value);
+    const DimensionsType = document.getElementById("TYPE_OF").value;
+    const DimensionsMeger = document.getElementById("meger").value;
+    const colorSizeQuantity = parseInt(
+      document.getElementById("Size_color_quantity").value
+    );
+    const colorPrice = parseInt(
+      document.getElementById("variation_color_prise").value
+    );
+    // const colorQuantityElement = document.getElementById("color_quantity");
+    // const colorQuantity = parseInt(colorQuantityElement.value);
 
-    if (!DimensionsType || !DimensionsMeger || isNaN(colorSizeQuantity) || isNaN(colorPrice)) {
-      Swal.fire('الرجاء إدخال جميع تفاصيل المقاس', 'تأكد من إدخال التصنيف، القياس، الكمية والسعر', 'warning');
+    if (
+      !DimensionsType ||
+      !DimensionsMeger ||
+      isNaN(colorSizeQuantity) ||
+      isNaN(colorPrice)
+    ) {
+      Swal.fire(
+        "الرجاء إدخال جميع تفاصيل المقاس",
+        "تأكد من إدخال التصنيف، القياس، الكمية والسعر",
+        "warning"
+      );
       return;
     }
-
-    const currentColor = addedColors.find(color => color.color === document.getElementById('colorr').value);
 
     if (colorSizeQuantity > currentColor.quantity) {
-      Swal.fire('الكمية غير متوفرة', 'عدد القطع التي أدخلتها أكثر من عدد القطع الخاصة باللون', 'warning');
+      Swal.fire(
+        "الكمية غير متوفرة",
+        "عدد القطع التي أدخلتها أكثر من عدد القطع الخاصة باللون",
+        "warning"
+      );
       return;
     }
 
-    currentColor.relatedVariants.push({
-      id: generateUniqueId(),
-      DimensionsType,
-      DimensionsMeger,
-      qty: colorSizeQuantity,
-      price: colorPrice
+    if (!currentColor.variations) {
+      currentColor.variations = [];
+    }
+
+    currentColor.variations.push({
+      DimensionsType: DimensionsType,
+      DimensionsMeger: DimensionsMeger,
+      quantity: colorSizeQuantity,
+      price: colorPrice,
+      element: null,
     });
 
     currentColor.quantity -= colorSizeQuantity;
 
     updateColorDisplay();
 
-    document.getElementById('Size_color_quantity').value = '';
-    document.getElementById('meger').value = '';
-    document.getElementById('variation_color_prise').value = '';
+    document.getElementById("Size_color_quantity").value = "";
+    document.getElementById("meger").value = "";
+    document.getElementById("variation_color_prise").value = "";
   }
-
-  function updateColorDisplay() {
-    displayContainer.innerHTML = '';
-    addedColors.forEach(color => {
-      const colorElement = createColorElement(color);
-      const variantsContainer = colorElement.querySelector('.related-variants');
-      color.relatedVariants.forEach(variant => {
-        const variantElement = document.createElement('div');
-        variantElement.classList.add('size-item');
-        variantElement.setAttribute('data-id', variant.id);
-        variantElement.innerHTML = `
-          <label class="form-label">مقاس: ${variant.DimensionsMeger}</label>
-          <label class="form-label">كمية: ${variant.qty}</label>
-          <label class="form-label">سعر: ${variant.price}</label>
-          <button type="button" class="delete-size" data-id="${variant.id}">X</button>
-        `;
-        variantsContainer.appendChild(variantElement);
-      });
-      displayContainer.appendChild(colorElement);
-    });
-    attachDeleteSizeEvent();
-  }
-
-  function attachDeleteSizeEvent() {
-    document.querySelectorAll('.delete-size').forEach(button => {
-      button.addEventListener('click', handleSizeDelete);
-    });
-  }
-
-  function handleSizeDelete(event) {
-    const sizeId = event.target.getAttribute('data-id');
-    const colorElement = event.target.closest('.color-item');
-    const colorId = colorElement.getAttribute('data-id');
-    const color = addedColors.find(color => color.id === colorId);
-    color.relatedVariants = color.relatedVariants.filter(variant => variant.id !== sizeId);
-    updateColorDisplay();
-  }
-
-  function handleImageUpload(inputId, fieldName) {
+  function handleImageUpload(inputId, formData, fieldName) {
     const imageInputs = document.getElementById(inputId);
     if (imageInputs.files.length > 0) {
       for (let i = 0; i < imageInputs.files.length; i++) {
         formData.append(fieldName, imageInputs.files[i]);
       }
-      Swal.fire('تم الحفظ!', 'تم الحفظ', 'success');
+      Swal.fire("تم الحفظ!", "تم الحفظ", "success");
     } else {
-      Swal.fire('لم يتم اختيار أي صورة', 'الرجاء اختيار صور', 'warning');
+      Swal.fire("لم يتم اختيار أي صورة", "الرجاء اختيار صور", "warning");
     }
+    console.log(imageInputs.files);
   }
 
-  saveProductButton.addEventListener('click', (event) => {
+  saveProductButton.addEventListener("click", (event) => {
     event.preventDefault();
     saveProductDetails();
   });
 
-  document.getElementById('cancel-product').addEventListener('click', (event) => {
-    event.preventDefault();
-    form.reset();
-  });
-
-  function clearColorDetails() {
-    currentColor = {};
-    document.getElementById('color_quantity').value = '';
-    document.getElementById('color-price').value = '';
-    document.getElementById('colorr').value = '';
-    document.querySelectorAll('.color-btn').forEach(btn => btn.style.border = 'none');
-  }
-
-  function saveProductDetails() {
-    const formData = new FormData(form);
-
-    formData.append('addedColors', JSON.stringify(addedColors));
-    formData.append('removedColors', JSON.stringify(removedColors));
-    formData.append('removedImages', JSON.stringify(removedImages));
-
-    fetch('/admin/Post_add_product', {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'CSRF-Token': document.querySelector('input[name="_csrf"]').value,
-      },
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log(data);
-      Swal.fire('تم الحفظ!', 'تم حفظ المنتج بنجاح', 'success');
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      Swal.fire('خطأ!', 'حدث خطأ أثناء حفظ المنتج', 'error');
+  document
+    .getElementById("cancel-product")
+    .addEventListener("click", (event) => {
+      event.preventDefault();
+      form.reset();
     });
+  function saveProductDetails() {
+    const ProductName = document.getElementById("product-name").value;
+    const ProductDiscrption = document.getElementById(
+      "product-description"
+    ).value;
+    const PrdustPrise = document.getElementById("product-price").value;
+    const Product_id = document.getElementById("productId").value;
+    const image1 = document.getElementById("image1");
+    const image2 = document.getElementById("image2");
+
+    formData.append("removedColors", JSON.stringify(removedColors));
+    formData.append("addedColorsVartion", JSON.stringify(addedColorsVartion));
+    formData.append("removedImages", JSON.stringify(removedImages));
+    formData.append("colors", JSON.stringify(colors));
+    formData.append("sizes", JSON.stringify(sizes));
+    formData.append("add_new_size", JSON.stringify(add_new_size));
+    formData.append("PrdustPrise", PrdustPrise);
+    formData.append("ProductDiscrption", ProductDiscrption);
+    formData.append("ProductName", ProductName);
+    formData.append("Product_id", Product_id);
+
+    const csrfToken = document.querySelector('input[name="_csrf"]').value;
+
+    axios
+      .post("/admin/Post_Edite_Product", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "CSRF-Token": csrfToken,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        Swal.fire("تم الحفظ!", "تم حفظ المنتج بنجاح", "success");
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        Swal.fire("خطأ!", "حدث خطأ أثناء حفظ المنتج", "error");
+      });
   }
 });
