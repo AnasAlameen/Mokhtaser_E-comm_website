@@ -2,7 +2,8 @@
 <html lang="ar">
 <head>
     <%- include('../../includes/shop/head.ejs') %>
-    <link rel="stylesheet" href="/css/add_product.css">
+    <link rel="stylesheet" href="/css/editeProduct.css">
+
 </head>
 <body>
     <%- include('../../includes/shop/navgation.ejs') %>
@@ -25,91 +26,128 @@
                     <% imageURLs.forEach((url, index) => { %>
                         <div class="image-item">
                             <img src="/images/<%= url.url.split('\\').pop() %>" alt="Product Image <%= index + 1 %>">
-                            <button type="button" class="delete-image" data-url="<%= url.id %>" id="<%= url.id %>">X</button>
+                            <label type="button" class="delete-image" data-url="<%= url.id %>" id="<%= url.id %>">X</label>
                         </div>
                     <% }) %>
                 </div>
                 <input class="images" type="file" multiple name="image1" id="ProductImages" accept="image/*" required>
                 <button type="button" id="save_the_image">حفظ</button>
             </div>
-            <button type="button" id="add-colors">تعديل الألوان</button>
-            <section class="product-image hide" id="colors">
-                <div class="display-container" id="display-container">
-                    <% Object.keys(combinations).forEach(key => { %>
-                        <div class="color-item p-3 border mb-2" data-id="<%= key %>">
-                            <label  data-id="<%= key %>" class="delete-color">x</label>
+            <% if (Object.keys(combinations).length > 0) { %>
+                <button type="button" id="add-colors">تعديل الألوان</button>
+                <section class="product-image hide" id="colors">
+                    <div class="display-container" id="display-container">
+                        <div class="colorsContainer">
 
-
-                            <label class="form-label font-semibold mt-2">لون: <%= combinations[key].color %></label>
-                            <h4 class="text-lg font-semibold mt-2">المقاسات المتصلة:</h4>
-                            <% combinations[key].relatedVariants.forEach(variant => { %>
-
-                                <div class="size-item p-2 border mb-1" data-id="<%= variant.id %>">
-                                    <label data-id="<%= variant.id %>" class="delete-color_vartion">x</label>
-
-                                    <!-- <label class="form-label">وحدة القياس: <%= variant.variant_type %></label> -->
-                                    <label class="form-label">مقاس: <%= variant.value %></label>
-                                    <label class="form-label">كمية: <%= variant.qty %></label>
-                                    <label class="form-label">سعر: <%= variant.price %></label>
-
-                                </div>
-                               
-
-                     
-                            <% }) %>
-                            <div class="size-edit-fields hide" id="size-edit-fields">
-                     
-                            </div>
-                            <button type="button" class="add-size" id="add-size" data-id="<%= key %>">اضافة مقاس جديد</button>
-
-                         
                             
-                           
-                        </div>
+                            <% Object.keys(combinations).forEach(key => { %>
+                                <div class="color-item p-3 border mb-2" data-id="<%= key %>">
+                                    <label  data-id="<%= key %>" class="delete-color">x</label>
+
+
+                                    <h4 class="form-label font-semibold mt-2">اللون : <%= combinations[key].color %></h4>
+                                    <h5 class="text-lg font-semibold mt-2">المقاسات المتصلة:</h5>
+                                    <% combinations[key].relatedVariants.forEach(variant => { %>
+
+                                        <div class="size-item p-2 border mb-1" data-id="<%= variant.id %>">
+                                                <label data-id="<%= variant.id %>" class="delete-color_vartion">x</label>
+
+                                                <!-- <label class="form-label">وحدة القياس: <%= variant.variant_type %></label> -->
+                                                <label class="form-label">المقاس : <%= variant.value %></label>
+                                                <label class="form-label">الكمية : <%= variant.qty %></label>
+                                                <label class="form-label">السعر : <%= variant.price %></label>
+
+                                        </div>
+
+                                    
+
+                            
+                                    <% }) %>
+                                    <button type="button" class="add-size" id="add-size" data-id="<%= key %>">اضافة مقاس جديد</button>
+
+                                    <div class="size-edit-fields hide" id="size-edit-fields">
+                            
+                                    </div>
+
+                                
+                                    
+                                
+                                </div>
+
+                                
+                            <% }) %>
                         
-                    <% }) %>
-                   
-                   
-                </div>
-                <button id="add_new_color_button">اضافة لون جديد</button>
-             <div class="addNewColorContainer hide" id="addNewColorContainer">
-                <input class="image" type="file" name="image2" id="ColorImage" accept="image/*">
-                <div id="color_container" class="selected-colorsContainer">
-                    <div class="color_containertop">
-                        <button class="color-btn red" data-color="red"></button>
-                        <button class="color-btn blue" data-color="blue"></button>
-                        <button class="color-btn green" data-color="green"></button>
-                        <button class="color-btn yellow" data-color="yellow"></button>
-                        <button class="color-btn black" data-color="black"></button>
-                        <button class="color-btn white" data-color="white"></button>
-                        <button class="color-btn gray" data-color="gray"></button>
-                        <button class="color-btn brown" data-color="brown"></button>
-                        <button class="color-btn orange" data-color="orange"></button>
-                        <button class="color-btn pink" data-color="pink"></button>
-                        <button class="color-btn purple" data-color="purple"></button>
-                        <button class="color-btn cyan" data-color="cyan"></button>
-                        <button class="color-btn teal" data-color="teal"></button>
+                        
+                        </div>
                     </div>
-                    <input type="text" id="colorr" placeholder="اكتب اللون اذا لم تجده في الأعلى" class="input-box">
-                    <input type="number" id="color_quantity" placeholder="الكمية الخاصة بهذا اللون" class="input-box">
-                    <input type="number" id="color-price" placeholder="السعر الخاص بهذا اللون" class="input-box">
-            
+                    <button id="add_new_color_button">اضافة لون جديد</button>
+                <div class="addNewColorContainer hide" id="addNewColorContainer">
+                    <input class="image" type="file" name="image2" id="ColorImage" accept="image/*">
+                    <div id="color_container" class="selected-colorsContainer">
+                        <div class="color_containertop">
+                            <button class="color-btn red" data-color="red"></button>
+                            <button class="color-btn blue" data-color="blue"></button>
+                            <button class="color-btn green" data-color="green"></button>
+                            <button class="color-btn yellow" data-color="yellow"></button>
+                            <button class="color-btn black" data-color="black"></button>
+                            <button class="color-btn white" data-color="white"></button>
+                            <button class="color-btn gray" data-color="gray"></button>
+                            <button class="color-btn brown" data-color="brown"></button>
+                            <button class="color-btn orange" data-color="orange"></button>
+                            <button class="color-btn pink" data-color="pink"></button>
+                            <button class="color-btn purple" data-color="purple"></button>
+                            <button class="color-btn cyan" data-color="cyan"></button>
+                            <button class="color-btn teal" data-color="teal"></button>
+                        </div>
+                        <input type="text" id="colorr" placeholder="اكتب اللون اذا لم تجده في الأعلى" class="input-box">
+                        <input type="number" id="color_quantity" placeholder="الكمية الخاصة بهذا اللون" class="input-box">
+                        <input type="number" id="color-price" placeholder="السعر الخاص بهذا اللون" class="input-box">
+                
+                    </div>
+                    <button type="button" id="colorSize" class="colorSizeButton">اختر المقاسات</button>
+                    <div class="color_containerButtom hide" id="color_containerButtom">
+                        <select id="TYPE_OF" name="DimensionsType">
+                            <option value="" disabled selected>اختر التصنيف</option>
+                            <option value="size">xl xxl ...</option>
+                            <option value="weight">الوزن</option>
+                        </select>
+                        <input id="meger" name="DimensionsMeger" placeholder="القياس">
+                        <input type="number" id="Size_color_quantity" name="quantity" placeholder="الكمية" class="input-box">
+                        <input type="number" id="variation_color_prise" name="price" placeholder="السعر" class="input-box">
+                        <button type="button" id="save-variation">احفظ المقاس</button>
+                    </div>
+                    <button type="button" id="nextColor">اختر اللون التالي</button>
+                    <button type="button" id="save_colors">حفظ كل الألوان</button>
                 </div>
-                <button type="button" id="colorSize" class="colorSizeButton">اختر المقاسات</button>
-                <div class="color_containerButtom hide" id="color_containerButtom">
-                    <select id="TYPE_OF" name="DimensionsType">
-                        <option value="" disabled selected>اختر التصنيف</option>
-                        <option value="size">xl xxl ...</option>
-                        <option value="weight">الوزن</option>
-                    </select>
-                    <input id="meger" name="DimensionsMeger" placeholder="القياس">
-                    <input type="number" id="Size_color_quantity" name="quantity" placeholder="الكمية" class="input-box">
-                    <input type="number" id="variation_color_prise" name="price" placeholder="السعر" class="input-box">
-                    <button type="button" id="save-variation">احفظ المقاس</button>
+            <% }else{ %>
+                <button type="button" id="add-sizes">تعديل الأحجام</button>
+                <section class="product-sizes hide" id="sizes">
+                    <div class="display-container" id="size-display-container">
+                        <div class="sizesContainer" id="sizesContainer">
+                            <h3 class="product_sizes"> مقاسات المنتج</h3>
+                            <% sizes.forEach(size => { %>
+                                <div class="size-item p-3 border mb-2" data-id="<%= size.id %>">
+                                    <label data-id="<%= size.id %>" class="delete-size">x</label>
+                                    <label class="form-label font-semibold mt-2">القياس : <%= size.value %></label>
+                                    <label class="form-label">الكمية : <%= size.qty %></label>
+                                    <label class="form-label">السعر : <%= size.price %></label>
+                                </div>
+                            <% }) %>
+                        </div>
+                    </div>
+                    <button id="add_new_size_button">اضافة قياس جديد</button>
+                  
+                </section>
+                <div class="addNewSizeContainer hide" id="addNewSizeContainer">
+                    <input id="megerment" name="megerment" placeholder="وحدة القياس">
+                    <input id="size" name="size" placeholder="القياس">
+                    <input type="number" id="size_quantity" name="size_quantity" placeholder="الكمية">
+                    <input type="number" id="size_price" name="size_price" placeholder="السعر">
+                    <button type="button" id="save_new_size">حفظ القياس</button>
                 </div>
-                <button type="button" id="nextColor">اختر اللون التالي</button>
-                <button type="button" id="save_colors">حفظ كل الألوان</button>
-            </div>
+            <% } %>
+    
+    
            
             </section>
             <div id="all-colors-display"></div>

@@ -18,12 +18,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const add_new_color_button = document.getElementById("add_new_color_button");
   let color_id;
   let size_edit_fields = document.getElementById("size-edit-fields");
+  let deleteProduct = document.getElementById("delet");
+  let add_sizes = document.getElementById("add-sizes");
+  let product_sizes_container = document.getElementById("sizes");
+  let add_new_size_button = document.getElementById("add_new_size_button");
+  let addNewSizeContainer=document.getElementById("addNewSizeContainer");
+  let save_new_size_button=document.getElementById("save_new_size");
+  let delete_size=document.getElementById("delete-size");
 
   const addedImages = [];
   const removedImages = [];
   const addedColors = [];
   const addedColorsVartion = [];
   const removedColors = [];
+  const removedVartion = [];
   let currentColor = {};
   let colors = [];
   let sizes = [];
@@ -33,27 +41,42 @@ document.addEventListener("DOMContentLoaded", () => {
   addImagesButton.addEventListener("click", () => {
     selectedImagesSection.classList.toggle("hide");
   });
-
-  addColorsButton.addEventListener("click", () => {
-    colorsSection.classList.toggle("hide");
-    addNewColorContainer.classList.add("hide");
-  });
+  if (addColorsButton) {
+    addColorsButton.addEventListener("click", () => {
+      colorsSection.classList.toggle("hide");
+      addNewColorContainer.classList.add("hide");
+    });
+  }
 
   buttonSaveImg.addEventListener("click", (event) => {
     event.preventDefault();
     selectedImagesSection.classList.add("hide");
     handleImageUpload("ProductImages", formData, "image1");
   });
-
-  saveColorsButton.addEventListener("click", () => {
-    saveColorDetails(true);
-  });
-
-  nextColorButton.addEventListener("click", (event) => {
-    event.preventDefault();
-    saveColorDetails();
-    clearColorDetails();
-  });
+  if (saveColorsButton) {
+    saveColorsButton.addEventListener("click", () => {
+      saveColorDetails(true);
+    });
+  }
+  if (nextColorButton) {
+    nextColorButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      saveColorDetails();
+      clearColorDetails();
+    });
+  }
+  if (add_sizes) {
+    add_sizes.addEventListener("click", () => {
+      product_sizes_container.classList.remove("hide");
+    });
+  }
+  if(add_new_size_button)
+  {
+    add_new_size_button.addEventListener("click",()=>{
+      addNewSizeContainer.classList.toggle("hide");
+      
+    })
+  }
 
   add_colorButtons.forEach((btn) => {
     btn.addEventListener("click", (event) => {
@@ -76,17 +99,29 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("Fields added");
 
       // إضافة مستمع الحدث بعد إنشاء الحقول الجديدة
-      newFields
-        .querySelector(".addVartion")
-        .addEventListener("click", handleAddSizecolor);
+      newFields.querySelector(".addVartion").addEventListener("click", () => {
+        event.preventDefault();
+        handleAddSizecolor();
+        size_edit_fields.classList.add("hide");
+      });
     });
   });
+  if (add_new_color_button) {
+    add_new_color_button.addEventListener("click", (event) => {
+      event.preventDefault();
 
-  add_new_color_button.addEventListener("click", (event) => {
-    event.preventDefault();
+      addNewColorContainer.classList.remove("hide");
+    });
+  }
+  if(save_new_size_button){
+    save_new_size_button.addEventListener("click",()=>{
+      handleAddNewSize();
+      clearAddNewSize();
+    //  addNewColorContainer.classList.add("hide");
 
-    addNewColorContainer.classList.remove("hide");
-  });
+
+    })
+  }
 
   function handleImageDelete(event) {
     const imageUrl = event.target.getAttribute("data-url");
@@ -110,17 +145,40 @@ document.addEventListener("DOMContentLoaded", () => {
     colorElement.remove();
     console.log(addedColorsVartion + "vartion");
   }
+  
+  function handleAddNewSize(){
+    event.preventDefault();
+    let megerment=document.getElementById("megerment").value;
+    let size=document.getElementById("size").value;
+    let size_quantity=document.getElementById("size_quantity").value;
+    let size_price=document.getElementById("size_price").value;
+    sizes.push({
+      megerment:megerment,
+      size_quantity:size_quantity,
+      size:size,
+      size_price:size_price
+
+    })
+    console.log("sizes "+ sizes)
+  }
+  
 
   function handleSizeDelete(event) {
     const sizeId = event.target.getAttribute("data-id");
-    const colorElement = event.target.closest(".color-item");
-    const colorId = colorElement.getAttribute("data-id");
-    const color = addedColors.find((color) => color.id === colorId);
-    color.relatedVariants = color.relatedVariants.filter(
-      (variant) => variant.id !== sizeId
-    );
-    updateColorDisplay();
+    const colorElement = event.target.closest(".size-item");
+    removedVartion.push(sizeId);
+    colorElement.remove();
+    console.log("size is "+ removedVartion)
+
   }
+  function clearAddNewSize(){
+    let megerment=document.getElementById("megerment").value=""
+    let size=document.getElementById("size").value="";
+    let size_quantity=document.getElementById("size_quantity").value="";
+    let size_price=document.getElementById("size_price").value="";
+  
+  }
+  
 
   // function handleSizeEdit(event) {
   //   const sizeId = event.target.getAttribute('data-id');
@@ -168,11 +226,15 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".delete-color_vartion").forEach((button) => {
     button.addEventListener("click", handleColorVartionDelete);
   });
-
-  colorSizeButton.addEventListener("click", () => {
-    colorContainerButtom.classList.toggle("hide");
+   document.querySelectorAll(".delete-size").forEach((button) => {
+    button.addEventListener("click", handleSizeDelete);
   });
 
+  if (colorSizeButton) {
+    colorSizeButton.addEventListener("click", () => {
+      colorContainerButtom.classList.toggle("hide");
+    });
+  }
   document.querySelectorAll(".color-btn").forEach((button) => {
     button.addEventListener("click", (event) => {
       event.preventDefault();
@@ -180,10 +242,11 @@ document.addEventListener("DOMContentLoaded", () => {
       selectColor(color);
     });
   });
-
-  document.getElementById("save-variation").addEventListener("click", () => {
-    saveVariationDetails();
-  });
+  if (document.getElementById("save-variation")) {
+    document.getElementById("save-variation").addEventListener("click", () => {
+      saveVariationDetails();
+    });
+  }
 
   function createColorElement(colorItem) {
     const colorElement = document.createElement("div");
@@ -318,12 +381,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   function handleAddSizecolor() {
-    const New_Size_color_quantity = document.getElementById(
-      "New_Size_color_quantity"
-    );
-    const New_variation_color_prise = document.getElementById(
-      "New_variation_color_prise"
-    );
+    const New_Size_color_quantity = document.getElementById( "New_Size_color_quantity");
+    const New_variation_color_prise = document.getElementById( "New_variation_color_prise");
     const megerment = document.getElementById("megerment");
     const megermentUnit = document.getElementById("megermentUnit");
     add_new_size.push({
@@ -335,7 +394,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     New_Size_color_quantity.value = "";
     New_variation_color_prise.value = "";
-    console.log("new soxe " + add_new_size);
+    console.log("new size " + add_new_size);
   }
 
   function saveVariationDetails() {
@@ -430,6 +489,7 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("removedColors", JSON.stringify(removedColors));
     formData.append("addedColorsVartion", JSON.stringify(addedColorsVartion));
     formData.append("removedImages", JSON.stringify(removedImages));
+    formData.append("removedVartion", JSON.stringify(removedVartion));
     formData.append("colors", JSON.stringify(colors));
     formData.append("sizes", JSON.stringify(sizes));
     formData.append("add_new_size", JSON.stringify(add_new_size));
@@ -457,3 +517,19 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 });
+// deleteProduct.addEventListener("click", ()=>{ axios
+//   .post("/admin/postDeleteProduct", {
+//     headers: {
+//       "CSRF-Token": csrfToken,
+//     },
+//   })
+//   .then((response) => {
+//     console.log(response.data);
+//     Swal.fire("تم الحفظ!", "تم حفظ المنتج بنجاح", "success");
+//   })
+//   .catch((error) => {
+//     console.error("Error:", error);
+//     Swal.fire("خطأ!", "حدث خطأ أثناء حفظ المنتج", "error");
+//   });
+
+// })

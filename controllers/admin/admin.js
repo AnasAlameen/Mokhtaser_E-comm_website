@@ -188,6 +188,7 @@ exports.Post_Product = async (req, res, next) => {
 
 exports.getEditProductPage = async (req, res, next) => {
   const productId = req.query.product_id;
+  
   try {
     const [productResults] = await db.execute(
       "SELECT * FROM products WHERE id = ?",
@@ -242,6 +243,7 @@ exports.getEditProductPage = async (req, res, next) => {
           value: row.option_value,
           qty: row.option_qty,
           price: row.option_price,
+          id:row.option_id
         });
         sizes.forEach((element) => {
         });
@@ -291,6 +293,7 @@ exports.postEdite_Products = async (req, res, next) => {
     addedColorsVartion,
     removedImages,
     Product_id,
+    removedVartion,
   } = req.body;
 
   console.log(req.body);
@@ -305,6 +308,7 @@ exports.postEdite_Products = async (req, res, next) => {
       parsedRemovedColors = [],
       parsedRemovedImages = [],
       parsedaddedColorsVartion=[];
+      parsedremovedVartion=[];
 
     // تحويل JSON إلى كائنات
     if (colors) parsedColors = JSON.parse(colors);
@@ -313,6 +317,7 @@ exports.postEdite_Products = async (req, res, next) => {
     if (add_new_size) parsedAddedNewSize = JSON.parse(add_new_size);
     if (removedColors) parsedRemovedColors = JSON.parse(removedColors);
     if (removedImages) parsedRemovedImages = JSON.parse(removedImages);
+    if (removedVartion) parsedremovedVartion = JSON.parse(removedVartion);
 
     const productId = Product_id;
 
@@ -485,3 +490,32 @@ if (parsedaddedColorsVartion.length > 0) {
     res.status(500).json({ message: "Error updating product" });
   }
 };
+
+exports.postDeleteProduct = async (req, res, next) => {
+  const productId = req.query.product_id;
+
+
+  try {
+    // حذف العلاقات بين المتغيرات المختلفة
+    await db.execute("DELETE FROM variant_relations WHERE parent_option_id IN (SELECT id FROM variant_options WHERE VariantsId IN (SELECT id FROM variants WHERE product_id = ?))", [productId]);
+    await db.execute("DELETE FROM variant_relations WHERE child_option_id IN (SELECT id FROM variant_options WHERE VariantsId IN (SELECT id FROM variants WHERE product_id = ?))", [productId]);
+
+    // حذف الصور المرتبطة بالمنتج
+    await db.execute("DELETE FROM product_images WHERE productId = ?", [productId]);
+    await db.execute("DELETE FROM variant_images WHERE variant_option_id IN (SELECT id FROM variant_options WHERE VariantsId IN (SELECT id FROM variants WHERE product_id = ?))", [productId]);
+
+    // حذف الخيارات (اللون والمقاسات) المرتبطة بالمنتج
+    await db.execute("DELETE FROM variant_options WHERE VariantsId IN (SELECT id FROM variants WHERE product_id = ?)", [productId]);
+
+    // حذف المتغيرات (اللون والمقاسات) المرتبطة بالمنتج
+    await db.execute("DELETE FROM variants WHERE product_id = ?", [productId]);
+
+    // حذف المنتج نفسه
+    await db.execute("DELETE FROM products WHERE id = ?", [productId]);
+
+    res.status(200).json({ message: "Product deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error deleting product" });
+  }
+}
