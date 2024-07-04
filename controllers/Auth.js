@@ -68,6 +68,10 @@ exports.postRejister = async (req, res, next) => {
         "INSERT INTO location (seller_id, City, area, longtiud, lasttiud) VALUES (?, ?, ?, ?, ?)",
         [ShopId, city, address, longitude, latitude]
       );
+      await db.execute(
+        "INSERT INTO store_user_roles (store_id , role_id ) VALUES (?, 1)",
+        [ShopId]
+      );
       console.log("New user created");
       res.status(201).redirect("/SingIn");
     }
@@ -93,6 +97,21 @@ exports.CheckSingIn = async (req, res, next) => {
       req.session.username = user.FirstName;
       req.session.role = "store";
       req.session.Categori=user.Catagori;
+      let roleCheck = `
+      SELECT r.name as roleName 
+      FROM sellers s
+      INNER JOIN store_user_roles sur ON s.id = sur.store_id
+      INNER JOIN roles r ON sur.role_id = r.id
+      WHERE s.Emile = ? AND s.Password = ?
+    `;
+    let [roleResult] = await db.execute(roleCheck, [email, password]);
+
+    if (roleResult.length > 0) {
+      req.session.roles = roleResult[0].roleName;
+    } else {
+      req.session.role = null;
+    }
+    console.log(req.session.roles+" rolse")
       return res.status(201).redirect("/shop/home");
       // } else {
       return res

@@ -74,6 +74,9 @@ const erorreConntlroller = require("./controllers/errore");
 const adminRoutes = require("./routers/admin");
 app.use("/admin", adminRoutes.router);
 
+const roleRoutes = require("./routers/roles");
+app.use("/", roleRoutes.router);
+
 const shopRoutes = require("./routers/shops");
 app.use("/shop", shopRoutes.router);
 

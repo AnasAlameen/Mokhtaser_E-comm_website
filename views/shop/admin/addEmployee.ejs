@@ -1,0 +1,89 @@
+
+<%- include('../../includes/shop/head.ejs') %>
+<link rel="stylesheet" href="/css/addEmployee.css">
+
+</head>
+<%- include('../../includes/shop/navgation.ejs') %>
+
+<div class="container search-container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" id="searchQuery" class="form-control" placeholder="ابحث عن المستخدم">
+                <div class="input-group-append">
+                    <button id="searchButton" class="btn btn-primary btn-search">بحث</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container results-container" id="resultsContainer">
+    <!-- نتائج البحث ستظهر هنا -->
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+ document.addEventListener('DOMContentLoaded', () => {
+    const resultsContainer = document.getElementById('resultsContainer');
+    document.getElementById('searchButton').addEventListener('click', function() {
+        const query = document.getElementById('searchQuery').value;
+        searchUsers(query);
+    });
+
+    function searchUsers(query) {
+        // هنا يجب أن تضع منطق البحث الخاص بك، سأستخدم بيانات افتراضية للاختبار
+        const sampleResults = [
+            { id: 1, name: 'أحمد', image: 'https://via.placeholder.com/50', roles: ['مسؤول', 'مشرف', 'ادمن'] },
+            { id: 2, name: 'سارة', image: 'https://via.placeholder.com/50', roles: ['مسؤول', 'مشرف', 'ادمن'] },
+            { id: 3, name: 'محمد', image: 'https://via.placeholder.com/50', roles: ['مسؤول', 'مشرف', 'ادمن'] }
+        ];
+
+        displayResults(sampleResults);
+    }
+
+    function displayResults(results) {
+        resultsContainer.innerHTML = '';
+
+        results.forEach(result => {
+            const resultCard = document.createElement('div');
+            resultCard.className = 'result-card';
+
+            resultCard.innerHTML = `
+                <div class="user-info">
+                    <img src="${result.image}" alt="${result.name}" class="user-image">
+                    <h4 class="name">${result.name}</h4>
+                </div>
+                <div class="role-checkboxes">
+                    ${result.roles.map(role => `
+                        <div class="role-checkbox">
+                            <input type="checkbox" id="role-${result.id}-${role}" name="roles-${result.id}" value="${role}" class="role-checkbox-input" data-user-id="${result.id}">
+                            <label for="role-${role}-${result.id}">${role}</label>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn btn-success add-button" onclick="addUser(${result.id})">إضافة</button>
+            `;
+
+            resultsContainer.appendChild(resultCard);
+        });
+
+        // إضافة الحدث للتحقق من خانة اختيار واحدة فقط
+        document.querySelectorAll('.role-checkbox-input').forEach(checkbox => {
+            checkbox.addEventListener('change', (event) => {
+                const userId = event.target.getAttribute('data-user-id');
+                const checkboxes = document.querySelectorAll(`input[name="roles-${userId}"]`);
+                checkboxes.forEach(cb => {
+                    if (cb !== event.target) {
+                        cb.checked = false;
+                    }
+                });
+            });
+        });
+    }
+});
+
+
+</script>
+
+<%- include('../../includes/shop/end.ejs') %>

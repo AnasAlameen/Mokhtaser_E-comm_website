@@ -55,6 +55,38 @@
     background-color: var(--input-bg);
   }
   
+.color-btn {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  margin: 5px;
+  cursor: pointer;
+}
+.color_containertop {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  background-color: #e6e6e6;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+  .color-btn.red { background-color: red; }
+.color-btn.blue { background-color: blue; }
+.color-btn.green { background-color: green; }
+.color-btn.yellow { background-color: yellow; }
+.color-btn.black { background-color: black; }
+.color-btn.white { background-color: white; border: 1px solid #ccc; }
+.color-btn.gray { background-color: gray; }
+.color-btn.brown { background-color: brown; }
+.color-btn.orange { background-color: orange; }
+.color-btn.pink { background-color: pink; }
+.color-btn.purple { background-color: purple; }
+.color-btn.cyan { background-color: cyan; }
+.color-btn.teal { background-color: teal; }
+
   button {
     width: 100%;
     background-color: var(--button-bg);

@@ -84,7 +84,9 @@ header {
 }
 
 .header__logo {
-  width: 70px;
+  width: 60px;
+  margin-right: 10px;
+  
 }
 
 .searchForm {
