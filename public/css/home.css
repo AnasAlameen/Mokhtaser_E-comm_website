@@ -212,6 +212,14 @@ li {
   font-size: 1.2em;
   margin-bottom: 5px;
 }
+.product-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: block;
+  max-width: 100%;
+}
+
 
 #shop-by-categories {
   padding: 50px 20px;

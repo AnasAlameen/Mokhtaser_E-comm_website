@@ -1,5 +1,12 @@
+const session = require("express-session");
 const db = require("../../helpers/databas");
 exports.getUserHomePage = async (req, res, next) => {
+  const userId = req.session.userId; // تأكد من أن userId معرف بشكل صحيح
+
+  if (!userId) {
+      throw new Error("User ID is undefined");
+  }
+
   try {
     const query = `
       SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
@@ -13,11 +20,23 @@ exports.getUserHomePage = async (req, res, next) => {
     let role = req.session.role || "";
     console.log(role + " role");
 
+    const [stores] = await db.execute(`
+    SELECT sr.store_id, s.CompanyName,s.id
+    FROM store_user_roles sr
+    INNER JOIN sellers s ON sr.store_id = s.id
+    WHERE sr.user_id = ?
+`, [userId]);
+
+console.log("data", {
+  userId: userId,
+  stores: stores
+});
     res.render("users/home", {
       pageTitle: "Home page",
       path: " users/home",
       products: rows, // Passing the fetched products to the view
-      role:role
+      role:role,
+      stores:stores
     });
   } catch (error) {
     console.error("Error retrieving featured products:", error);
@@ -161,14 +180,26 @@ exports.getUserHomePage = async (req, res, next) => {
       path: "shop/profile",
     });
   };
+  exports.getStores = async (req, res, next) => {
+    const userId = req.session.userId; 
+    if (!userId) {
+      throw new Error("User ID is undefined");
+    }
   
-      // Determine the path based on the role
-      /* let path;
-      if (role === 'store') {
-        path = 'shop/home';
-      } else if (role === 'user') {
-        path = 'users/home';
-      } else {
-        // Handle the case where role is not set
-        path = 'default/home';
-      }*/
+    try {
+      const [stores] = await db.execute(`
+        SELECT sr.store_id, s.CompanyName, s.id
+        FROM store_user_roles sr
+        INNER JOIN sellers s ON sr.store_id = s.id
+        WHERE sr.user_id = ?
+      `, [userId]);
+  
+      res.render("includes/users/Navgation", {
+        path: "includes/users/Navgation",
+        stores: stores,
+      });
+    } catch (error) {
+      console.error("Error retrieving stores:", error);
+      res.status(500).json({ error: "Error retrieving stores" });
+    }
+  };

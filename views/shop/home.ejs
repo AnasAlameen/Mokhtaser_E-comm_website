@@ -163,22 +163,22 @@
    
     
 </div>
-  <section id="featured-jobs">
-    <h2>عروض مميزة</h2>
-    <ul>
+<section id="featured-jobs">
+  <h2>عروض مميزة</h2>
+  <ul>
       <% products.forEach(product => { %>
-        <li>
-          <a href="http://localhost:3000/shop/prdoduct/detlas?product_id=<%= product.id %>&view=<%= role  %>">
-            <img src="../images/<%= product.image_url.split('\\').pop() %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
-            <h3><%= product.ProductName %></h3>
-            <p><%= product.Discrption %></p>
-            <p><%= product.Prise %></p>
-          </a>
-        </li>
+          <li>
+              <a href="http://localhost:3000/shop/prdoduct/detlas?product_id=<%= product.id %>&view=<%= role  %>">
+                  <img src="../images/<%= product.image_url.split('\\').pop().replace('personal', '') %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
+                  <h3><%= product.ProductName %></h3>
+                  <p class="product-description"><%= product.Discrption %></p>
+                  <p><%= product.Prise %></p>
+              </a>
+          </li>
       <% }) %>
-  
-    
-  </section>
+  </ul>
+</section>
+
 
 
   <section id="latest-jobs">
@@ -190,7 +190,7 @@
             <img src="../images/<%= product.image_url.split('\\').pop() %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
             <h3><%= product.ProductName %></h3>
             <p><%= product.Discrption %></p>
-            <p><%= product.Prise %></p>
+            <p class="prise"><%= product.Prise %></p>
           </a>
         </li>
       <% }) %>
@@ -243,7 +243,15 @@
             }
         }
 
-        setInterval(scroll, 30);
+        setInterval(scroll, 40);
+    });
+    const descriptions = document.querySelectorAll('.product-description');
+    descriptions.forEach(description => {
+        const maxLength = 20; // تحديد الحد الأقصى للطول هنا
+        if (description.textContent.length > maxLength) {
+            const truncated = description.textContent.slice(0, maxLength) + '...';
+            description.textContent = truncated;
+        }
     });
 </script>
 <%- include('../includes/shop/end.ejs') %>

@@ -8,7 +8,7 @@ const path = require("path");
 const singInControllers = require("../controllers/Auth");
 const upload = multer({
     storage: multer.diskStorage({
-      destination: "../images",
+      destination: "./public/personalImages",
       filename: function (req, file, cb) {
         cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
       },

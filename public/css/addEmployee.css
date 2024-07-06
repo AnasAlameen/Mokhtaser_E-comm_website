@@ -1,105 +1,149 @@
 /* CSS */
 :root {
-    --accent-color: hsl(30, 100%, 50%);
-    --bg-color: #f2f2f2;
-    --font-family: Arial, sans-serif;
-    --text-color: black;
-    --input-bg: #fff;
-    --input-border: #ccc;
-    --input-radius: 4px;
-    --button-bg: var(--accent-color);
-    --button-hover-bg: black;
-    --button-text-color: white;
-    --button-border: transparent;
-    --container-max-width: 800px;
-    --container-bg: #fff;
-    --container-padding: 20px;
-    --container-radius: 5px;
-    --container-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    --image-size: 100px; 
-    --delete-btn-bg: transparent;
-    --delete-btn-color: red;
-    --delete-btn-size: 20px;
-  }
-  
-  body {
-    background-color: white;
-  }
-  
-  .search-container {
-    margin-top: 50px;
-    text-align: center;
-  }
-  
-  .results-container {
-    margin-top: 30px;
-  }
-  
+  --accent-color: hsl(30, 100%, 50%);
+  --bg-color: #f2f2f2;
+  --font-family: Arial, sans-serif;
+  --text-color: black;
+  --input-bg: #fff;
+  --input-border: #ccc;
+  --input-radius: 20px 0 0 20px; /* نصف قطر الزاوية لمدخل النص */
+  --button-bg: var(--accent-color);
+  --button-hover-bg: black;
+  --button-text-color: white;
+  --button-border: var(--accent-color);
+  --button-radius: 0 20px 20px 0; /* نصف قطر الزاوية للزر */
+  --container-max-width: 800px;
+  --container-bg: #fff;
+  --container-padding: 20px;
+  --container-radius: 5px;
+  --container-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  --image-size: 100px; 
+  --delete-btn-bg: transparent;
+  --delete-btn-color: red;
+  --delete-btn-size: 20px;
+}
+
+body {
+  background-color: white;
+}
+
+.search-container {
+  margin-top: 50px;
+  text-align: center;
+}
+
+.input-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 400px; /* يمكنك تعديل هذا القيمة لتتناسب مع حجم المدخلات والزر */
+  margin: auto;
+}
+
+.form-control {
+  border: 1px solid var(--input-border);
+  border-right: none;
+  border-radius: var(--input-radius);
+  padding: 10px;
+  width: 100%;
+  font-size: 16px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.input-group-append {
+  display: flex;
+}
+
+.btn-search {
+  background-color: var(--button-bg);
+  border: 1px solid var(--button-border);
+  color: var(--button-text-color);
+  border-radius: var(--button-radius);
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 16px;
+  height: 100%; /* ضمان أن الزر يتطابق مع ارتفاع حقل الإدخال */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-search:hover {
+  background-color: var(--button-hover-bg);
+}
+
+.results-container {
+  margin-top: 30px;
+}
+
+.result-card {
+  padding: 20px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.user-image {
+  width: var(--image-size);
+  height: var(--image-size);
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.role-checkboxes {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center; 
+}
+
+.role-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.add-button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+@media (min-width: 601px) {
   .result-card {
-    padding: 20px;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column; /* تعديل اتجاه العناصر للعرض العمودي */
-    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
   }
-  
+
   .user-info {
-    display: flex;
-    flex-direction: column; 
+    flex-direction: row;
     align-items: center;
+    justify-content: flex-start;
   }
-  
-  .user-image {
-    width: var(--image-size);
-    height: var(--image-size);
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
-  }
-  
-  .role-checkboxes {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: center; 
-  }
-  
-  .role-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-  
+
   .add-button {
-    width: 100%;
-    margin-top: 10px;
+    width: 100px;
+    align-self: center;
   }
-  
-  @media (min-width: 601px) {
-    .result-card {
-      flex-direction: row;
-      justify-content: space-between;
-    }
-  
-    .user-info {
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-start;
-    }
-  
-    .add-button {
-      width: 100px;
-      align-self: center;
-    }
-  
-    .role-checkboxes {
-      margin-right: 50px;
-    }
+
+  .role-checkboxes {
+    margin-right: 50px;
   }
-  .name{
-    
-  }
+}
+
+.name {
+  margin-right: 25px;
+}

@@ -97,6 +97,7 @@ header {
 }
 
 .search-Input {
+  
   padding: 10px;
   border: 1px solid black;
   border-radius: 20px 0 0 20px;
@@ -106,6 +107,7 @@ header {
 }
 
 .search-Button {
+  margin-top: 15px;
   padding: 10px 20px;
   border: 1px solid black;
   border-radius: 0 20px 20px 0;
@@ -337,6 +339,6 @@ button:hover {
   }
   
   .sidebar {
-    width: 150px;
+    width: 200px;
   }
 }

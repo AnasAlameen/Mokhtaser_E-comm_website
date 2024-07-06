@@ -18,7 +18,7 @@ document.getElementById('show-map-btn').addEventListener('click', function() {
 document.getElementById("all").addEventListener("submit", function (event) {
     event.preventDefault(); // لمنع الإرسال التقليدي للنموذج
 
-    const formData = new FormData(this); // Create FormData from the form element
+    const formData = new FormData(this);
 
     console.log("Form Data:", Object.fromEntries(formData.entries()));
 

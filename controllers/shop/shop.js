@@ -137,6 +137,7 @@ exports.getproductDetals = async (req, res, next) => {
 
 exports.getShopeHomePage = async (req, res, next) => {
   try {
+    
     const query = `
       SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
       FROM products p
