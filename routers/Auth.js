@@ -26,6 +26,7 @@ router.post("/SingIn/Check",multable, singInControllers.CheckSingIn);
 router.post("/Rejister/Check",multable, singInControllers.postRejister);
 router.get("/Rejister/user",singInControllers.getRejisterUser);
 router.post("/Rejister/User/Check",multable, singInControllers.postRegisterUser);
+router.post("home",singInControllers.getRoles);
 
 
 router.get("/LogOut",singInControllers.LogOut);

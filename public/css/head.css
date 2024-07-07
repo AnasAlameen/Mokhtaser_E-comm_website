@@ -258,8 +258,9 @@ header {
 
 .sidebar__name {
   font-size: var(--normal-font-size);
-  color: var(--white-color);
+  color: black;
   margin-bottom: .25rem;
+   margin-right: 25px;
 }
 
 .sidebar__email {
@@ -272,6 +273,21 @@ header {
   font-size: 1.5rem;
   margin-left: auto;
   cursor: pointer;
+}
+.store-list {
+  display: none;
+  margin-left: 20px;
+}
+.store-list.active {
+  display: block;
+}
+.toggle-button {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.toggle-button i {
+  margin-left: 8px;
 }
 
 .show-sidebar {
@@ -341,4 +357,10 @@ button:hover {
   .sidebar {
     width: 200px;
   }
+  .ri-menu-line{
+    margin-left: 20px;
+  }
+}
+.namet{
+  margin-right: 35px;
 }

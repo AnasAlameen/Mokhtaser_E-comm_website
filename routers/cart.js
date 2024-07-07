@@ -4,6 +4,7 @@ const multer = require("multer");
 const cartControler = require("../controllers/users/Cart");
 const isAuth = require("../middlewear/isAuth");
 const isShop=require("../middlewear/isSeller")
+const isUser=require("../middlewear/isAuthUser")
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -21,9 +22,9 @@ const multable = upload.fields([
   { name: "image1", maxCount: 7 },
   { name: "image2", maxCount: 9 },
 ]);
-router.post("/add/toCart", multable, cartControler.postAddToCart);
-router.post("/addOrder", multable, cartControler.addOrder);
-router.get("/", isAuth, cartControler.getCart);
+router.post("/add/toCart", multable,isUser, cartControler.postAddToCart);
+router.post("/addOrder", multable, isUser,cartControler.addOrder);
+router.get("/", isAuth, isUser,cartControler.getCart);
 router.post("/ordered",upload.none(),cartControler.addOrder); // تعديل المسار هنا
 router.get("/Orders", isAuth,isShop,cartControler.getOrders);
 router.post("/orderRedy",multable, cartControler.orderRedy);

@@ -96,7 +96,7 @@ exports.CheckSingIn = async (req, res, next) => {
       req.session.userId = user.id;
       req.session.username = user.FirstName;
       req.session.role = "store";
-      req.session.Categori=user.Catagori;
+      req.session.Categori = user.Catagori;
       let roleCheck = `
       SELECT r.name as roleName 
       FROM sellers s
@@ -104,14 +104,14 @@ exports.CheckSingIn = async (req, res, next) => {
       INNER JOIN roles r ON sur.role_id = r.id
       WHERE s.Emile = ? AND s.Password = ?
     `;
-    let [roleResult] = await db.execute(roleCheck, [email, password]);
+      let [roleResult] = await db.execute(roleCheck, [email, password]);
 
-    if (roleResult.length > 0) {
-      req.session.roles = roleResult[0].roleName;
-    } else {
-      req.session.role = null;
-    }
-    console.log(req.session.roles+" rolse")
+      if (roleResult.length > 0) {
+        req.session.roles = roleResult[0].roleName;
+      } else {
+        req.session.role = null;
+      }
+      console.log(req.session.roles + " rolse");
       return res.status(201).redirect("/shop/home");
       // } else {
       return res
@@ -223,5 +223,38 @@ exports.postRegisterUser = async (req, res, next) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("An error occurred while processing your request.");
+  }
+};
+
+exports.getRoles = async (req, res, next) => {
+  const storeId = req.query.storeId;
+  const role = req.query.role;
+
+  try {
+    const query = `
+      SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
+      FROM products p
+      INNER JOIN product_images pi ON p.id = pi.productId
+      GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
+    `;
+    const [rows, fields] = await db.execute(query);
+    const [store] = await db.execute(
+      "SELECT * FROM stores WHERE store_id = ?",
+      [storeId]
+    );
+    if (store.length > 0) {
+      res.render("shop/home", {
+        pageTitle: "Home page",
+        path: "shop/home",
+        products: rows, // Passing the fetched products to the view
+        role: role,
+        store: store[0],
+      });
+    } else {
+      res.status(404).send("Store not found");
+    }
+  } catch (error) {
+    console.error("Error fetching store data:", error);
+    res.status(500).send("Internal Server Error");
   }
 };

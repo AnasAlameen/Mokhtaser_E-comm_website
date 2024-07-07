@@ -9,6 +9,7 @@ const csrf = require("csurf");
 const cron = require('node-cron');
 const app = express();
 
+
 // إعدادات تخزين الجلسة في قاعدة البيانات
 const options = {
   host: 'localhost',
@@ -80,11 +81,18 @@ app.use("/", roleRoutes.router);
 const shopRoutes = require("./routers/shops");
 app.use("/shop", shopRoutes.router);
 
-const UsersControlers = require("./routers/users");
-app.use("/user", UsersControlers.router);
+
 
 const general = require("./routers/general");
 app.use("/general", general.router);
+
+const haveRoles =require("./middlewear/haveRoles")
+app.use(haveRoles);
+
+
+
+const UsersControlers = require("./routers/users");
+app.use("/user", UsersControlers.router);
 
 const CartRoute = require("./routers/cart");
 app.use("/cart", CartRoute.router);
