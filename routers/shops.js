@@ -1,16 +1,20 @@
 const express=require("express");
 const router = express.Router();
 const isAuth=require("../middlewear/isAuth")
+const isNotAuth=require("../middlewear/isNotAuth")
+
 //3
 const isShop=require("../middlewear/isSeller")
-
+const haveRole=require("../middlewear/haveRoles");
 const shopControler=require("../controllers/shop/shop");
-router.get("/home",isAuth,shopControler.getShopeHomePage);
-router.get("/prdoduct/detlas",isAuth,isShop,shopControler.getproductDetals);
-router.get("/orders",isAuth,isShop,shopControler.getOrders);
-router.get("/orders/detals",isAuth,isShop,shopControler.getOrderDetals);
-router.get("/prdoducts",isAuth,isShop,shopControler.getProductList);
-router.get("/profile",isAuth,isShop,shopControler.getProfile);
+router.get("/home",isAuth,isNotAuth,haveRole,shopControler.getShopeHomePage);
+router.get("/prdoduct/detlas",isAuth,haveRole,shopControler.getproductDetals);
+router.get("/orders",isAuth,haveRole,shopControler.getOrders);
+router.get("/orders/detals",haveRole,isAuth,shopControler.getOrderDetals);
+router.get("/prdoducts",isAuth,haveRole,shopControler.getProductList);
+router.get("/profile",isAuth,haveRole,shopControler.getProfile);
+router.get("/shop",isAuth,haveRole,shopControler.getRoles);
+
 
 
 

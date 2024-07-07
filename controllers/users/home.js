@@ -20,23 +20,12 @@ exports.getUserHomePage = async (req, res, next) => {
     let role = req.session.role || "";
     console.log(role + " role");
 
-    const [stores] = await db.execute(`
-    SELECT sr.store_id, s.CompanyName,s.id
-    FROM store_user_roles sr
-    INNER JOIN sellers s ON sr.store_id = s.id
-    WHERE sr.user_id = ?
-`, [userId]);
 
-console.log("data", {
-  userId: userId,
-  stores: stores
-});
     res.render("users/home", {
       pageTitle: "Home page",
       path: " users/home",
       products: rows, // Passing the fetched products to the view
       role:role,
-      stores:stores
     });
   } catch (error) {
     console.error("Error retrieving featured products:", error);

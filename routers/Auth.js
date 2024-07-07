@@ -1,8 +1,9 @@
 const express=require("express");
 const router = express.Router();
 const multer=require("multer");
-const isAuth=require("../middlewear/isAuth")
+const isNotAuth=require("../middlewear/isNotAuth")
 const path = require("path"); 
+// const haveRole=require("../middlewear/haveRoles");
 
 
 const singInControllers = require("../controllers/Auth");
@@ -20,13 +21,12 @@ const upload = multer({
 
   ]);
 
-router.get("/SingIn",singInControllers.getSinIn);
-router.get("/Rejister", singInControllers.getRejister);
+router.get("/SingIn",isNotAuth,singInControllers.getSinIn);
+router.get("/Rejister", isNotAuth,singInControllers.getRejister);
 router.post("/SingIn/Check",multable, singInControllers.CheckSingIn);
 router.post("/Rejister/Check",multable, singInControllers.postRejister);
-router.get("/Rejister/user",singInControllers.getRejisterUser);
+router.get("/Rejister/user",isNotAuth,singInControllers.getRejisterUser);
 router.post("/Rejister/User/Check",multable, singInControllers.postRegisterUser);
-router.post("home",singInControllers.getRoles);
 
 
 router.get("/LogOut",singInControllers.LogOut);

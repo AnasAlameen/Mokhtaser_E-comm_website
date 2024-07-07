@@ -19,8 +19,7 @@
    <div class="sidebar" id="sidebar">
       <nav class="sidebar__container">
          <div class="sidebar__logo">
-               <img src="/imjs/hh.png" alt="Logo" class="sidebar__logo-img">  <i class="namet">الأمين</i>
-
+               <img src="<%= storeInfo.url %>" alt="Logo" class="sidebar__logo-img">  <i class="namet"><%= storeInfo.CompanyName  %></i>
          </div>
          <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
          <div class="sidebar__content">
@@ -37,51 +36,49 @@
                   <i class="ri-video-line"></i>
                   <span class="sidebar__link-name">الملف الشخصي</span>
                </a>
+               <% stores.forEach(store => { %>
+               <% if (store.role_id != 4) { %>
                <a href="/admin/add_product" class="sidebar__link">
                   <i class="ri-add-box-line"></i>
                   <span class="sidebar__link-name">اضافة منتج جديد</span>
                </a>
+               <% } %>
+               <% }) %>
+
             </div>
             <h3 class="sidebar__title">
                <span>الاعدادت</span>
             </h3>
             <div class="sidebar__list">
+               <% stores.forEach(store => { %>
+
+               <% if (store.role_id === 1) { %>
                <a href="/addEmployee" class="sidebar__link">
                   <i class="ri-logout-box-r-line"></i>
                   <span class="sidebar__link-name">اضافة موظف</span>
                </a>
+               <% } %>
+               <% }) %>
+
                <a href="/LogOut" class="sidebar__link">
                   <i class="ri-logout-box-r-line"></i>
                   <span class="sidebar__link-name">LogOut</span>
                </a>
             </div>
-            <h3 class="sidebar__title">
-               <span>General</span>
-            </h3>
-            <div class="sidebar__list">
-               <a href="#" class="sidebar__link">
-                  <i class="ri-notification-2-line"></i>
-                  <span class="sidebar__link-name">Notifications</span>
-               </a>
-               <a href="#" class="sidebar__link">
-                  <i class="ri-settings-3-line"></i>
-                  <span class="sidebar__link-name">Settings</span>
-               </a>
-               <a href="#" class="sidebar__link">
-                  <i class="ri-logout-box-r-line"></i>
-                  <span class="sidebar__link-name">Logout</span>
-               </a>
-            </div>
+   
+            <% if(userInfo.lenght===0) {%>
             <div class="sidebar__account">
-               <img src="/" alt="Profile" class="sidebar__perfil">
+               <img src="<%= userInfo.url %>" alt="Profile" class="sidebar__perfil">
                <div class="sidebar__names">
-                  <h3 class="sidebar__name">Will Lens</h3>
+                  <h3 class="sidebar__name"><% userInfo.FirstName %></h3>
                </div>
                <i class="ri-arrow-right-s-line"></i>
             </div>
+            <% } %>
          </div>
       </nav>
    </div>
+   
 
    <script>
       document.getElementById('header-toggle').addEventListener('click', function() {

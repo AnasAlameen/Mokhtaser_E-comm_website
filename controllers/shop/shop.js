@@ -137,7 +137,6 @@ exports.getproductDetals = async (req, res, next) => {
 
 exports.getShopeHomePage = async (req, res, next) => {
   try {
-    const userId=session.userId;
 
     const query = `
       SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
@@ -204,6 +203,49 @@ exports.getProfile = (req, res, next) => {
     path: "shop/profile",
   });
 };
+exports.getRoles = async (req, res, next) => {
+  
+  const storeId = req.query.storeId;
+  const role = req.query.role;
+  req.session.role =role;
+  req.session.isLoggedIn = true;
+  req.session.storeId = storeId;
+  try {
+    const query = `
+      SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
+      FROM products p
+      INNER JOIN product_images pi ON p.id = pi.productId
+      GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
+    `;
+    const [rows, fields] = await db.execute(query);
+    const [stores] = await db.execute(`
+    SELECT sr.store_id, sr.role_id, s.CompanyName, s.id
+    FROM store_user_roles sr
+    INNER JOIN sellers s ON sr.store_id = s.id
+    WHERE sr.store_id = ?
+`, [storeId]);
+    
+console.log("stoew",stores)
+      console.log(role+"fsdf")
+      if (stores.length > 0) {
+      res.render("shop/home", {
+        pageTitle: "Home page",
+        path: "shop/home",
+        products: rows, // Passing the fetched products to the view
+        role: role,
+      });
+     
+    
+    } else {
+      res.status(404).send("Store not found");
+    }
+
+  } catch (error) {
+    console.error("Error fetching store data:", error);
+    res.status(500).send("Internal Server Error");
+  }
+  
+}; 
 
     // Determine the path based on the role
     /* let path;

@@ -72,22 +72,25 @@
                    <span class="sidebar__link-name">Logout</span>
                </a>
            </div> -->
-           <h3 class="sidebar__title">
-            <span>المتاجر</span>
+           <% if(stores.lenght===0) {%>
 
-            <button onclick="toggleStoreList()">اظهار المتاجر</button>
-        </h3>
-        <div class="sidebar__list store-list" id="storeList">
-            <% stores.forEach(store => { %>
-                <a href="/home?storeId=<%= store.id %>&role=<%= store.role_id   %>" class="sidebar__link">
-                    <i class="ri-store-line"></i>
-                    <span class="sidebar__link-name"><%= store.CompanyName %></span>
-                </a>
-            <% }) %>
-        </div>
-        
-      
-           
+           <% }else{ %>
+
+           <h3 class="sidebar__title">
+               <span>المتاجر</span>
+
+                <button onclick="toggleStoreList()">اظهار المتاجر</button>
+            </h3>
+            <div class="sidebar__list store-list" id="storeList">
+                <% stores.forEach(store => { %>
+                    <a href="/shop/shop?storeId=<%= store.id %>&role=<%= store.role_id %>" class="sidebar__link">
+                        <i class="ri-store-line"></i>
+                        <span class="sidebar__link-name"><%= store.CompanyName %></span>
+                    </a>
+                <% }) %>
+            </div>        
+            <% } %>
+
          </div>
       </nav>
    </div>

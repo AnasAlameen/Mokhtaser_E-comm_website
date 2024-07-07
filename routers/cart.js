@@ -26,7 +26,7 @@ router.post("/add/toCart", multable,isUser, cartControler.postAddToCart);
 router.post("/addOrder", multable, isUser,cartControler.addOrder);
 router.get("/", isAuth, isUser,cartControler.getCart);
 router.post("/ordered",upload.none(),cartControler.addOrder); // تعديل المسار هنا
-router.get("/Orders", isAuth,isShop,cartControler.getOrders);
+router.get("/Orders", isAuth,cartControler.getOrders);
 router.post("/orderRedy",multable, cartControler.orderRedy);
 
 
