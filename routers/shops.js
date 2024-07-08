@@ -6,6 +6,7 @@ const isNotAuth=require("../middlewear/isNotAuth")
 //3
 const isShop=require("../middlewear/isSeller")
 const haveRole=require("../middlewear/haveRoles");
+
 const shopControler=require("../controllers/shop/shop");
 router.get("/home",isAuth,isNotAuth,haveRole,shopControler.getShopeHomePage);
 router.get("/prdoduct/detlas",isAuth,haveRole,shopControler.getproductDetals);

@@ -1,7 +1,18 @@
 const session = require("express-session");
 const db = require("../helpers/databas");
 const bcrypt = require("bcryptjs");
+const nodemailer=require("nodemailer");
 
+const transporter=nodemailer.createTransport({
+  service:"gmail",
+  host:"smtp.gmail.com",
+  port:587,
+  secure:false,
+  auth:{
+    user:"anas2002218@gmail.com",
+    pass:"chhg kjfn kgbv yqok"
+  },
+})
 exports.getRejister = (req, res, next) => {
   res.render("shop/Rejister", {
     pageTitle: "Rejister",
@@ -10,9 +21,17 @@ exports.getRejister = (req, res, next) => {
 };
 
 exports.getSinIn = (req, res, next) => {
+  let message=req.flash("error");
+  if(message.length>0){
+    message=message[0]
+
+  }else{
+    message=null;
+  }
   res.render("users/SingIn", {
-    pageTitle: "Sing In",
+    pageTitle: "Log In",
     path: "users/SingIn",
+    errorMessage:message
   });
 };
 
@@ -73,6 +92,19 @@ exports.postRejister = async (req, res, next) => {
         [ShopId]
       );
       console.log("New user created");
+      transporter.sendMail({
+        to:req.body.email,
+        from:"anas2002218@gmail.com",
+        text:"done",
+        html:"<li> done</li>",
+      },(error,sesses)=>{
+        if(error)
+        {
+          console.log(error);
+        }else{
+          console.log("email:sent"+sesses.response);
+        }
+      })
       res.status(201).redirect("/SingIn");
     }
   }
@@ -112,12 +144,26 @@ exports.CheckSingIn = async (req, res, next) => {
         req.session.role = null;
       }
       console.log(req.session.roles + " rolse");
+      transporter.sendMail({
+        to:req.body.email,
+        from:"anas2002218@gmail.com",
+        text:"stignup succeeded",
+        html:"<li> you sussesfuly signup</li>",
+      },(error,sesses)=>{
+        if(error)
+        {
+          console.log(error);
+        }else{
+          console.log("email:sent"+sesses.response);
+        }
+      })
       return res.status(201).redirect("/shop/home");
       // } else {
-      return res
-        .status(401)
-        .json({ message: "Password incorrect", redirectUrl: "/LogIn" });
-      console.log("ksdiohfo");
+
+      // return res
+      //   .status(401).redirect("/SingIn");
+        
+      // console.log("ksdiohfo");
       // }
     } else {
       // Check if the email exists in users
@@ -136,6 +182,7 @@ exports.CheckSingIn = async (req, res, next) => {
         console.log("hhhhhh");
 
         return res.status(201).redirect("/user/Home");
+      
         //   } else {
         //return res.status(401).json({ message: "Password incorrect", redirectUrl: "/LogIn" });
         // }
@@ -143,7 +190,8 @@ exports.CheckSingIn = async (req, res, next) => {
     }
 
     console.log("The user does not exist");
-    res.status(409).send("The user does not exist OR PASSORD RONG");
+    req.flash("error"," بريد الكتروني او كلمة مرور خاطئة")
+    res.redirect("/SingIn")
   } catch (error) {
     console.error("Error during sign-in:", error);
     res.status(500).json({ error: "Error during sign-in" });
@@ -217,12 +265,11 @@ exports.postRegisterUser = async (req, res, next) => {
           latitude,
         ]);
         res.status(201).redirect("http://localhost:3000/SingIn");
-        console.log(":d");
-      }
+      
+            }
     }
   } catch (error) {
     console.error(error);
     res.status(500).send("An error occurred while processing your request.");
   }
 };
-

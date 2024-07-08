@@ -1,12 +1,13 @@
 <%- include('../includes/shop/head.ejs') %>
-<link rel="stylesheet" href="/css/head.css">
 <link rel="stylesheet" href="/css/ShopSinIN.css">
 
-</head>
-
-<%- include('../includes/shop/navgationGeneral.ejs') %>
   </head>
   <body>
+    <% if (errorMessage){ %>
+      <div class="user_messege user-messege--error"><%= errorMessage %></div>
+      <% } %>
+
+      <%- include('../includes/shop/navgationGeneral.ejs') %>
     <div class="container">
       <h2>تسجيل االدخول</h2>
       <form id="singin" action="/SingIn/Check" method="POST" >

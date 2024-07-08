@@ -10,9 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.609.0",
     "axios": "^1.6.8",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
+    "connect-flash": "^0.1.1",
     "cors": "^2.8.5",
     "csurf": "^1.11.0",
     "ejs": "^3.1.10",
@@ -20,9 +22,11 @@
     "express-mysql-session": "^3.0.2",
     "express-mysql2-session": "^1.0.1",
     "express-session": "^1.18.0",
+    "express-validator": "^7.1.0",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.9.7",
     "node-cron": "^3.0.3",
+    "nodemailer": "^6.9.14",
     "nodemon": "^3.1.0",
     "path": "^0.12.7"
   }

@@ -8,7 +8,7 @@ const MySQLStore = require("express-mysql-session")(session);
 const csrf = require("csurf");
 const cron = require('node-cron');
 const app = express();
-
+const flash = require("connect-flash"); // تأكد من استدعاء المكتبة هنا
 
 // إعدادات تخزين الجلسة في قاعدة البيانات
 const options = {
@@ -30,6 +30,8 @@ app.use(session({
   cookie: { secure: false } // true إذا كنت تستخدم HTTPS
 }));
 
+// استخدم flash بعد إعداد الجلسات
+app.use(flash());
 
 // إعداد مهمة cron لمسح الجلسات المنتهية الصلاحية كل 5 دقائق
 cron.schedule('*/5 * * * *', async () => {
@@ -81,15 +83,11 @@ app.use("/", roleRoutes.router);
 const shopRoutes = require("./routers/shops");
 app.use("/shop", shopRoutes.router);
 
-
-
 const general = require("./routers/general");
 app.use("/general", general.router);
 
 const haveRoles =require("./middlewear/haveRoles")
 app.use(haveRoles);
-
-
 
 const UsersControlers = require("./routers/users");
 app.use("/user", UsersControlers.router);
