@@ -67,98 +67,23 @@
   </section>
   
     <div id="shop-by-categories">
-      <h2>استكشف انواع المنتاجات الان</h2>
+      <h2>Shop by categories</h2>
       <div class="categories-container">
-        <ul>
+        <ul>         
+           <!-- <button id="next-button">التالي</button> -->
+
+          <% categories.forEach(categorie => { %>
           <li>
             <div class="category-item">
-              <a href="#">
-                <img src="/imjs/BACK2.webp" alt="Phones & Telecommunications">
+              
+              <a href="/user/subCategoriesPage?subCategorieId=<%= categorie.id %>&name=<%= categorie.name %>">
+                <img src="..<%= categorie.url.replace('public', '') %>" alt="Phones & Telecommunications">
               </a>
-              <p>Phones & Telecommunications</p>
+              <p><%= categorie.name %></p>
             </div>
           </li>
-          <li>
-            <div class="category-item">
-              <a href="#">
-                <img src="/imjs/BACK3.jpg" alt="Home & Garden">
-              </a>
-              <p>Home & Garden</p>
-            </div>
-          </li>
-          <li>
-            <div class="category-item">
-              <a href="#">
-                <img src="/imjs/BACK4.jpg" alt="Men's Clothing">
-              </a>
-              <p>Men's Clothing</p>
-            </div>
-          </li>
-          <li>
-            <div class="category-item">
-              <a href="#">
-                <img src="/imjs/BACK5.jpg" alt="Computer, Office & Security">
-              </a>
-              <p>Computer, Office & Security</p>
-            </div>
-          </li>
-          <li>
-            <div class="category-item">
-              <a href="#">
-                <img src="/imjs/s5.webp" alt="Beauty & Health">
-              </a>
-              <p>Beauty & Health</p>
-            </div>
-          </li>
-          <li>
-            <div class="category-item">
-              <a href="#">
-                <img src="https://via.placeholder.com/150" alt="Pet Supplies">
-              </a>
-              <p>Pet Supplies</p>
-            </div>
-          </li>
-          <li>
-            <div class="category-item">
-              <a href="#">
-                <img src="https://via.placeholder.com/150" alt="Hair Extensions & Wigs">
-              </a>
-              <p>Hair Extensions & Wigs</p>
-            </div>
-          </li>
-          <li>
-            <div class="category-item">
-              <a href="#">
-                <img src="https://via.placeholder.com/150" alt="Babies & Kids">
-              </a>
-              <p>Babies & Kids</p>
-            </div>
-          </li>
-          <li>
-            <div class="category-item">
-              <a href="#">
-                <img src="https://via.placeholder.com/150" alt="Women's Clothing">
-              </a>
-              <p>Women's Clothing</p>
-            </div>
-            
-          </li>
-          <li>
-            <div class="category-item">
-              <a href="#">
-                <img src="https://via.placeholder.com/150" alt="Sports & Entertainment">
-              </a>
-              <p>Sports & Entertainment</p>
-            </div>
-          </li>
-          <li>
-            <div class="category-item">
-              <a href="#">
-                <img src="https://via.placeholder.com/150" alt="Furniture">
-              </a>
-              <p>Furniture</p>
-            </div>
-          </li>
+          <% }); %>
+          <!-- <button id="prev-button">السابق</button> -->
         </ul>
    
     
@@ -198,6 +123,7 @@
   </section>
 </main>
 
+
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script>
   var swiper = new Swiper(".mySwiper", {
@@ -208,13 +134,13 @@
       clickable: true,
     },
     navigation: {
-        nextEl: ".swiper-button-next",
-        prevEl: ".swiper-button-prev",
-      },
-      autoplay: {
-        delay: 2500,
-        disableOnInteraction: false,
-      },
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+    autoplay: {
+      delay: 2500,
+      disableOnInteraction: false,
+    },
     effect: "coverflow",
     grabCursor: true,
     centeredSlides: true,
@@ -227,31 +153,76 @@
       slideShadows: true,
     },
   });
+
   document.addEventListener('DOMContentLoaded', function () {
-        const container = document.querySelector('.categories-container ul');
-        let isScrolling = false;
+    const container = document.querySelector('.categories-container ul');
+    let isScrolling = false;
 
-        function scroll() {
-            if (!isScrolling) {
-                container.scrollBy({
-                    left: 1,
-                    behavior: 'smooth'
-                });
-            }
-            if (container.scrollLeft + container.clientWidth >= container.scrollWidth) {
-                container.scrollTo({ left: 0, behavior: 'smooth' });
-            }
-        }
+    function scroll() {
+      if (!isScrolling) {
+        container.scrollBy({
+          left: -1, // تعديل الاتجاه
+          behavior: 'smooth'
+        });
+      }
+      if (container.scrollLeft <= 0) {
+        container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
+      }
+    }
 
-        setInterval(scroll, 40);
+    setInterval(scroll, 15); // جعل الحركة أسرع
+
+    // إضافة أزرار التمرير
+    const prevButton = document.getElementById('prev-button');
+    const nextButton = document.getElementById('next-button');
+
+    prevButton.addEventListener('click', function () {
+      container.scrollBy({
+        left: -150,
+        behavior: 'smooth'
+      });
     });
-    const descriptions = document.querySelectorAll('.product-description');
-    descriptions.forEach(description => {
-        const maxLength = 20; // تحديد الحد الأقصى للطول هنا
-        if (description.textContent.length > maxLength) {
-            const truncated = description.textContent.slice(0, maxLength) + '...';
-            description.textContent = truncated;
-        }
+
+    nextButton.addEventListener('click', function () {
+      container.scrollBy({
+        left: 150,
+        behavior: 'smooth'
+      });
     });
+  });
+  // const container = document.querySelector('.categories-container ul');
+  //     let isScrolling = false;
+
+  //     function scroll() {
+  //       if (!isScrolling) {
+  //         container.scrollBy({
+  //           left: -1, // التمرير لليسار
+  //           behavior: 'smooth'
+  //         });
+  //       }
+  //       if (container.scrollLeft <= 0) {
+  //         container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
+  //       }
+  //     }
+
+  //     setInterval(scroll, 15); // سرعة الحركة
+
+  //     // إضافة أزرار التمرير
+  //     const prevButton = document.getElementById('prev-button');
+  //     const nextButton = document.getElementById('next-button');
+
+  //     prevButton.addEventListener('click', function () {
+  //       container.scrollBy({
+  //         left: -150,
+  //         behavior: 'smooth'
+  //       });
+  //     });
+
+  //     nextButton.addEventListener('click', function () {
+  //       container.scrollBy({
+  //         left: 150,
+  //         behavior: 'smooth'
+  //       });
+  //     });
 </script>
 <%- include('../includes/shop/end.ejs') %>

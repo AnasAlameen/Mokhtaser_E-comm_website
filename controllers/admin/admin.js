@@ -1,15 +1,23 @@
 const { join } = require("path");
 const db = require("../../helpers/databas");
-
-exports.getAddProductPage = (req, res, next) => {
-  res.render("shop/admin/addProduct", {
-    pageTitle: "Add Product",
-    path: "shop/addProduct",
-  });
+exports.getAddProductPage = async (req, res, next) => {
+  const Categori = req.session.Categori;
+  console.log("categories", Categori);
+  try {
+    const [selectSubCategories] = await db.execute("SELECT * FROM categories WHERE parent_id = ?", [Categori]);
+    res.render("shop/admin/addProduct", {
+      pageTitle: "Add Product",
+      path: "shop/addProduct",
+      selectSubCategories: selectSubCategories
+    });
+    console.log("selectSubCategories", { selectSubCategories: selectSubCategories, Categori: Categori });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to load add product page" });
+  }
 };
 
 exports.Post_Product = async (req, res, next) => {
-  let seller_id = req.session.userId;
+  let seller_id = req.session.storeId;
   let MainCatagori = req.session.Catagori || "h";
   const {
     ProductName,
@@ -49,14 +57,7 @@ exports.Post_Product = async (req, res, next) => {
       [seller_id, ProductName, ProductDiscrption, PrdustPrise, SubCategorie]
     );
     const productId = add.insertId;
-    // إدخال الفئة الفرعية في جدول categories
-    if (SubCategorie) {
-      let [categorie] = await db.execute(
-        "INSERT INTO categories (product_id, MainCategorie,SubCategorie) VALUES (?,?, ?)",
-        [productId, MainCatagori, SubCategorie]
-      );
-      SubCategorieId = categorie.insertId;
-    }
+   
 
     // إدخال صور المنتج في جدول product_images
     if (req.files["image1"]) {

@@ -20,8 +20,15 @@ const upload = multer({
   ]);
   
 router.get("/categories",adminControllers.getCategories);
+
 router.post("/categories",multable,adminControllers.postCategories);
+
 router.post("/subCategories",multable,adminControllers.postSubCategoty);
+
+router.delete('/categories/:categoryId', adminControllers.deleteCategory);
+
+router.delete('/subCategories/:subCategoryId', adminControllers.deleteSubCategory);
+
 
 
 

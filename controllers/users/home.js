@@ -106,27 +106,14 @@ exports.getUserHomePage = async (req, res, next) => {
         GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
       `;
       const [rows, fields] = await db.execute(query);
-  
-      // Check the role of the user from session
-      let role = req.session.role || "";
+      const [categories]= await db.execute("select name, url,id from categories where parent_id =0")
+        let role = req.session.role || "";
       console.log(role + " role");
-  
-      // Determine the path based on the role
-      /* let path;
-      if (role === 'store') {
-        path = 'shop/home';
-      } else if (role === 'user') {
-        path = 'users/home';
-      } else {
-        // Handle the case where role is not set
-        path = 'default/home';
-      }*/
-  
-      // Render the correct path based on the role
       res.render("shop/home", {
         pageTitle: "Home page",
         path: "shop/home",
-        products: rows, // Passing the fetched products to the view
+        products: rows,
+        categories:categories
       });
     } catch (error) {
       console.error("Error retrieving featured products:", error);
@@ -148,21 +135,21 @@ exports.getUserHomePage = async (req, res, next) => {
       path: "shope/orders",
     });
   };
-  exports.getOrderDetals = (req, res, next) => {
-    res.render("shop/orderDetals", {
-      pageTitle: "Order Details",
-      path: "shope/orders/details",
-    });
-  };
+  // exports.getOrderDetals = (req, res, next) => {
+  //   res.render("shop/orderDetals", {
+  //     pageTitle: "Order Details",
+  //     path: "shope/orders/details",
+  //   });
+  // };
   
-  exports.getHopePageProducts = async (req, res, next) => {};
+  // exports.getHopePageProducts = async (req, res, next) => {};
   
-  exports.getProductList = (req, res, next) => {
-    res.render("shop/productList", {
-      pageTitle: "Product List",
-      path: "shop/productList",
-    });
-  };
+  // exports.getProductList = (req, res, next) => {
+  //   res.render("shop/productList", {
+  //     pageTitle: "Product List",
+  //     path: "shop/productList",
+  //   });
+  // };
   exports.getProfile = (req, res, next) => {
     res.render("shop/profile", {
       pageTitle: "Prfile",
@@ -192,3 +179,40 @@ exports.getUserHomePage = async (req, res, next) => {
       res.status(500).json({ error: "Error retrieving stores" });
     }
   };
+  exports.getsubCategoriesPage = async (req, res, next) => {
+    const subCategorieId = req.query.subCategorieId;
+    const name = req.query.name;
+  
+    console.log("name", name);
+    console.log(subCategorieId + " ddddddddddddd");
+  
+    try {
+      // التأكد من أن الاتصال بقاعدة البيانات مفتوح
+      if (!db) {
+        throw new Error("Database connection is closed");
+      }
+  
+      // استعلام لجلب الفئات
+      const [productByCategory] = await db.execute(
+        'SELECT * FROM categories WHERE parent_id = ?', [subCategorieId]
+      );
+  
+      // استعلام لجلب المنتجات
+      const [products] = await db.execute(
+        'SELECT * FROM products WHERE categorie = ?', [subCategorieId]
+      );
+  
+      let productss = products || [];
+      res.render("users/subCategoriesPage", {
+        pageTitle: "الفئات الفرعية",
+        path: "users/subCategoriesPage",
+        productByCategory: productByCategory,
+        name: name,
+        products: productss
+      });
+    } catch (error) {
+      console.log("subCategoriesPage" + error);
+      res.status(500).json({ message: "error getting subCategoriesPage" });
+    }
+  }
+  

@@ -69,7 +69,7 @@ exports.postCategories = async (req, res, next) => {
   };
   exports.postSubCategoty=async (req,res,next)=>{
     try {
-        const { name } = req.body;
+        const { name,MainId } = req.body;
         const imageFile = req.files && req.files.image ? req.files.image[0] : null;
     
         if (!name || !imageFile) {
@@ -77,7 +77,14 @@ exports.postCategories = async (req, res, next) => {
         }
     
         const imageUrl = imageFile.path.replace(/\\/g, '/');
-    
+        await db.execute(
+            "INSERT INTO categories (parent_id,url, name) VALUES (?, ?,?)",
+            [MainId,imageUrl, name]
+          );
+      
+          res.status(201).json({ message: "Category added successfully" });
+   
+
        
       } catch (error) {
         console.error("Error adding category:", error);
@@ -85,4 +92,29 @@ exports.postCategories = async (req, res, next) => {
       }
     };
 
-  
+exports.deleteCategory = async (req, res, next) => {
+  const categoryId = req.params.categoryId;
+
+  try {
+    // حذف الفئة الرئيسية
+    await db.execute("DELETE FROM categories WHERE id = ?", [categoryId]);
+
+    res.status(200).json({ message: "Category deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting category:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+exports.deleteSubCategory = async (req, res, next) => {
+  const subCategoryId = req.params.subCategoryId;
+
+  try {
+    // حذف الفئة الفرعية
+    await db.execute("DELETE FROM categories WHERE id = ?", [subCategoryId]);
+
+    res.status(200).json({ message: "Subcategory deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting subcategory:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

@@ -16,10 +16,9 @@
 
     <select id="product-category" name="SubCategorie" required>
       <option value="" disabled selected>اختر التصنيف</option>
-      <option value="1">ملابس رجال</option>
-      <option value="2">ملابس أطفال</option>
-      <option value="3">موضة و تجميل</option>
-      <option value="4">ملابس نسائية</option>
+      <% selectSubCategories.forEach((categorie)=>{%>
+        <option class="option" value="<%= categorie.id%>"><%= categorie.name%></option>
+       <% })  %>
     </select>
 
     <button type="button" id="add-images">اختر الصور</button>

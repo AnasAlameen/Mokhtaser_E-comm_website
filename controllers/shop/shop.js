@@ -137,7 +137,6 @@ exports.getproductDetals = async (req, res, next) => {
 
 exports.getShopeHomePage = async (req, res, next) => {
   try {
-
     const query = `
       SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
       FROM products p
@@ -145,27 +144,17 @@ exports.getShopeHomePage = async (req, res, next) => {
       GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
     `;
     const [rows, fields] = await db.execute(query);
+    const [categories]= await db.execute("select name, url,id from categories where parent_id =0")
 
-    // Check the role of the user from session
+    console.log("categories",categories)
     let role = req.session.role || "";
 
-    // Determine the path based on the role
-    /* let path;
-    if (role === 'store') {
-      path = 'shop/home';
-    } else if (role === 'user') {
-      path = 'users/home';
-    } else {
-      // Handle the case where role is not set
-      path = 'default/home';
-    }*/
-
-    // Render the correct path based on the role
     res.render("shop/home", {
       pageTitle: "Home page",
       path: "shop/home",
-      products: rows, // Passing the fetched products to the view
-      role:role
+      products: rows, 
+      role:role,
+      categories:categories
     });
   } catch (error) {
     console.error("Error retrieving featured products:", error);
@@ -247,13 +236,3 @@ console.log("stoew",stores)
   
 }; 
 
-    // Determine the path based on the role
-    /* let path;
-    if (role === 'store') {
-      path = 'shop/home';
-    } else if (role === 'user') {
-      path = 'users/home';
-    } else {
-      // Handle the case where role is not set
-      path = 'default/home';
-    }*/

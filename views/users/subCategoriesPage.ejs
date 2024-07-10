@@ -1,0 +1,44 @@
+<%- include('../includes/shop/head.ejs') %>
+<link rel="stylesheet" href="/css/subCategoriesPage.css">
+
+</head>
+<input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+<%- include('../includes/shop/navgation.ejs') %>
+<div id="shop-by-categories">
+    <h2><%= name %></h2>
+    <div class="categories-container">
+      <ul>
+        <% productByCategory.forEach(product => { %>
+          <li>
+            <a href="/user/subCategoriesPage">
+              <div class="category-item">
+                <img src="..<%= product.url.split('\\').pop().replace('public', '') %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
+              </div>
+              <h3 class="namee"><%= product.name %></h3>
+
+            </a>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  </div>
+
+
+    <h2>آخر المنتجات</h2>
+    <ul>
+      <% products.forEach(product => { %>
+        <li>
+          <a href="http://localhost:3000/user/prdoduct/detlas?product_id=<%= product.id %>&view=<%= role %>">
+            <img src="../images/<%= product.image_url.split('\\').pop() %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
+            <h3><%= product.ProductName %></h3>
+            <p><%= product.Discrption %></p>
+            <p><%= product.Prise %></p>
+          </a>
+        </li>
+      <% }) %>
+    </ul>
+  </section>
+</main>
+
+<%- include('../includes/shop/end.ejs') %>

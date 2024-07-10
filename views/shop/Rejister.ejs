@@ -38,9 +38,9 @@
     <div class="form-group">
       <label for="activity_type">نوع النشاط:</label>
       <select id="activity_type" name="activity_type" class="form-control rounded-input" required>
-        <option value="Men Clothes">ملابس رجال</option>
-        <option value="Children Clothes">ملابس أطفال</option>
-        <option value="Health and care">الصحة</option>
+        <% categories.forEach((categorie)=>{%>
+          <option class="option" value="<%= categorie.id%>"><%= categorie.name%></option>
+         <% })  %> 
       </select>
     </div>
  

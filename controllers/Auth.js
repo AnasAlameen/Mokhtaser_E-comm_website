@@ -153,12 +153,20 @@ exports.getNewPasswordPage = (req, res, next) => {
   });
 };
 
-exports.getRejister = (req, res, next) => {
-  res.render("shop/Rejister", {
-    pageTitle: "Rejister",
-    path: "shop/Rejister",
-  });
+exports.getRejister = async (req, res, next) => {
+  try {
+    const [categories] = await db.execute("SELECT * FROM categories where parent_id =0 ");
+    console.log("categories", categories);
+    res.render("shop/Rejister", {
+      pageTitle: "Rejister",
+      path: "shop/Rejister",
+      categories: categories,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "خطأ في جلب الفئات الرئيسية" });
+  }
 };
+
 
 exports.getSinIn = (req, res, next) => {
   let errorMessage = req.flash("error");
@@ -277,6 +285,7 @@ exports.CheckSingIn = async (req, res, next) => {
       req.session.username = user.FirstName;
       req.session.rol = "store";
       req.session.Categori = user.Catagori;
+
       let roleCheck = `
       SELECT r.name as roleName 
       FROM sellers s

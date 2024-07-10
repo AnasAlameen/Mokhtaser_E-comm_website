@@ -63,19 +63,21 @@
   <div id="shop-by-categories">
     <h2>Shop by categories</h2>
     <div class="categories-container">
-      <ul>
-        <% products.forEach(product => { %>
-          <li>
-            <a href="#">
-              <div class="category-item">
-                <img src="../images/<%= product.image_url.split('\\').pop() %>" alt="Product Image"/>
-                <p><%= product.ProductName %></p>
-              </div>
+      <ul>         
+         <!-- <button id="next-button">التالي</button> -->
+
+        <% categories.forEach(categorie => { %>
+        <li>
+          <div class="category-item">
+            <a href="/user/subCategoriesPage?subCategorieId=<%= categorie.id %>">
+              <img src="..<%= categorie.url.replace('public', '') %>" alt="Phones & Telecommunications">
             </a>
-          </li>
-        <% }) %>
+            <p><%= categorie.name %></p>
+          </div>
+        </li>
+        <% }); %>
+        <!-- <button id="prev-button">السابق</button> -->
       </ul>
-    </div>
   </div>
 
   <section id="featured-jobs">

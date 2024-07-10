@@ -8,6 +8,9 @@ const rolesControler=require("../controllers/admin/roles");
 const haveRole=require("../middlewear/haveRoles");
 
 router.get("/addEmployee",isAuth,haveRole,rolesControler.getAddEmploy);
+
 router.get("/search",isAuth,haveRole,rolesControler.getSearches);
+
 router.post("/addrole",isAuth,haveRole,rolesControler.postAddRole);
+
 exports.router = router;
