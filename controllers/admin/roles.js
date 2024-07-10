@@ -8,8 +8,8 @@ exports.getAddEmploy = (req, res, next) => {
 };
 
 exports.getSearches = async (req, res, next) => {
-  const UserEmail = req.query.q.trim(); // Trimming any extra whitespace
-  const storeId = req.session.userId;
+  const UserEmail = req.query.q.trim(); 
+  const storeId = req.session.storeId;
   let Employees = [];
   const usersMap = {};
 
@@ -25,7 +25,7 @@ exports.getSearches = async (req, res, next) => {
       JOIN roles r ON s.role_id = r.id
       WHERE u.Email = ?
     `, [storeId, UserEmail]);
-
+console.log("stored",usersWithRoles)
     // تحقق من استرجاع البيانات من قاعدة البيانات
     console.log("usersWithRoles:", usersWithRoles);
 
@@ -81,7 +81,7 @@ exports.getSearches = async (req, res, next) => {
   }
 };
 exports.postAddRole = async (req, res, next) => {
-  const storeId = req.session.userId;
+  const storeId = req.session.storeId;
   const { userId, roleId } = req.body;
   console.log("data", {
     userId: userId,
@@ -108,7 +108,7 @@ exports.postAddRole = async (req, res, next) => {
     `, [roleId, userId, storeId]);
     console.log("Role added");
 
-    res.status(200).json({ message: "Role added successfully" });
+    res.status(200).redirect("/addEmployee");
   } catch (error) {
     console.error("Error adding role:", error);
     res.status(500).json({ message: "Server error" });

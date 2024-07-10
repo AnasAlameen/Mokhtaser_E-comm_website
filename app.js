@@ -72,7 +72,8 @@ app.set("views", "views");
 app.use(express.static(path.join(__dirname, "public")));
 
 const erorreConntlroller = require("./controllers/errore");
-
+const topAdminRoutes = require("./routers/topAdmin");
+app.use("/admin", topAdminRoutes.router);
 // Import and use routers for different parts of your application
 const adminRoutes = require("./routers/admin");
 app.use("/admin", adminRoutes.router);

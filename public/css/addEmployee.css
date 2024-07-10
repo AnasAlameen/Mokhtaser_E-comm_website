@@ -36,7 +36,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 400px; /* يمكنك تعديل هذا القيمة لتتناسب مع حجم المدخلات والزر */
+  max-width: 400px; 
   margin: auto;
 }
 
@@ -63,21 +63,30 @@ body {
   padding: 10px 20px;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin-top: 17px;
   font-size: 16px;
   height: 100%; /* ضمان أن الزر يتطابق مع ارتفاع حقل الإدخال */
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid black;
+
 }
 
 .btn-search:hover {
   background-color: var(--button-hover-bg);
 }
-
+.title{
+  margin: 0;
+  text-align: center;
+}
 .results-container {
   margin-top: 30px;
 }
+.search-input{
+  border: 1px solid black;
 
+}
 .result-card {
   padding: 20px;
   background: white;

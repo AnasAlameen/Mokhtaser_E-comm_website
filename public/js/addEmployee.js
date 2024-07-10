@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         </div>
                     `;
 
-                    if (result.roleid.includes(role.id)) {
+                    if (result.roleid && result.roleid.includes(role.id)) {
                         checkboxHTML = `
                             <div class="role-checkbox">
                                 <input type="checkbox" id="role-${result.id}-${role.id}" name="roles-${result.id}" value="${role.id}" class="role-checkbox-input" checked disabled>

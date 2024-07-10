@@ -3,10 +3,14 @@
 
   </head>
   <body>
-    <% if (errorMessage){ %>
+    <% if (errorMessage) { %>
       <div class="user_messege user-messege--error"><%= errorMessage %></div>
-      <% } %>
 
+    <% } %>
+  
+    <% if (successMessage) { %>
+      <div class="user_messege user-messege--success "><%= successMessage %></div>
+    <% } %>
       <%- include('../includes/shop/navgationGeneral.ejs') %>
     <div class="container">
       <h2>تسجيل االدخول</h2>
@@ -17,6 +21,11 @@
         </div>
         <div class="input-container">
           <label for="password">كلمة المرور</label>
+          <% if (errorMessage) { %>
+            <p>هل نسيت كلمة المرور ؟ <a href="/reset">اعادة تعيين كلمة المرور</a></p>
+      
+          <% } %>
+        
           <input type="password" id="password" name="password" required />
         </div>
 

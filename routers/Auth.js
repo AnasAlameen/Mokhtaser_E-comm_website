@@ -24,11 +24,24 @@ const upload = multer({
   ]);
 
 router.get("/SingIn",isNotAuth,haveRole,singInControllers.getSinIn);
+
 router.get("/Rejister", isNotAuth,singInControllers.getRejister);
-router.post("/SingIn/Check",multable,haveRole, singInControllers.CheckSingIn);
+
+router.post("/SingIn/Check",multable, singInControllers.CheckSingIn);
+
 router.post("/Rejister/Check",multable, singInControllers.postRejister);
+
 router.get("/Rejister/user",isNotAuth,singInControllers.getRejisterUser);
+
 router.post("/Rejister/User/Check",multable, singInControllers.postRegisterUser);
+
+router.get("/reset",singInControllers.getResetPasswordPage);
+
+router.post("/reset",singInControllers.postSendResetEmail)
+
+router.get("/resetPassword",singInControllers.getNewPasswordPage)
+
+router.post("/resetPassword",singInControllers.postNewPasswordPage)
 
 
 router.get("/LogOut",singInControllers.LogOut);

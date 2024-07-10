@@ -217,7 +217,7 @@ exports.getCart = async (req, res, next) => {
 
 
 exports.getOrders = async (req, res, next) => {
-  let sellerId = req.session.userId;
+  let sellerId = req.session.storeId;
   console.log(sellerId + " sellerid");
   const query = `
     SELECT o.ProductId, o.Qwnatity, o.Prise, o.VOCId, o.VOId, o.CreatDate, o.status, o.UserId, o.id,

@@ -22,11 +22,11 @@ const upload = multer({
     { name: 'image2', maxCount: 10 }  // الصور المرتبطة بالألوان
   ]);
   
-  router.get("/add_product", isAuth,isShop,haveRole ,adminControls.getAddProductPage);
-  router.post("/Post_add_product", isAuth,isShop,multable,adminControls.Post_Product);
+  router.get("/add_product", isAuth,haveRole ,adminControls.getAddProductPage);
+  router.post("/Post_add_product", isAuth,multable,adminControls.Post_Product);
   router.get("/Edite_Product", isAuth,haveRole,adminControls.getEditProductPage);
   router.post("/Post_Edite_Product", isAuth,multable,isShop,adminControls.postEdite_Products);
-  router.post("/DeleteProduct",isAuth,isShop,adminControls.postDeleteProduct)
+  router.post("/DeleteProduct",isAuth,adminControls.postDeleteProduct)
 
 
 exports.router = router;

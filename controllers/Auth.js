@@ -2,6 +2,7 @@ const session = require("express-session");
 const db = require("../helpers/databas");
 const bcrypt = require("bcryptjs");
 const nodemailer=require("nodemailer");
+const jwt = require('jsonwebtoken');
 
 const transporter=nodemailer.createTransport({
   service:"gmail",
@@ -13,6 +14,145 @@ const transporter=nodemailer.createTransport({
     pass:"chhg kjfn kgbv yqok"
   },
 })
+function generateResetToken(email) {
+  const secret = 'your_jwt_secret'; 
+  const token = jwt.sign({ email }, secret, { expiresIn: '1h' });
+  return token;
+}
+
+// إرسال بريد إلكتروني لإعادة تعيين كلمة المرور
+async function sendResetEmail(email, token) {
+  const resetUrl = `http://localhost:3000/resetPassword?token=${token}`;
+  const mailOptions = {
+    from: 'anas2002218@gmail.com',
+    to: email,
+    subject: 'Password Reset',
+    text: `You requested a password reset. Please click the following link to reset your password: ${resetUrl}`,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
+function verifyResetToken(token) {
+  const secret = 'your_jwt_secret';
+  try {
+    const decoded = jwt.verify(token, secret);
+    return decoded.email;
+  } catch (error) {
+    return null;
+  }
+}
+
+exports.getResetPasswordPage=async (req,res,next)=>{
+  let errorMessage = req.flash("error");
+  let successMessage = req.flash("success");
+
+  if (errorMessage.length > 0) {
+    errorMessage = errorMessage[0];
+  } else {
+    errorMessage = null;
+  }
+
+  if (successMessage.length > 0) {
+    successMessage = successMessage[0];
+  } else {
+    successMessage = null;
+  }
+  res.render("resetPassword",{
+    pageTitle:"rest Password",
+    path:"resetPassword",
+    errorMessage:errorMessage,
+    successMessage:successMessage
+  })
+}
+
+exports.postSendResetEmail = async (req, res, next) => {
+  const email = req.body.email;
+  console.log("email", email);
+  try {
+    const [search] = await db.execute("SELECT Email FROM users WHERE Email = ?", [email]);
+    const [searchInSellers] = await db.execute("SELECT Emile FROM sellers WHERE Emile = ?", [email]);
+
+    if (search.length > 0) {
+     
+      const token = generateResetToken(email);
+      console.log("data",{
+        email:email,
+        token:token
+      })
+      await sendResetEmail(email, token);
+      req.flash("success", "تم ارسال رابط  تعيين كلمة المرور ع البريد الاكتروني الرجاء التحقق")
+
+      res.status(200).redirect("/reset");
+    } else if(searchInSellers.length>0) {
+      const token = generateResetToken(email);
+      console.log("data",{
+        email:email,
+        token:token
+      })
+      await sendResetEmail(email, token);
+      req.flash("success", "تم ارسال رابط  تعيين كلمة المرور ع البريد الاكتروني الرجاء التحقق")
+      console.log("successMessage")
+
+      res.status(200).redirect("/reset");
+      
+    }else{
+      req.flash("error", "هذ البريد الالكتروني لا ينتمي لاي حساب");
+      res.redirect("/reset");
+    }
+  } catch (error) {
+    console.error("Error during sign-in:", error);
+    res.status(500).json({ error: "Error during sign-in" });  }
+};
+
+exports.postNewPasswordPage = async (req, res, next) => {
+  console.log(req.body)
+  const token = req.body.token;
+  const newPassword = req.body.password;
+  const email = verifyResetToken(token);
+
+  console.log("dataa",{
+    email:email,
+    token:token,
+    newPassword:newPassword
+  })
+  if (email) {
+    await db.execute("UPDATE users SET Password = ? WHERE Email = ?", [newPassword, email]);
+    req.flash('success', 'تم إعادة تعيين كلمة المرور بنجاح');
+    res.status(200).redirect("/SingIn"); 
+  } else {
+    req.flash('error', 'لقد انتهت صلاحية الرابط');
+
+    res.status(400).redirect("/SingIn"); 
+    
+  }
+};
+
+exports.getNewPasswordPage = (req, res, next) => {
+  const token = req.query.token;
+  let errorMessage = req.flash("error");
+  let successMessage = req.flash("success");
+
+  if (errorMessage.length > 0) {
+    errorMessage = errorMessage[0];
+  } else {
+    errorMessage = null;
+  }
+
+  if (successMessage.length > 0) {
+    successMessage = successMessage[0];
+  } else {
+    successMessage = null;
+  }
+  res.render("newPassword", {
+    pageTitle: "New Password",
+    path: "newPassword",
+    token: token ,
+    errorMessage:errorMessage,
+    successMessage:successMessage
+  });
+};
+
 exports.getRejister = (req, res, next) => {
   res.render("shop/Rejister", {
     pageTitle: "Rejister",
@@ -21,17 +161,25 @@ exports.getRejister = (req, res, next) => {
 };
 
 exports.getSinIn = (req, res, next) => {
-  let message=req.flash("error");
-  if(message.length>0){
-    message=message[0]
+  let errorMessage = req.flash("error");
+  let successMessage = req.flash("success");
 
-  }else{
-    message=null;
+  if (errorMessage.length > 0) {
+    errorMessage = errorMessage[0];
+  } else {
+    errorMessage = null;
+  }
+
+  if (successMessage.length > 0) {
+    successMessage = successMessage[0];
+  } else {
+    successMessage = null;
   }
   res.render("users/SingIn", {
     pageTitle: "Log In",
     path: "users/SingIn",
-    errorMessage:message
+    errorMessage:errorMessage,
+    successMessage:successMessage
   });
 };
 
