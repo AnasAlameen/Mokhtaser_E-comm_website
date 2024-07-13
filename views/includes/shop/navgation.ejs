@@ -19,7 +19,8 @@
    <div class="sidebar" id="sidebar">
       <nav class="sidebar__container">
          <div class="sidebar__logo">
-               <img src="<%= storeInfo.url %> %>" alt="Logo" class="sidebar__logo-img">  <i class="namet"><%= storeInfo.CompanyName  %></i>
+               <img src="..<%= storeInfo.url.replace('public', '') %>" alt="Logo" class="sidebar__logo-img">  <i class="namet"><%= storeInfo.CompanyName  %></i>
+               <p class="FirstName"><%= userInfo.FirstName  %></p>
          </div>
          <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
          <div class="sidebar__content">

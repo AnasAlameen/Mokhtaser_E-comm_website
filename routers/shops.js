@@ -4,7 +4,7 @@ const isAuth=require("../middlewear/isAuth")
 const isNotAuth=require("../middlewear/isNotAuth")
 
 //3
-const isShop=require("../middlewear/isSeller")
+const shops=require("../middlewear/shops")
 const haveRole=require("../middlewear/haveRoles");
 
 const shopControler=require("../controllers/shop/shop");
@@ -20,7 +20,7 @@ router.get("/prdoducts",isAuth,haveRole,shopControler.getProductList);
 
 router.get("/profile",isAuth,haveRole,shopControler.getProfile);
 
-router.get("/shop",isAuth,haveRole,shopControler.getRoles);
+router.get("/shop",isAuth,haveRole,shops,shopControler.getRoles);
 
 
 

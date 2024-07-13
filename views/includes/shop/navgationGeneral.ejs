@@ -1,12 +1,44 @@
-<header>
-    <h1>موقع التجارة الإلكترونية</h1>
+<body>
 
-    <nav>
-        <ul>
-            <li><a href="http://localhost:3000/SingIn"><i class="fas fa-sign-out-alt"></i> تسجيل الدخول</a></li>
-            <li><a href="http://localhost:3000/Rejister"><i class="fas fa-user"></i> الانضمام</a></li>
-      
-
-        </ul>
-    </nav>
-</header>
+    <header class="header">
+       <div class="header__container containerr">
+          <div class="header__toggle" id="header-toggle">
+             <i class="ri-menu-line"></i>
+          </div>
+       </div>
+ 
+       <a href="http://localhost:3000/user/Home" class="header__logo">
+          <img src="/imjs/hh.png" alt="Logo">
+       </a>
+    </header>
+ 
+    <div class="sidebar" id="sidebar">
+       <nav class="sidebar__container">
+         
+          <div class="sidebar__content">
+             <div class="sidebar__list">
+                <a href="http://localhost:3000/user/Home" class="sidebar__link active-link">
+                    <i class="ri-home-5-line"></i>
+                    <span class="sidebar__link-name">الرئسية</span>
+                </a>
+            </div>
+          </div>
+       </nav>
+    </div>
+ 
+    <script>
+       document.getElementById('header-toggle').addEventListener('click', function() {
+          document.getElementById('sidebar').classList.toggle('show-sidebar');
+       });
+ 
+       function closeNav() {
+          document.getElementById('sidebar').classList.remove('show-sidebar');
+       }
+       function toggleStoreList() {
+         const storeList = document.getElementById('storeList');
+         storeList.classList.toggle('active');
+         const arrow = document.getElementById('toggleArrow');
+         arrow.classList.toggle('ri-arrow-down-s-line');
+         arrow.classList.toggle('ri-arrow-right-s-line');
+     }
+    </script>

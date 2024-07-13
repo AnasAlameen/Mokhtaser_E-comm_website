@@ -12,27 +12,33 @@ const haveRoles = async (req, res, next) => {
             const [userInfo] = await db.execute(`
                 SELECT FirstName, url FROM users WHERE id = ? 
             `, [userId]);
-
+    
             res.locals.userInfo = userInfo[0] || {};
-
+              console.log("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
             const [stores] = await db.execute(`
                 SELECT sr.store_id, sr.role_id, s.CompanyName, s.id
                 FROM store_user_roles sr
                 INNER JOIN sellers s ON sr.store_id = s.id
                 WHERE sr.user_id = ?
             `, [userId]);
-
+    
             res.locals.stores = stores || [];
-        }
+        }    
 
         if (req.session.storeId) {
             const storeId = req.session.storeId;
 
             const [storeInfo] = await db.execute(`
-                SELECT CompanyName, id, url FROM sellers WHERE id = ? 
+                SELECT CompanyName, id, url, Catagori FROM sellers WHERE id = ? 
             `, [storeId]);
 
             res.locals.storeInfo = storeInfo[0] || {};
+            req.session.Catagori = storeInfo[0].Catagori;
+
+            console.log("storeInfo", {
+                storeInfoCatagoxi: req.session.Catagori,
+                storeInfo: storeInfo
+            });
 
             const [roles] = await db.execute(`
                 SELECT sr.store_id, sr.role_id, s.CompanyName, s.id

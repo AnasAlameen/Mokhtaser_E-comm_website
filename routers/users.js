@@ -15,4 +15,7 @@ router.get("/stores", isAuth, isUser, UsersControlers.getStores);
 
 router.get('/subCategoriesPage',UsersControlers.getsubCategoriesPage);
 
+router.get('/subCategoriesProducts',UsersControlers.getsubCategoriesProducts);
+
+
 exports.router = router;

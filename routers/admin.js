@@ -28,7 +28,7 @@ const upload = multer({
 
   router.get("/Edite_Product", isAuth,haveRole,adminControls.getEditProductPage);
 
-  router.post("/Post_Edite_Product", isAuth,multable,isShop,adminControls.postEdite_Products);
+  router.post("/Post_Edite_Product", isAuth,multable,adminControls.postEdite_Products);
   
   router.post("/DeleteProduct",isAuth,adminControls.postDeleteProduct)
 

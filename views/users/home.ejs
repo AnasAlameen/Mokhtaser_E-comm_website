@@ -1,6 +1,6 @@
 <%- include('../includes/shop/head.ejs') %>
 
-<link rel="stylesheet" href="/css/home.css">
+<link rel="stylesheet" href="/css/subCategoriesPage.css">
 <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
 <!-- Link Swiper's CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -15,44 +15,27 @@
     <div class="swiper mySwiper">
       <div class="swiper-wrapper">
         <div class="swiper-slide">
-          <img src="/imjs/s1.webp" alt="Image 1">
+          <img src="../shop/1.jpg" alt="Image 1">
         </div>
         <div class="swiper-slide">
-          <img src="/imjs/s2.webp" alt="Image 2">
+          <img src="../shop/" alt="Image 2">
         </div>
         <div class="swiper-slide">
-          <img src="/imjs/s3.webp" alt="Image 3">
+          <img src="../shop/imjs/4.jpg" alt="Image 3">
         </div>
         <div class="swiper-slide">
-          <img src="/imjs/s4.webp" alt="Image 4">
+          <img src="../shop/imjs/4.jpg" alt="Image 4">
         </div>
         <div class="swiper-slide">
-          <img src="/imjs/s5.webp" alt="Image 5">
+          <img src="../shop/imjs/4.jpg" alt="Image 5">
         </div>
         <div class="swiper-slide">
-          <img src="/imjs/s6.webp" alt="Image 6">
+          <img src="../shop/imjs/4.jpg" alt="Image 6">
         </div>
         <div class="swiper-slide">
-          <img src="/imjs/s7.webp" alt="Image 7">
+          <img src="../shop/imjs/4.jpg" alt="Image 7">
         </div>
-        <div class="swiper-slide">
-          <img src="/imjs/8.webp" alt="Image 8">
-        </div>
-        <div class="swiper-slide">
-          <img src="/imjs/9.webp" alt="Image 9">
-        </div>
-        <div class="swiper-slide">
-          <img src="/images/10.webp" alt="Image 10">
-        </div>
-        <div class="swiper-slide">
-          <img src="/imjs/3.jpg" alt="Image 11">
-        </div>
-        <div class="swiper-slide">
-          <img src="/imjs/4.jpg" alt="Image 12">
-        </div>
-        <div class="swiper-slide">
-          <img src="/imjs/5.jpg" alt="Image 13">
-        </div>
+   
       </div>
       <div class="swiper-pagination"></div>
       <div class="swiper-button-next"></div>
@@ -60,6 +43,7 @@
     </div>
   </section>
 
+ 
   <div id="shop-by-categories">
     <h2>Shop by categories</h2>
     <div class="categories-container">
@@ -69,7 +53,8 @@
         <% categories.forEach(categorie => { %>
         <li>
           <div class="category-item">
-            <a href="/user/subCategoriesPage?subCategorieId=<%= categorie.id %>">
+            
+            <a href="/user/subCategoriesPage?subCategorieId=<%= categorie.id %>&name=<%= categorie.name %>">
               <img src="..<%= categorie.url.replace('public', '') %>" alt="Phones & Telecommunications">
             </a>
             <p><%= categorie.name %></p>
@@ -78,7 +63,9 @@
         <% }); %>
         <!-- <button id="prev-button">السابق</button> -->
       </ul>
-  </div>
+ 
+  
+</div>
 
   <section id="featured-jobs">
     <h2>عروض مميزة</h2>

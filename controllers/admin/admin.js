@@ -1,7 +1,8 @@
 const { join } = require("path");
 const db = require("../../helpers/databas");
+
 exports.getAddProductPage = async (req, res, next) => {
-  const Categori = req.session.Categori;
+  const Categori = req.session.Catagori;
   console.log("categories", Categori);
   try {
     const [selectSubCategories] = await db.execute("SELECT * FROM categories WHERE parent_id = ?", [Categori]);
@@ -28,11 +29,6 @@ exports.Post_Product = async (req, res, next) => {
     SubCategorie,
   } = req.body;
 
-  console.log(req.body);
-  console.log(req.files);
-
-  console.log("add");
-
   try {
     let parsedColors = [];
     let parsedSizes = [];
@@ -47,23 +43,17 @@ exports.Post_Product = async (req, res, next) => {
       console.error("Error parsing JSON:", error);
       return res.status(400).json({ message: "Invalid JSON format" });
     }
-    let SubCategorieId;
-    console.log(seller_id + " seller_id");
-    console.log(MainCatagori + " MainCatagori");
 
     // إدخال المنتج في جدول products
-    let [add, fields] = await db.execute(
-      "INSERT INTO products (SellerId, ProductName, Discrption, Prise, CrationDate,categorie) VALUES (?, ?, ?, ?, now(),?)",
+    let [add] = await db.execute(
+      "INSERT INTO products (SellerId, ProductName, Discrption, Prise, CrationDate, categorie) VALUES (?, ?, ?, ?, NOW(), ?)",
       [seller_id, ProductName, ProductDiscrption, PrdustPrise, SubCategorie]
     );
     const productId = add.insertId;
-   
 
     // إدخال صور المنتج في جدول product_images
     if (req.files["image1"]) {
       for (const file of req.files["image1"]) {
-        console.log(req.files["image1"]);
-        console.log("sdflskdnm");
         await db.execute(
           "INSERT INTO product_images (url, productId) VALUES (?, ?)",
           [file.path, productId]
@@ -71,112 +61,80 @@ exports.Post_Product = async (req, res, next) => {
       }
     }
 
-    // استخدام مجموعات للتأكد من أن المتغيرات ليست مكررة
-    let setVartins = new Set();
-    let setSizeVartins = new Set();
+    // إنشاء مجموعة لتخزين أنواع المتغيرات الموجودة بالفعل
+    let existingVariantTypes = new Set();
+    let existingVariantValue = new Set();
 
-    // إدخال المتغيرات في جدول variants وجداول الربط
+
+    // دالة مساعدة للحصول على معرف المتغير أو إنشاء واحد جديد إذا لم يكن موجودًا
+    async function getOrCreateVariantId(variantType) {
+      if (!existingVariantTypes.has(variantType)) {
+        let [variant] = await db.execute(
+          "INSERT INTO variants (product_id, VariantsType) VALUES (?, ?)",
+          [productId, variantType]
+        );
+        existingVariantTypes.add(variantType);
+        return variant.insertId;
+      } else {
+        let [existingVariant] = await db.execute(
+          "SELECT id FROM variants WHERE product_id = ? AND VariantsType = ?",
+          [productId, variantType]
+        );
+        return existingVariant[0].id;
+      }
+    }
+
+    // معالجة الألوان إذا كانت موجودة
     if (parsedColors.length > 0) {
-      await Promise.all(
-        parsedColors.map(async (color, index) => {
-          let colorVariantId;
+      const colorVariantId = await getOrCreateVariantId('color');
+      for (const [index, color] of parsedColors.entries()) {
+        let [colorOption] = await db.execute(
+          "INSERT INTO variant_options (VariantsId, value, qty, prise) VALUES (?, ?, ?, ?)",
+          [colorVariantId, color.name, color.quantity, color.price]
+        );
+        let colorOptionId = colorOption.insertId;
 
-          // التحقق من وجود اللون في مجموعة المتغيرات
-          if (!setVartins.has("color")) {
-            // التحقق من قاعدة البيانات بدلاً من الاعتماد على المجموعة فقط
-            let [existingColor] = await db.execute(
-              "SELECT id FROM variants WHERE product_id = ? AND VariantsType = 'color'",
-              [productId]
-            );
-
-            if (existingColor.length === 0) {
-              let [colorVariant] = await db.execute(
-                "INSERT INTO variants (product_id, VariantsType) VALUES (?, 'color')",
-                [productId]
-              );
-              setVartins.add("color");
-              colorVariantId = colorVariant.insertId;
-            } else {
-              colorVariantId = existingColor[0].id;
-              setVartins.add("color");
-            }
-          } else {
-            // الحصول على معرف المتغير إذا كان موجودًا بالفعل
-            let [existingColor] = await db.execute(
-              "SELECT id FROM variants WHERE product_id = ? AND VariantsType = 'color'",
-              [productId]
-            );
-            colorVariantId = existingColor[0].id;
-          }
-
-          let [colorOption] = await db.execute(
-            "INSERT INTO variant_options (VariantsId, value, qty, prise) VALUES (?, ?, ?, ?)",
-            [colorVariantId, color.name, color.quantity, color.price]
+        // إدخال صورة اللون
+        if (req.files["image2"] && req.files["image2"][index]) {
+          let file = req.files["image2"][index];
+          await db.execute(
+            "INSERT INTO variant_images (variant_option_id, url) VALUES (?, ?)",
+            [colorOptionId, file.path]
           );
-          let colorOptionId = colorOption.insertId;
+        }
 
-          // إدخال صورة اللون
-          if (req.files["image2"] && req.files["image2"][index]) {
-            let file = req.files["image2"][index];
+        // معالجة الأحجام المرتبطة باللون إذا كانت موجودة
+        if (color.variations && color.variations.length > 0) {
+          // if(!existingVariantValue.has( variation.DimensionsMeger))
+          // {
+          for (const variation of color.variations) {
+            const sizeVariantId = await getOrCreateVariantId(variation.DimensionsType);
+            let [sizeOption] = await db.execute(
+              "INSERT INTO variant_options (VariantsId, value, qty, prise) VALUES (?, ?, ?, ?)",
+              [sizeVariantId, variation.DimensionsMeger, variation.quantity, variation.price]
+            );
+            let sizeOptionId = sizeOption.insertId;
+
+            // ربط الحجم باللون في جدول variant_relations
             await db.execute(
-              "INSERT INTO variant_images (variant_option_id, url) VALUES (?, ?)",
-              [colorOptionId, file.path]
+              "INSERT INTO variant_relations (parent_option_id, child_option_id) VALUES (?, ?)",
+              [colorOptionId, sizeOptionId]
             );
           }
+        // }
+        }
+      }
+    }
 
-          // إدخال القياسات في جدول variants وجداول الربط
-          await Promise.all(
-            color.variations.map(async (variation) => {
-              let sizeVariantId;
-
-              // التحقق من وجود النوع في مجموعة المتغيرات
-              if (!setSizeVartins.has(variation.DimensionsType)) {
-                // التحقق من قاعدة البيانات بدلاً من الاعتماد على المجموعة فقط
-                let [existingSize] = await db.execute(
-                  "SELECT id FROM variants WHERE product_id = ? AND VariantsType = ?",
-                  [productId, variation.DimensionsType]
-                );
-
-                if (existingSize.length === 0) {
-                  let [sizeVariant] = await db.execute(
-                    "INSERT INTO variants (product_id, VariantsType) VALUES (?, ?)",
-                    [productId, variation.DimensionsType]
-                  );
-                  setSizeVartins.add(variation.DimensionsType);
-                  sizeVariantId = sizeVariant.insertId;
-                } else {
-                  sizeVariantId = existingSize[0].id;
-                  setSizeVartins.add(variation.DimensionsType);
-                }
-              } else {
-                // الحصول على معرف المتغير إذا كان موجودًا بالفعل
-                let [existingSize] = await db.execute(
-                  "SELECT id FROM variants WHERE product_id = ? AND VariantsType = ?",
-                  [productId, variation.DimensionsType]
-                );
-                sizeVariantId = existingSize[0].id;
-              }
-
-              let [sizeOption] = await db.execute(
-                "INSERT INTO variant_options (VariantsId, value, qty, prise) VALUES (?, ?, ?, ?)",
-                [
-                  sizeVariantId,
-                  variation.DimensionsMeger,
-                  variation.quantity,
-                  variation.price,
-                ]
-              );
-              let sizeOptionId = sizeOption.insertId;
-
-              // ربط المقاسات باللون في جدول variant_relations
-              await db.execute(
-                "INSERT INTO variant_relations (parent_option_id, child_option_id) VALUES (?, ?)",
-                [colorOptionId, sizeOptionId]
-              );
-            })
-          );
-        })
-      );
+    // معالجة الأحجام المستقلة إذا كانت موجودة
+    if (parsedSizes.length > 0 && parsedColors.length === 0) {
+      const sizeVariantId = await getOrCreateVariantId('size');
+      for (const size of parsedSizes) {
+        await db.execute(
+          "INSERT INTO variant_options (VariantsId, value, qty, prise) VALUES (?, ?, ?, ?)",
+          [sizeVariantId, size.name, size.quantity, size.price]
+        );
+      }
     }
 
     res.status(200).json({ message: "Product added successfully" });

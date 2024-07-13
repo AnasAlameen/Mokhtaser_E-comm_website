@@ -71,8 +71,10 @@
 
         <!-- Action Buttons -->
         <div class="flex space-x-4 my-6">
+          <% if(type){ %>
           <a href="http://localhost:3000/admin/DeleteProduct?product_id=<%= product.id %>"> حذف</a>            
           <a href="http://localhost:3000/admin/Edite_Product?product_id=<%= product.id %>"> تعديل</a>
+          <% } %>
           </button>
         </div>
       </div>

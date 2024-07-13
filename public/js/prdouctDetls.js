@@ -14,7 +14,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const confirmOrderButton = document.getElementById("confirmOrder");
   const cancelOrderButton = document.getElementById("cancelOrder");
   const closeButton = document.querySelector(".close");
-
+  const mainImage = document.querySelector('.main_image img');
+  const thumbnails = document.querySelectorAll('.option img');
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const close = document.querySelector('.lightbox .close');
+  const prev = document.querySelector('.lightbox .prev');
+  const next = document.querySelector('.lightbox .next');
+  
+  let currentIndex = 0;
   let selectedOptionId,
     selectedImageId,
     selectedColor,
@@ -95,7 +103,6 @@ document.addEventListener("DOMContentLoaded", function () {
           sizeOptionsContainer.classList.remove("hide");
           sizeLabels.forEach((label) => label.classList.add("disabled"));
           sizes.forEach((size) => size.classList.remove("disabled"));
-
 
           // إخفاء المقاسات التي نفذت كمياتها
           sizes.forEach((size) => {
@@ -330,10 +337,10 @@ document.addEventListener("DOMContentLoaded", function () {
     detailsButton.classList.toggle("hide");
     images.forEach((image) => (image.style.border = "none"));
   });
-
+if(addToCartButton && buyNowButton){
   addToCartButton.addEventListener("click", handleAddToCart);
   buyNowButton.addEventListener("click", handleBuyNow);
-
+} 
   handleLabelClick();
   handleMainImageClick();
   handleColorImageClick();
@@ -386,3 +393,43 @@ document.addEventListener("DOMContentLoaded", function () {
   // // استدعاء دالة التحقق من التوفر عند تحميل الصفحة
   initializePage();
 });
+
+
+  // فتح العرض المكبر عند النقر على الصورة الرئيسية
+  mainImage.addEventListener('click', function() {
+    openLightbox(this.src, 0);
+  });
+
+  // فتح العرض المكبر عند النقر على الصور المصغرة
+  thumbnails.forEach((thumb, index) => {
+    thumb.addEventListener('click', function() {
+      openLightbox(this.src, index);
+    });
+  });
+
+  // إغلاق العرض المكبر
+  close.addEventListener('click', closeLightbox);
+
+  // التنقل بين الصور
+  prev.addEventListener('click', showPrevImage);
+  next.addEventListener('click', showNextImage);
+
+  function openLightbox(src, index) {
+    lightbox.style.display = 'block';
+    lightboxImg.src = src;
+    currentIndex = index;
+  }
+
+  function closeLightbox() {
+    lightbox.style.display = 'none';
+  }
+
+  function showPrevImage() {
+    currentIndex = (currentIndex - 1 + thumbnails.length) % thumbnails.length;
+    lightboxImg.src = thumbnails[currentIndex].src;
+  }
+
+  function showNextImage() {
+    currentIndex = (currentIndex + 1) % thumbnails.length;
+    lightboxImg.src = thumbnails[currentIndex].src;
+  }

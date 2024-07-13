@@ -3,7 +3,9 @@ const db = require("../../helpers/databas");
 exports.getproductDetals = async (req, res, next) => {
   const productId = req.query.product_id;
   const view = req.query.view || 'store';
+  const storeId=req.session.storeId;
 
+  let type;
   if (!productId) {
     return res.status(400).send("معرف المنتج مطلوب");
   }
@@ -14,15 +16,24 @@ exports.getproductDetals = async (req, res, next) => {
     const [imageResults] = await db.execute(imageQuery, [productId]);
     const imageURLs = imageResults.map((row) => row.url);
 
-    console.log("Image URLs:", imageURLs);
+    // console.log("Image URLs:", imageURLs);
 
     // جلب تفاصيل المنتج
     const productQuery =
-      "SELECT `SellerId`, `id`, `Prise`, `Discrption`, `ProductName`, `solid` FROM products WHERE id = ?";
+      "SELECT `SellerId`, `id`, `Prise`, `Discrption`, `ProductName`, `SellerId`,numberOfPises FROM products WHERE id = ?";
     const [productResults] = await db.execute(productQuery, [productId]);
     const product = productResults[0];
+    if(storeId===productResults[0].SellerId)
+    {
+    type=true;
+    }
+    console.log("fffff",{
+      storeId:storeId,
+      productQuery:productResults[0].SellerId,
+      imageQuery:productResults
+    })
 
-    console.log("Product Details:", product);
+    // console.log("Product Details:", product);
 
     // جلب صورة الألوان المتاحة
     const variantImageQuery = `
@@ -34,7 +45,7 @@ exports.getproductDetals = async (req, res, next) => {
     `;
     const [variantImageResults] = await db.execute(variantImageQuery, [productId]);
 
-    console.log("Variant Image Results:", variantImageResults);
+    // console.log("Variant Image Results:", variantImageResults);
 
     // جلب خيارات الأحجام المتاحة
     const variantOptionsQuery = `
@@ -46,12 +57,13 @@ exports.getproductDetals = async (req, res, next) => {
     `;
     const [variantOptionsResults] = await db.execute(variantOptionsQuery, [productId]);
 
-    console.log("Variant Options Results:", variantOptionsResults);
+    // console.log("Variant Options Results:", variantOptionsResults);
 
     // تنظيم بيانات الألوان والأحجام
     const colorImages = {};
     const sizeOptions = {};
-
+    const allSizes = new Set();
+    
     variantImageResults.forEach(row => {
       if (!colorImages[row.option_id]) {
         colorImages[row.option_id] = {
@@ -62,8 +74,9 @@ exports.getproductDetals = async (req, res, next) => {
         };
       }
     });
-
+    
     variantOptionsResults.forEach(row => {
+      allSizes.add(row.size); // جمع جميع المقاسات في مجموعة
       if (!row.color_id) {
         // تعامل مع الحالة التي لا تحتوي على ألوان
         if (!sizeOptions[0]) {
@@ -87,7 +100,7 @@ exports.getproductDetals = async (req, res, next) => {
         });
       }
     });
-
+    
     const combinations = Object.keys(colorImages).length > 0
       ? Object.keys(colorImages).map(colorId => ({
         colorId: colorId,
@@ -103,9 +116,11 @@ exports.getproductDetals = async (req, res, next) => {
         image: imageURLs.length > 0 ? imageURLs[0] : null,
         sizes: sizeOptions[0] || []
       }];
+    
+    // console.log("Combinations:", combinations);
+    // console.log("allSizes:", allSizes);
 
-    console.log("Combinations:", combinations);
-
+    
     if (view === 'user') {
       res.render("users/productDetals", {
         pageTitle: "تفاصيل المنتج ",
@@ -113,6 +128,7 @@ exports.getproductDetals = async (req, res, next) => {
         product: product,
         imageURLs: imageURLs,
         combinations: combinations,
+        allSizes: Array.from(allSizes), // تمرير جميع المقاسات إلى العرض
         csrfToken: req.csrfToken(),
         productId: productId,
       });
@@ -123,10 +139,13 @@ exports.getproductDetals = async (req, res, next) => {
         product: product,
         imageURLs: imageURLs,
         combinations: combinations,
+        allSizes: Array.from(allSizes), // تمرير جميع المقاسات إلى العرض
         csrfToken: req.csrfToken(),
         productId: productId,
+        type:type
       });
     }
+    
   } catch (err) {
     console.error(err);
     next(err);
@@ -137,6 +156,7 @@ exports.getproductDetals = async (req, res, next) => {
 
 exports.getShopeHomePage = async (req, res, next) => {
   try {
+    console.log("Ddddddddddddddddddd")
     const query = `
       SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
       FROM products p
@@ -213,8 +233,9 @@ exports.getRoles = async (req, res, next) => {
     INNER JOIN sellers s ON sr.store_id = s.id
     WHERE sr.store_id = ?
 `, [storeId]);
-    
-console.log("stoew",stores)
+const [categories]= await db.execute("select name, url,id from categories where parent_id =0")
+
+console.log("stoeZZZZZZZZZw",stores)
       console.log(role+"fsdf")
       if (stores.length > 0) {
       res.render("shop/home", {
@@ -222,6 +243,7 @@ console.log("stoew",stores)
         path: "shop/home",
         products: rows, // Passing the fetched products to the view
         role: role,
+        categories:categories
       });
      
     
@@ -235,4 +257,3 @@ console.log("stoew",stores)
   }
   
 }; 
-

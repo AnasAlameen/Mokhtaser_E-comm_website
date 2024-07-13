@@ -11,7 +11,7 @@
       <ul>
         <% productByCategory.forEach(product => { %>
           <li>
-            <a href="/user/subCategoriesPage">
+            <a href="/user/subCategoriesProducts?subCategorieId=<%= product.id %>">
               <div class="category-item">
                 <img src="..<%= product.url.split('\\').pop().replace('public', '') %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
               </div>

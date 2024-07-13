@@ -6,7 +6,6 @@ exports.getUserHomePage = async (req, res, next) => {
   if (!userId) {
       throw new Error("User ID is undefined");
   }
-
   try {
     const query = `
       SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
@@ -15,17 +14,18 @@ exports.getUserHomePage = async (req, res, next) => {
       GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
     `;
     const [rows, fields] = await db.execute(query);
+    const [categories]= await db.execute("select name, url,id from categories where parent_id =0")
 
-    // Check the role of the user from session
+    console.log("categories",categories)
     let role = req.session.role || "";
-    console.log(role + " role");
-
 
     res.render("users/home", {
       pageTitle: "Home page",
-      path: " users/home",
-      products: rows, // Passing the fetched products to the view
+      path: "users/home",
+      products: rows, 
       role:role,
+      categories:categories
+
     });
   } catch (error) {
     console.error("Error retrieving featured products:", error);
@@ -97,29 +97,7 @@ exports.getUserHomePage = async (req, res, next) => {
       next(err);
     }
   };
-  exports.getShopeHomePage = async (req, res, next) => {
-    try {
-      const query = `
-        SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
-        FROM products p
-        INNER JOIN product_images pi ON p.id = pi.productId
-        GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
-      `;
-      const [rows, fields] = await db.execute(query);
-      const [categories]= await db.execute("select name, url,id from categories where parent_id =0")
-        let role = req.session.role || "";
-      console.log(role + " role");
-      res.render("shop/home", {
-        pageTitle: "Home page",
-        path: "shop/home",
-        products: rows,
-        categories:categories
-      });
-    } catch (error) {
-      console.error("Error retrieving featured products:", error);
-      res.status(500).json({ error: "Error retrieving featured products" });
-    }
-  };
+ 
   
   
   
@@ -182,10 +160,8 @@ exports.getUserHomePage = async (req, res, next) => {
   exports.getsubCategoriesPage = async (req, res, next) => {
     const subCategorieId = req.query.subCategorieId;
     const name = req.query.name;
-  
-    console.log("name", name);
-    console.log(subCategorieId + " ddddddddddddd");
-  
+
+   
     try {
       // التأكد من أن الاتصال بقاعدة البيانات مفتوح
       if (!db) {
@@ -196,6 +172,7 @@ exports.getUserHomePage = async (req, res, next) => {
       const [productByCategory] = await db.execute(
         'SELECT * FROM categories WHERE parent_id = ?', [subCategorieId]
       );
+      
   
       // استعلام لجلب المنتجات
       const [products] = await db.execute(
@@ -214,5 +191,33 @@ exports.getUserHomePage = async (req, res, next) => {
       console.log("subCategoriesPage" + error);
       res.status(500).json({ message: "error getting subCategoriesPage" });
     }
+  }
+  exports.getsubCategoriesProducts = async (req, res, next) => {
+
+    const subCategorieId=req.query.subCategorieId;
+    console.log("ffffffff1 ",subCategorieId)
+    try {
+      const query = `
+      SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url,c.id
+      FROM products p
+      INNER JOIN product_images pi ON p.id = pi.productId
+      inner join categories c on p.categorie=c.id
+      where p.categorie=?
+      GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
+    `;
+    const categorieName= db.execute(`select name from categories where id =? `,[subCategorieId]);
+    const [rows, fields] = await db.execute(query,[subCategorieId]);
+      res.render("users/subcategoriesProduct", {
+        pageTitle: "المنتحات",
+        path: "users/subcategoriesProduct",
+        products: rows
+      });
+      
+    } catch (error) {
+      console.log("con`t get subCategoriesProducts"+error);
+      res.status(500).json({message : "con`t get subCategoriesProducts"})
+    }
+
+
   }
   

@@ -32,7 +32,7 @@ router.post("/ordered",upload.none(),cartControler.addOrder); // تعديل ال
 
 router.get("/Orders", isAuth,cartControler.getOrders);
 
-router.post("/orderRedy",multable, cartControler.orderRedy);
+router.post("/orderRedy",multable, isShop,cartControler.orderRedy);
 
 
 exports.router = router;

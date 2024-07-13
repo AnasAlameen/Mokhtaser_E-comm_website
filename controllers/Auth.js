@@ -285,6 +285,7 @@ exports.CheckSingIn = async (req, res, next) => {
       req.session.username = user.FirstName;
       req.session.rol = "store";
       req.session.Categori = user.Catagori;
+      req.session.type = "seller";
 
       let roleCheck = `
       SELECT r.name as roleName 
@@ -336,7 +337,7 @@ exports.CheckSingIn = async (req, res, next) => {
         req.session.userId = user.id;
         req.session.username = user.FirstName;
         req.session.role = "user";
-        console.log("hhhhhh");
+        req.session.type = "user";
 
         return res.status(201).redirect("/user/Home");
       
