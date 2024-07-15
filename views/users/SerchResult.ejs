@@ -1,0 +1,25 @@
+<%- include('../includes/shop/head.ejs') %>
+<link rel="stylesheet" href="/css/SearchResult.css">
+</head>
+<input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+<%- include('../includes/users/Navgation.ejs') %>
+
+  <section id="latest-jobs">
+    <h2>نتائج البحث</h2>
+    <ul>
+      <% products.forEach(product => { %>
+        <li>
+          <a href="http://localhost:3000/user/prdoduct/detlas?product_id=<%= product.id %>">
+            <img src="../images/<%= product.image_url.split('\\').pop() %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
+            <h3><%= product.ProductName %></h3>
+            <p><%= product.Discrption %></p>
+            <p><%= product.Prise %></p>
+          </a>
+        </li>
+      <% }) %>
+    </ul>
+  </section>
+</main>
+
+<%- include('../includes/shop/end.ejs') %>

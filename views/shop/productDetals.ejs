@@ -2,16 +2,12 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/css/prdouctDetls.css">
-<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 </head>
-<%- include('../includes/SHOP/navgation.ejs') %>
+<%- include('../includes/shop/navgation.ejs') %>
 <form id="all" enctype="multipart/form-data">
   <section>
     <div class="container mx-auto flex flex-wrap justify-between">
@@ -68,17 +64,26 @@
         <div class="mt-6">
           <a href="#" id="details" class="text-blue-600 hover:underline text-sm">عرض التفاصيل ></a>
         </div>
+        <div id="lightbox" class="lightbox">
+          <span class="close">&times;</span>
+          <img class="lightbox-content" id="lightbox-img">
+          <a class="prev">&#10095;</a>
+          <a class="next">&#10094;</a>
+        </div>
 
-        <!-- Action Buttons -->
         <div class="flex space-x-4 my-6">
           <% if(type){ %>
-          <a href="http://localhost:3000/admin/DeleteProduct?product_id=<%= product.id %>"> حذف</a>            
-          <a href="http://localhost:3000/admin/Edite_Product?product_id=<%= product.id %>"> تعديل</a>
+            <a href="http://localhost:3000/admin/DeleteProduct?product_id=<%= product.id %>" class="btn flex-1 bg-red-500">حذف</a>
+            <a href="http://localhost:3000/admin/Edite_Product?product_id=<%= product.id %>" class="btn flex-1 bg-green-500">تعديل</a>
+            
+            
           <% } %>
           </button>
-        </div>
+        </div>         
       </div>
+      
     </div>
+    
   </section>
   <input type="hidden" name="_csrf" id="l" value="<%= csrfToken %>">
 </form>

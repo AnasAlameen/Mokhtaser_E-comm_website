@@ -39,16 +39,42 @@ const haveRoles = async (req, res, next) => {
                 storeInfoCatagoxi: req.session.Catagori,
                 storeInfo: storeInfo
             });
+            const [roles] = await db.execute(`
+            SELECT sr.store_id, sr.role_id, s.CompanyName, s.id
+            FROM store_user_roles sr
+            INNER JOIN sellers s ON sr.store_id = s.id
+            WHERE sr.store_id = ? and sr.user_id IS NULL
+        `, [storeId]);
+        console.log("roles", roles);
 
+            res.locals.stores = roles || [];
+        }
+        if (req.session.storeId && req.session.userId) {
+            const storeId = req.session.storeId;
+
+            const [storeInfo] = await db.execute(`
+                SELECT CompanyName, id, url, Catagori FROM sellers WHERE id = ? 
+            `, [storeId]);
+
+            res.locals.storeInfo = storeInfo[0] || {};
+            req.session.Catagori = storeInfo[0].Catagori;
+
+            console.log("storeInfo", {
+                storeInfoCatagoxi: req.session.Catagori,
+                storeInfo: storeInfo
+            });
             const [roles] = await db.execute(`
                 SELECT sr.store_id, sr.role_id, s.CompanyName, s.id
                 FROM store_user_roles sr
                 INNER JOIN sellers s ON sr.store_id = s.id
-                WHERE sr.store_id = ?
-            `, [storeId]);
+                WHERE sr.store_id = ? and sr.user_id=?
+            `, [storeId,req.session.userId]);
+            console.log("roles",roles)
 
-            res.locals.stores = roles || [];
+
+            res.locals.stores = roles[0] || [];
         }
+
 
     } catch (error) {
         console.error("Error retrieving stores or user info:", error);

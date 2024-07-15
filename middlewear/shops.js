@@ -20,12 +20,13 @@ const getshops = async (req, res, next) => {
             res.locals.stores = stores || [];
     
             // إذا لم يكن هناك storeId في الجلسة وتريد تعيينه الآن
-            if (!req.session.storeId && stores.length > 0) {
+                
                 req.session.regenerate((err) => {
                     if (err) {
                         console.error("Error regenerating session:", err);
                         return next(err);
                     }
+                    
     
                     // إعادة تعيين القيم المشتركة بعد إعادة تهيئة الجلسة
                     req.session.userId = userId;
@@ -34,13 +35,12 @@ const getshops = async (req, res, next) => {
                     req.session.isLoggedIn = true;
                     req.session.name = userInfo[0].FirstName;
                     req.session.type = "seller";
-    
-    
+                
     
                     next();
                 });
                 return; // إنهاء التنفيذ هنا لأن الجلسة تم تجديدها
-            }
+            
         }
     } catch (error) {
         res.status(500).send({error:"the get role not work"})

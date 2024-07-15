@@ -29,9 +29,13 @@ document.addEventListener('DOMContentLoaded', function () {
   
     document.querySelectorAll(".add-subcategory-btn").forEach(button => {
         button.addEventListener("click", (event) => {
+          
             const categoryId = button.dataset.categoryId;
             document.querySelector("#addSubcategoryModal .btn-primary").dataset.categoryId = categoryId;
-        });
+            location.reload(); // تحديث الصفحة
+
+          });
+        
     });
 
     document.querySelector("#addSubcategoryModal .btn-primary").addEventListener("click", (event) => {

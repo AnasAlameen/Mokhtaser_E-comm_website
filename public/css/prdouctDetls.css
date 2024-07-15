@@ -177,6 +177,7 @@ button:disabled {
 
 /* تنسيق العرض في الشاشات الصغيرة جدا */
 @media only screen and (max-width: 511px) {
+  
   .container {
     max-width: 100%;
     height: auto;
@@ -308,6 +309,15 @@ button:disabled {
   background-color: rgb(0,0,0);
   background-color: rgba(0,0,0,0.4);
 }
+.optione{
+  display: flex;
+  flex-wrap: nowrap; /* لإبقاء العناصر في صف واحد */
+  justify-content: flex-start;
+  overflow-x: auto; /* السماح بالتمرير الأفقي */
+  padding: 0 40px;
+  margin: 0;
+  list-style: none;
+}
 .modal-content {
   background-color: #fefefe;
   margin: 15% auto;
@@ -327,6 +337,7 @@ button:disabled {
   text-decoration: none;
   cursor: pointer;
 }
+
 .lightbox {
   display: none;
   position: fixed;
@@ -337,13 +348,18 @@ button:disabled {
   height: 100%;
   overflow: auto;
   background-color: rgba(0,0,0,0.9);
+
+  
 }
 
 .lightbox-content {
   margin: auto;
+  margin-top: 5%;
   display: block;
   width: 80%;
   max-width: 700px;
+  max-height: 80%;
+  object-fit: contain;
 }
 
 .close {
@@ -384,6 +400,41 @@ button:disabled {
   border-radius: 3px 0 0 3px;
 }
 
+.prev {
+  left: 0;
+}
+
 .prev:hover, .next:hover {
   background-color: rgba(0, 0, 0, 0.8);
+}
+.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 5px;
+  margin: 5px;
+  width: 48%; /* تأخذ 50% من عرض الحاوية، مع ترك مساحة للهوامش */
+  box-sizing: border-box;
+  transition: background-color 0.3s ease;
+}
+
+.bg-red-500 {
+  background-color: #ff4d4d; /* لون الزر الأحمر */
+}
+
+.bg-red-500:hover {
+  background-color: #e60000; /* لون الزر الأحمر عند التحويم */
+}
+
+.bg-green-500 {
+  background-color: #4CAF50; /* لون الزر الأخضر */
+}
+
+.bg-green-500:hover {
+  background-color: #45a049; /* لون الزر الأخضر عند التحويم */
 }

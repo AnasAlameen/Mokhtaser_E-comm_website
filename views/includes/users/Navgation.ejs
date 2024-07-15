@@ -1,113 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Page</title>
+
 <body>
-
-   <header class="header">
-      <div class="header__container containerr">
-         <div class="header__toggle" id="header-toggle">
-            <i class="ri-menu-line"></i>
-         </div>
+  <header class="header">
+    <div class="header__container containerr">
+      <div class="header__toggle" id="header-toggle">
+        <i class="ri-menu-line"></i>
       </div>
-      <div class="searchForm">
-         <button type="submit" id="search_button" class="search-Button">بحث</button>
-         <input type="text" id="search_inputs" class="search-Input" name="keyword" placeholder="ابحث عن المنتجات المميزة">
+    </div>
+    <form class="searchForm" action="/user/SerchResult" enctype="multipart/form-data">
+      <button type="submit" id="search_button" class="search-Button">بحث</button>
+      <input type="text" id="search_inputs" class="search-Input" name="keyword" placeholder="ابحث عن المنتجات المميزة">
 
-      </div>
-      <a href="http://localhost:3000/user/Home" class="header__logo">
-         <img src="/imjs/hh.png" alt="Logo">
-      </a>
-   </header>
+    </form>
+    
+    <a href="http://localhost:3000/user/Home" class="header__logo">
+      <img src="/imjs/hh.png" alt="Logo">
+    </a>
+  </header>
 
-   <div class="sidebar" id="sidebar">
-      <nav class="sidebar__container">
-        
-         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-         <div class="sidebar__account">
-            <img src="<%= userInfo.url %>" alt="Profile" class="sidebar__perfil">
-            <div class="sidebar__names">
-                <h3 class="sidebar__name"><%= userInfo.FirstName %></h3>
-            </div>
+  <div class="sidebar" id="sidebar">
+    <nav class="sidebar__container">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      <div class="sidebar__account">
+        <img src="<%= userInfo.url %>" alt="Profile" class="sidebar__perfil">
+        <div class="sidebar__names">
+          <h3 class="sidebar__name"><%= userInfo.FirstName %></h3>
         </div>
-        
-         <div class="sidebar__content">
-            <div class="sidebar__list">
-               <a href="http://localhost:3000/user/Home" class="sidebar__link active-link">
-                   <i class="ri-home-5-line"></i>
-                   <span class="sidebar__link-name">الرئسية</span>
-               </a>
-               <a href="/cart" class="sidebar__link">
-                   <i class="ri-shopping-cart-line"></i>
-                   <span class="sidebar__link-name">السلة</span>
-               </a>
-               <a href="http://localhost:3000/shop/profile" class="sidebar__link">
-                   <i class="ri-user-line"></i>
-                   <span class="sidebar__link-name">الملف الشخصي</span>
-               </a>
-               <a href="/cart/Orders" class="sidebar__link">
-                   <i class="ri-file-list-3-line"></i>
-                   <span class="sidebar__link-name">الطلبيات</span>
-               </a>
-           </div>
-           <h3 class="sidebar__title">
-               <span>عام</span>
-           </h3>
-           <div class="sidebar__list">
-               <a href="/LogOut" class="sidebar__link">
-                   <i class="ri-logout-box-r-line"></i>
-                   <span class="sidebar__link-name">تسجيل الخروج</span>
-               </a>
-           </div>
-           <!-- <h3 class="sidebar__title">
-               <span>General</span>
-           </h3>
-           <div class="sidebar__list">
-               <a href="#" class="sidebar__link">
-                   <i class="ri-notification-2-line"></i>
-                   <span class="sidebar__link-name">Notifications</span>
-               </a>
-               <a href="#" class="sidebar__link">
-                   <i class="ri-settings-3-line"></i>
-                   <span class="sidebar__link-name">Settings</span>
-               </a>
-               <a href="#" class="sidebar__link">
-                   <i class="ri-logout-box-r-line"></i>
-                   <span class="sidebar__link-name">Logout</span>
-               </a>
-           </div> -->
-           <% if(stores.lenght===0) {%>
+      </div>
+      
+      <div class="sidebar__content">
+        <div class="sidebar__list">
+          <a href="http://localhost:3000/user/Home" class="sidebar__link active-link">
+            <i class="ri-home-5-line"></i>
+            <span class="sidebar__link-name">الرئسية</span>
+          </a>
+          <a href="/cart" class="sidebar__link">
+            <i class="ri-shopping-cart-line"></i>
+            <span class="sidebar__link-name">السلة</span>
+          </a>
+          <a href="http://localhost:3000/shop/profile" class="sidebar__link">
+            <i class="ri-user-line"></i>
+            <span class="sidebar__link-name">الملف الشخصي</span>
+          </a>
+          <a href="/cart/Orders" class="sidebar__link">
+            <i class="ri-file-list-3-line"></i>
+            <span class="sidebar__link-name">الطلبيات</span>
+          </a>
+        </div>
+        <h3 class="sidebar__title">
+          <span>عام</span>
+        </h3>
+        <div class="sidebar__list">
+          <a href="/LogOut" class="sidebar__link">
+            <i class="ri-logout-box-r-line"></i>
+            <span class="sidebar__link-name">تسجيل الخروج</span>
+          </a>
+        </div>
+        <% if(stores.lenght===0) {%>
+        <% } else { %>
+        <h3 class="sidebar__title">
+          <span>المتاجر</span>
+          <button onclick="toggleStoreList()">اظهار المتاجر</button>
+        </h3>
+        <div class="sidebar__list store-list" id="storeList">
+          <% stores.forEach(store => { %>
+          <a href="/shop/shop?storeId=<%= store.id %>&role=<%= store.role_id %>" class="sidebar__link">
+            <i class="ri-store-line"></i>
+            <span class="sidebar__link-name"><%= store.CompanyName %></span>
+          </a>
+          <% }) %>
+        </div>        
+        <% } %>
+      </div>
+    </nav>
+  </div>
 
-           <% }else{ %>
-
-           <h3 class="sidebar__title">
-               <span>المتاجر</span>
-
-                <button onclick="toggleStoreList()">اظهار المتاجر</button>
-            </h3>
-            <div class="sidebar__list store-list" id="storeList">
-                <% stores.forEach(store => { %>
-                    <a href="/shop/shop?storeId=<%= store.id %>&role=<%= store.role_id %>" class="sidebar__link">
-                        <i class="ri-store-line"></i>
-                        <span class="sidebar__link-name"><%= store.CompanyName %></span>
-                    </a>
-                <% }) %>
-            </div>        
-            <% } %>
-
-         </div>
-      </nav>
-   </div>
-
-   <script>
-      document.getElementById('header-toggle').addEventListener('click', function() {
-         document.getElementById('sidebar').classList.toggle('show-sidebar');
-      });
-
-      function closeNav() {
-         document.getElementById('sidebar').classList.remove('show-sidebar');
-      }
-      function toggleStoreList() {
-        const storeList = document.getElementById('storeList');
-        storeList.classList.toggle('active');
-        const arrow = document.getElementById('toggleArrow');
-        arrow.classList.toggle('ri-arrow-down-s-line');
-        arrow.classList.toggle('ri-arrow-right-s-line');
-    }
-   </script>
+  <script src="/js/Navgation.js"></script>
+</body>
+</html>

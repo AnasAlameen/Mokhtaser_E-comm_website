@@ -19,7 +19,7 @@
     <div class="container mx-auto flex flex-wrap justify-between">
       <div class="left w-full lg:w-1/2 p-4">
         <div class="main_image">
-          <img src="/<%= imageURLs[0].replace(/\\/g, '/').replace('public/', '') %>" name="main" class="slide w-full h-auto" />
+          <img src="/<%= imageURLs[0].replace(/\\/g, '/')%>" name="main" class="slide w-full h-auto" />
         </div>
         <div class="option flex flex-wrap mt-4">
           <% imageURLs.forEach(imageUrl => { %>
@@ -97,9 +97,10 @@
         <div id="lightbox" class="lightbox">
           <span class="close">&times;</span>
           <img class="lightbox-content" id="lightbox-img">
-          <a class="prev">&#10094;</a>
-          <a class="next">&#10095;</a>
+          <a class="prev">&#10095;</a>
+          <a class="next">&#10094;</a>
         </div>
+
         <script src="/js/prdouctDetls.js"></script>
 
 <%- include('../includes/shop/end.ejs') %>

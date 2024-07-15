@@ -2,7 +2,7 @@ const db = require("../../helpers/databas");
 
 exports.getproductDetals = async (req, res, next) => {
   const productId = req.query.product_id;
-  const view = req.query.view || 'store';
+  const view = req.session.role || 'store';
   const storeId=req.session.storeId;
 
   let type;
@@ -16,7 +16,7 @@ exports.getproductDetals = async (req, res, next) => {
     const [imageResults] = await db.execute(imageQuery, [productId]);
     const imageURLs = imageResults.map((row) => row.url);
 
-    // console.log("Image URLs:", imageURLs);
+    console.log("Image URLs:", imageURLs);
 
     // جلب تفاصيل المنتج
     const productQuery =
@@ -33,7 +33,7 @@ exports.getproductDetals = async (req, res, next) => {
       imageQuery:productResults
     })
 
-    // console.log("Product Details:", product);
+     console.log("Product Details:", product);
 
     // جلب صورة الألوان المتاحة
     const variantImageQuery = `
@@ -57,7 +57,7 @@ exports.getproductDetals = async (req, res, next) => {
     `;
     const [variantOptionsResults] = await db.execute(variantOptionsQuery, [productId]);
 
-    // console.log("Variant Options Results:", variantOptionsResults);
+    console.log("Variant Options Results:", variantOptionsResults);
 
     // تنظيم بيانات الألوان والأحجام
     const colorImages = {};
@@ -117,11 +117,12 @@ exports.getproductDetals = async (req, res, next) => {
         sizes: sizeOptions[0] || []
       }];
     
-    // console.log("Combinations:", combinations);
-    // console.log("allSizes:", allSizes);
+   console.log("Combinations:", combinations);
+    console.log("allSizes:", allSizes);
 
     
     if (view === 'user') {
+      console.log(view+"uuuuuuuuuuuuuuuuuuuu")
       res.render("users/productDetals", {
         pageTitle: "تفاصيل المنتج ",
         path: "users/productDetals",
@@ -133,6 +134,8 @@ exports.getproductDetals = async (req, res, next) => {
         productId: productId,
       });
     } else {
+      console.log(view+"ssssssssssssssssssssssss")
+
       res.render("shop/productDetals", {
         pageTitle: "تفاصيل المنتج",
         path: "shop/productDetals",

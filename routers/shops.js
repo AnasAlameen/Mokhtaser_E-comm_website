@@ -20,7 +20,7 @@ router.get("/prdoducts",isAuth,haveRole,shopControler.getProductList);
 
 router.get("/profile",isAuth,haveRole,shopControler.getProfile);
 
-router.get("/shop",isAuth,haveRole,shops,shopControler.getRoles);
+router.get("/shop",isAuth,shops,haveRole,shopControler.getRoles);
 
 
 

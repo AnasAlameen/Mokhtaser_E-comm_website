@@ -2,17 +2,10 @@
 
 <link rel="stylesheet" href="/css/home.css">
 <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
-  <!-- Link Swiper's CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
-<!-- 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/3.4.0/remixicon.css" crossorigin=""> -->
-
 
 </head>
 <%- include('../includes/shop/navgation.ejs') %>
 
- 
 <main>
   <section id="hero">
     <h2>عالم التسوق بين يديك</h2>
@@ -46,61 +39,55 @@
         <div class="swiper-slide">
           <img src="/imjs/back9.jpg" alt="Image 9">
         </div>
-
       </div>
       <div class="swiper-pagination"></div>
       <div class="swiper-button-next"></div>
       <div class="swiper-button-prev"></div>
     </div>
-
   </section>
   
-    <div id="shop-by-categories">
-      <h2>Shop by categories</h2>
-      <div class="categories-container">
-        <ul>         
-           <!-- <button id="next-button">التالي</button> -->
-
-          <% categories.forEach(categorie => { %>
+  <div id="shop-by-categories">
+    <h2>تسوق حسب الفئة</h2>
+    <div class="categories-container">
+      <button id="prev-button" class="scroll-button">❮</button>
+      <ul class="categories-list">
+        <% categories.forEach(categorie => { %>
           <li>
             <div class="category-item">
-              
               <a href="/user/subCategoriesPage?subCategorieId=<%= categorie.id %>&name=<%= categorie.name %>">
-                <img src="..<%= categorie.url.replace('public', '') %>" alt="Phones & Telecommunications">
+                <img src="<%= categorie.url.replace('public', '') %>" alt="<%= categorie.name %>">
               </a>
               <p><%= categorie.name %></p>
             </div>
           </li>
-          <% }); %>
-          <!-- <button id="prev-button">السابق</button> -->
-        </ul>
-   
-    
-</div>
-<section id="featured-jobs">
-  <h2>عروض مميزة</h2>
-  <ul>
+        <% }); %>
+      </ul>
+      <button id="next-button" class="scroll-button">❯</button>
+    </div>
+  </div>
+      
+  <section id="featured-jobs">
+    <h2>عروض مميزة</h2>
+    <ul>
       <% products.forEach(product => { %>
-          <li>
-              <a href="http://localhost:3000/shop/prdoduct/detlas?product_id=<%= product.id %>&view=<%= role  %>">
-                  <img src="../images/<%= product.image_url.split('\\').pop().replace('personal', '') %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
-                  <h3><%= product.ProductName %></h3>
-                  <p class="product-description"><%= product.Discrption %></p>
-                  <p><%= product.Prise %></p>
-              </a>
-          </li>
+        <li>
+          <a href="http://localhost:3000/shop/prdoduct/detlas?product_id=<%= product.id %>&view=<%= role %>">
+            <img src="../images/<%= product.image_url.split('\\').pop().replace('personal', '') %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
+            <h3><%= product.ProductName %></h3>
+            <p class="product-description"><%= product.Discrption %></p>
+            <p><%= product.Prise %></p>
+          </a>
+        </li>
       <% }) %>
-  </ul>
-</section>
-
-
+    </ul>
+  </section>
 
   <section id="latest-jobs">
     <h2>آخر المنتجات</h2>
     <ul>
       <% products.forEach(product => { %>
         <li>
-          <a href="http://localhost:3000/shop/prdoduct/detlas?product_id=<%= product.id %>&view=<%= role  %>">
+          <a href="http://localhost:3000/shop/prdoduct/detlas?product_id=<%= product.id %>&view=<%= role %>">
             <img src="../images/<%= product.image_url.split('\\').pop() %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
             <h3><%= product.ProductName %></h3>
             <p><%= product.Discrption %></p>
@@ -111,7 +98,6 @@
     </ul>
   </section>
 </main>
-
 
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script>
@@ -145,25 +131,24 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     const container = document.querySelector('.categories-container ul');
+    const prevButton = document.getElementById('prev-button');
+    const nextButton = document.getElementById('next-button');
+
     let isScrolling = false;
 
     function scroll() {
       if (!isScrolling) {
         container.scrollBy({
-          left: -1, // تعديل الاتجاه
+          left: 1,
           behavior: 'smooth'
         });
       }
-      if (container.scrollLeft <= 0) {
-        container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
+      if (container.scrollLeft >= container.scrollWidth - container.clientWidth) {
+        container.scrollTo({ left: 0, behavior: 'smooth' });
       }
     }
 
-    setInterval(scroll, 15); // جعل الحركة أسرع
-
-    // إضافة أزرار التمرير
-    const prevButton = document.getElementById('prev-button');
-    const nextButton = document.getElementById('next-button');
+    setInterval(scroll, 15);
 
     prevButton.addEventListener('click', function () {
       container.scrollBy({
@@ -179,39 +164,40 @@
       });
     });
   });
-  // const container = document.querySelector('.categories-container ul');
-  //     let isScrolling = false;
 
-  //     function scroll() {
-  //       if (!isScrolling) {
-  //         container.scrollBy({
-  //           left: -1, // التمرير لليسار
-  //           behavior: 'smooth'
-  //         });
-  //       }
-  //       if (container.scrollLeft <= 0) {
-  //         container.scrollTo({ left: container.scrollWidth, behavior: 'smooth' });
-  //       }
-  //     }
+  document.addEventListener('DOMContentLoaded', function () {
+  const container = document.querySelector('.categories-list');
+  const nextButton = document.getElementById('next-button');
+  const prevButton = document.getElementById('prev-button');
+  const itemWidth = 150; // تحديد عرض العنصر
+  let currentPosition = 0; // الموضع الحالي للعنصر
 
-  //     setInterval(scroll, 15); // سرعة الحركة
+  function updatePosition() {
+    container.style.transform = `translateX(${currentPosition}px)`;
+  }
 
-  //     // إضافة أزرار التمرير
-  //     const prevButton = document.getElementById('prev-button');
-  //     const nextButton = document.getElementById('next-button');
+  function moveNext() {
+    currentPosition -= itemWidth;
+    if (Math.abs(currentPosition) >= container.scrollWidth - container.clientWidth) {
+      currentPosition = 0;
+    }
+    updatePosition();
+  }
 
-  //     prevButton.addEventListener('click', function () {
-  //       container.scrollBy({
-  //         left: -150,
-  //         behavior: 'smooth'
-  //       });
-  //     });
+  function movePrev() {
+    currentPosition += itemWidth;
+    if (currentPosition > 0) {
+      currentPosition = -(container.scrollWidth - container.clientWidth);
+    }
+    updatePosition();
+  }
 
-  //     nextButton.addEventListener('click', function () {
-  //       container.scrollBy({
-  //         left: 150,
-  //         behavior: 'smooth'
-  //       });
-  //     });
+  nextButton.addEventListener('click', moveNext);
+  prevButton.addEventListener('click', movePrev);
+
+  setInterval(moveNext, 3000); // التمرير التلقائي كل 3 ثواني
+});
+
 </script>
+
 <%- include('../includes/shop/end.ejs') %>

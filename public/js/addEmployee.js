@@ -1,14 +1,16 @@
 document.addEventListener("DOMContentLoaded", () => {
     const resultsContainer = document.getElementById("resultsContainer");
-    let availableRoles = [
+    const searchButton = document.getElementById("searchButton");
+    const searchQuery = document.getElementById("searchQuery");
+    const availableRoles = [
         { id: 1, name: "ادمن" },
         { id: 2, name: "مدير" },
         { id: 4, name: "محرر" },
     ];
 
-    document.getElementById("searchButton").addEventListener("click", function () {
-        const query = document.getElementById("searchQuery").value;
-        searchUsers(query);
+    // حدث البحث عن المستخدمين
+    searchButton.addEventListener("click", () => {
+        searchUsers(searchQuery.value);
     });
 
     async function searchUsers(query) {
@@ -24,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // عرض النتائج
     function displayResults(results) {
         resultsContainer.innerHTML = "";
 
@@ -37,42 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         results.forEach((result) => {
-            const resultCard = document.createElement("div");
-            resultCard.className = "result-card";
-
-            const rolesCheckboxes = availableRoles
-                .map((role) => {
-                    let checkboxHTML = `
-                        <div class="role-checkbox">
-                            <input type="checkbox" id="role-${result.id}-${role.id}" name="roles-${result.id}" value="${role.id}" class="role-checkbox-input">
-                            <label for="role-${role.id}-${result.id}">${role.name}</label>
-                        </div>
-                    `;
-
-                    if (result.roleid && result.roleid.includes(role.id)) {
-                        checkboxHTML = `
-                            <div class="role-checkbox">
-                                <input type="checkbox" id="role-${result.id}-${role.id}" name="roles-${result.id}" value="${role.id}" class="role-checkbox-input" checked disabled>
-                                <label for="role-${role.id}-${result.id}">${role.name}</label>
-                            </div>
-                        `;
-                    }
-
-                    return checkboxHTML;
-                })
-                .join("");
-
-            resultCard.innerHTML = `
-                <div class="user-info">
-                    <img src="../images/${result.imageUrl.split("\\").pop()}" alt="${result.name}" class="user-image">
-                    <h4 class="name">${result.name}</h4>
-                </div>
-                <div class="role-checkboxes">
-                    ${rolesCheckboxes}
-                </div>
-                <button class="btn btn-success add-button" data-user-id="${result.id}">إضافة</button>
-            `;
-
+            const resultCard = createResultCard(result);
             resultsContainer.appendChild(resultCard);
         });
 
@@ -80,12 +48,54 @@ document.addEventListener("DOMContentLoaded", () => {
         addAddButtonEventListeners();
     }
 
+    // إنشاء بطاقة النتائج
+    function createResultCard(result) {
+        const resultCard = document.createElement("div");
+        resultCard.className = "result-card";
+
+        const rolesCheckboxes = availableRoles.map(role => createRoleCheckbox(result, role)).join("");
+
+        resultCard.innerHTML = `
+            <div class="user-info">
+                <img src="../images/${result.imageUrl.split("\\").pop()}" alt="${result.name}" class="user-image">
+                <h4 class="name">${result.name}</h4>
+            </div>
+            <div class="role-checkboxes">
+                ${rolesCheckboxes}
+            </div>
+            <button class="btn btn-success add-button" data-user-id="${result.id}" ${result.roleid && result.roleid.includes(1) ? 'disabled' : ''}>إضافة</button>
+        `;
+
+        return resultCard;
+    }
+
+    // إنشاء مربعات اختيار الأدوار
+    function createRoleCheckbox(result, role) {
+        let checkboxHTML = `
+            <div class="role-checkbox">
+                <input type="checkbox" id="role-${result.id}-${role.id}" name="roles-${result.id}" value="${role.id}" class="role-checkbox-input" ${result.roleid && result.roleid.includes(1) ? 'disabled' : ''}>
+                <label for="role-${role.id}-${result.id}">${role.name}</label>
+            </div>
+        `;
+
+        if (result.roleid && result.roleid.includes(role.id)) {
+            checkboxHTML = `
+                <div class="role-checkbox">
+                    <input type="checkbox" id="role-${result.id}-${role.id}" name="roles-${result.id}" value="${role.id}" class="role-checkbox-input" checked ${result.roleid.includes(1) ? 'disabled' : ''}>
+                    <label for="role-${role.id}-${result.id}">${role.name}</label>
+                </div>
+            `;
+        }
+
+        return checkboxHTML;
+    }
+
+    // إضافة مستمعين لمربعات الاختيار
     function addCheckboxEventListeners() {
-        document.querySelectorAll(".role-checkbox-input").forEach((checkbox) => {
+        document.querySelectorAll(".role-checkbox-input").forEach(checkbox => {
             checkbox.addEventListener("change", (event) => {
                 const userId = event.target.getAttribute("name").split("-")[1];
-                const checkboxes = document.querySelectorAll(`input[name="roles-${userId}"]`);
-                checkboxes.forEach((cb) => {
+                document.querySelectorAll(`input[name="roles-${userId}"]`).forEach(cb => {
                     if (cb !== event.target) {
                         cb.checked = false;
                     }
@@ -94,8 +104,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // إضافة مستمعين لأزرار الإضافة
     function addAddButtonEventListeners() {
-        document.querySelectorAll(".add-button").forEach((button) => {
+        document.querySelectorAll(".add-button").forEach(button => {
             button.addEventListener("click", async (event) => {
                 const userId = event.target.getAttribute("data-user-id");
                 await addUser(userId);
@@ -103,22 +114,30 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // إضافة دور للمستخدم مع تحذير عند اختيار دور الادمن
     async function addUser(userId) {
         const selectedRoleCheckbox = document.querySelector(`input[name="roles-${userId}"]:checked`);
         if (selectedRoleCheckbox && !selectedRoleCheckbox.disabled) {
             const roleId = selectedRoleCheckbox.value;
-            try {
-                console.log("data", {
-                    userId: userId,
-                    roleId: roleId,
+            
+            if (roleId == 1) { // إذا كان الدور المحدد هو الادمن
+                const confirmation = await Swal.fire({
+                    icon: "warning",
+                    title: "تحذير",
+                    text: "تعيين دور 'ادمن' غير قابل للتعديل. هل أنت متأكد أنك تريد الاستمرار؟",
+                    showCancelButton: true,
+                    confirmButtonText: "نعم، أضف الدور",
+                    cancelButtonText: "إلغاء"
                 });
-                const response = await axios.post("/addrole", {
-                    userId,
-                    roleId
-                }, {
-                    headers: {
-                        "CSRF-Token": document.querySelector('input[name="_csrf"]').value,
-                    },
+
+                if (!confirmation.isConfirmed) {
+                    return; // إلغاء العملية إذا لم يتم التأكيد
+                }
+            }
+
+            try {
+                const response = await axios.post("/addrole", { userId, roleId }, {
+                    headers: { "CSRF-Token": document.querySelector('input[name="_csrf"]').value }
                 });
                 Swal.fire({
                     icon: "success",

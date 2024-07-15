@@ -8,7 +8,7 @@ exports.getAddEmploy = (req, res, next) => {
 };
 
 exports.getSearches = async (req, res, next) => {
-  const UserEmail = req.query.q.trim(); 
+  const UserEmail = req.query.SearchInput.trim(); 
   const storeId = req.session.storeId;
   let Employees = [];
   const usersMap = {};
@@ -25,11 +25,11 @@ exports.getSearches = async (req, res, next) => {
       JOIN roles r ON s.role_id = r.id
       WHERE u.Email = ?
     `, [storeId, UserEmail]);
-console.log("stored",usersWithRoles)
+      console.log("stored",usersWithRoles)
     // تحقق من استرجاع البيانات من قاعدة البيانات
     console.log("usersWithRoles:", usersWithRoles);
 
-    // إذا لم يكن هناك أدوار للمستخدم في المتجر، قم بجلب البيانات الرئيسية فقط
+    // إذا لم يكن هناك أدوار للمستخدم في المتجر،  بجلب البيانات الرئيسية فقط
     if (usersWithRoles.length === 0) {
       console.log("No roles found, fetching main data for user.");
 

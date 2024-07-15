@@ -465,9 +465,13 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log(imageInputs.files);
   }
 
-  saveProductButton.addEventListener("click", (event) => {
-    event.preventDefault();
+  saveProductButton.addEventListener("click", async(event) => {
     saveProductDetails();
+   await Swal.fire("تم الحفظ!", "تم حفظ المنتج بنجاح", "success");
+
+    location.reload(); // تحديث الصفحة
+
+
   });
 
   document

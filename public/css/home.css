@@ -243,10 +243,11 @@ li {
   flex-wrap: nowrap; /* لإبقاء العناصر في صف واحد */
   justify-content: flex-start;
   overflow-x: auto; /* السماح بالتمرير الأفقي */
-  padding: 0;
+  padding: 0 40px;
   margin: 0;
   list-style: none;
 }
+
 
 .categories-container li {
   display: flex;
@@ -258,15 +259,37 @@ li {
   border: none; /* إزالة الحدود */
   flex-shrink: 0;
   overflow: hidden;
+  scroll-snap-align: start; 
+}
+#shop-by-categories {
+  padding: 50px 20px;
+  text-align: center;
+}
+
+#shop-by-categories h2 {
+  font-size: 2em;
+  margin-bottom: 30px;
+}
+
+.categories-container {
+  position: relative;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.categories-list {
+  display: flex;
+  transition: transform 0.3s ease;
+  padding: 0 40px;
 }
 
 .category-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex: 0 0 auto;
+  width: 120px;
+  margin: 0 10px;
   text-align: center;
-  width: 100%;
 }
+
 
 .category-item img {
   width: 150px;
@@ -275,44 +298,69 @@ li {
   object-position: center;
   border-radius: 50%; /* جعل الصور دائرية */
 }
-
 .category-item p {
   margin-top: 10px;
-  font-size: 1em;
-  color: #333;
-  text-align: center;
-  word-wrap: break-word; /* التفاف النصوص الطويلة */
-  white-space: pre-wrap; /* لتجنب تجاوز النص للحاوية */
-  width: 100%;
+  font-size: 0.9em;
+}
+
+.scroll-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 10;
+  
+}
+
+#prev-button {
+  left: 0;
+  width: 20px;
+  margin: 0 10px;
+}
+
+#next-button {
+  right: 0;
+  width: 20px;
 }
 
 @media screen and (max-width: 768px) {
-  .categories-container li {
-      width: 100px;
-  }
-
-  .category-item img {
+  .category-item {
     width: 100px;
-    height: 100px;
   }
-}
-
-@media screen and (max-width: 480px) {
-  .categories-container ul {
-      flex-direction: row;
-      overflow-x: auto;
-  }
-
-  .categories-container li {
-      width: 80px;
-  }
-
+  
   .category-item img {
     width: 80px;
     height: 80px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%; /* جعل الصور دائرية */
+  }
+  
+  .categories-container {
+    padding: 0 30px;
   }
 }
 
+.product-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* يعرض سطرًا واحدًا فقط */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ظهور أسماء الفئات على الشاشات الصغيرة */
+@media screen and (max-width: 480px) {
+  .category-item p {
+    display: block;
+    white-space: normal; /* عرض النص بشكل عادي */
+  }
+}
 
 
 @media screen and (max-width: 480px) {
@@ -320,14 +368,25 @@ li {
       flex-direction: row;
       overflow-x: auto;
   }
-
+  .category-item img {
+    width: 90px;
+    height: 80px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%; /* جعل الصور دائرية */
+  }
   .categories-container li {
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 120px;
   }
   .swiper-button-next, .swiper-button-prev {
     display: block;
   }
+  .category-item p {
+    margin-top: 10px;
+    font-size: 0.9em;
+  }
+  
 }
 
 @media screen and (max-width: 768px) {
