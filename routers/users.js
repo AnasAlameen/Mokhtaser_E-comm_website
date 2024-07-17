@@ -19,6 +19,8 @@ router.get('/subCategoriesProducts',UsersControlers.getsubCategoriesProducts);
 
 router.get('/SerchResult',UsersControlers.getSearchResults);
 
+router.get('/ordersTracking',UsersControlers.getOrdersTracking);
+
 
 
 exports.router = router;

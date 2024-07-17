@@ -1,10 +1,16 @@
+:root {
+    --accent-color: hsl(30, 100%, 50%); /* البرتقالي */
+    --accent-color-border:hsl(30, 98%, 50%);
+    --hero-background-gradient: linear-gradient(0, hsla(0, 0%, 0%, 0), hsl(210, 4%, 64%), hsla(0, 0%, 0%, 0));
+    
+  }
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
     direction: rtl;
-    margin-top: 100px;
+    margin-top: 150px;
 }
 
 .container {
@@ -44,7 +50,9 @@ h2 {
     margin-left: 20px;
     border-radius: 8px;
 }
-
+.card-header{
+    background-color: var(--accent-color);
+}
 .product-details {
     flex-grow: 1;
 }
@@ -120,7 +128,7 @@ h2 {
 }
 
 button {
-    background-color: #069a8e;
+    background-color: var(--accent-color);
     color: #fff;
     border: none;
     padding: 10px 20px;
@@ -133,7 +141,7 @@ button {
 }
 
 button:hover {
-    background-color: #05534d;
+    background-color: black;
 }
 
 .checkout {

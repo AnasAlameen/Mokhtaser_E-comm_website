@@ -1,0 +1,121 @@
+:root {
+    --accent-color: hsl(30, 100%, 50%); /* البرتقالي */
+    --accent-color-border:hsl(30, 98%, 50%);
+    --hero-background-gradient: linear-gradient(0, hsla(0, 0%, 0%, 0), hsl(210, 4%, 64%), hsla(0, 0%, 0%, 0));
+    
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* تصميم الكاردات */
+.card {
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    padding: 10px 20px;
+}
+
+.card-body {
+    padding: 20px;
+}
+.card-header{
+    background-color: var(--accent-color);
+
+}
+.card-footer {
+    padding: 10px 20px;
+    background-color: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.card-footer .btn {
+    margin-left: 10px;
+}
+
+/* تصميم الأزرار */
+.btn {
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: var( --accent-color);
+    border-color:var(--accent-color-border);
+}
+
+.btn-primary:hover {
+    background-color: #0069d9;
+    border-color: #0062cc;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+    border-color: #117a8b;
+}
+
+/* تصميم العناصر الأخرى */
+.product-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.product-details {
+    flex-grow: 1;
+}
+
+.product-list {
+    margin-bottom: 0;
+}
+
+.shipping-info {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.shipping-info p {
+    margin-bottom: 5px;
+}
+
+/* تصميم الأسلوب الاستجابة */
+@media (max-width: 768px) {
+    .card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .card-footer .btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+}

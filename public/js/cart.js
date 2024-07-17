@@ -60,6 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         text: 'سيتم تجهيز طلبك قريباً.',
                         icon: 'success',
                         confirmButtonText: 'موافق'
+                    }).then(() => {
+                        window.location.href = "/user/product/details"; // إعادة التوجيه بعد النجاح
                     });
                 } else {
                     Swal.fire({

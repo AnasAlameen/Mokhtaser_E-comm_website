@@ -289,7 +289,7 @@ document.addEventListener("DOMContentLoaded", function () {
               "CSRF-Token": document.querySelector('input[name="_csrf"]').value,
             },
           }
-        );
+        )
         console.log("Response from server:", response);
         qwan = lastQuan;
         Swal.fire({
@@ -297,7 +297,8 @@ document.addEventListener("DOMContentLoaded", function () {
           text: "تمت عملية الشراء بنجاح",
           icon: "success",
           timer: 3000,
-        });
+        })
+        window.location.href = "/user/prdoduct/detlas"; // إعادة التوجيه بعد النجاح
         orderSummaryModal.style.display = "none";
       } catch (error) {
         console.error("Error occurred:", error);

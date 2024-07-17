@@ -132,7 +132,7 @@ exports.addOrder = async (req, res, next) => {
       await db.execute(deleteCartQuery, [UserId, productId]);
     }
 
-    res.status(200).json({ success: true, message: "Order placed successfully" });
+    res.status(200).json({ success: true, message: "Order placed successfully" })
   } catch (error) {
     console.error("Error executing query:", error);
     res.status(500).json({ success: false, message: "Error placing order" });

@@ -249,4 +249,97 @@ exports.getUserHomePage = async (req, res, next) => {
       res.status(500).send({ error: "هناك خطأ في تحميل صفحة البحث" });
     }
   };
-  
+  exports.getOrdersTracking = async (req, res) => {
+    const user_id = req.session.userId;
+    
+    const query = `
+    SELECT o.id AS orderNumber, o.ProductId, o.Qwnatity, o.Prise, o.VOCId, o.VOId, o.CreatDate, o.status, o.UserId,
+    pi.url AS image_url, p.ProductName, p.Discrption, s.PhoneNum, s.CompanyName, loc.City, loc.area, s.id AS SellerId
+    FROM orders o
+    INNER JOIN product_images pi ON o.ProductId = pi.productId
+    INNER JOIN products p ON o.ProductId = p.id
+    INNER JOIN sellers s ON p.SellerId = s.id
+    LEFT JOIN location loc ON loc.UserId = o.UserId
+    WHERE o.UserId = ? and o.status != "Pending Preparation"
+    ORDER BY o.CreatDate, s.id
+    `;
+
+    try {
+        const [rows] = await db.execute(query, [user_id]);
+        if (rows.length === 0) {
+            return res.render("users/OrdersTrack", {
+                pageTitle: "Orders",
+                path: "users/OrdersTrack",
+                groupedOrders: {}
+            });
+        }
+
+        const groupedOrders = {};
+        
+        rows.forEach((row) => {
+            const orderKey = `${row.SellerId}_${new Date(row.CreatDate).getTime()}`;
+            
+            if (!groupedOrders[orderKey]) {
+                groupedOrders[orderKey] = {
+                    orderId: row.orderNumber,
+                    sellerId: row.SellerId,
+                    companyName: row.CompanyName,
+                    status: row.status,
+                    phoneNum: row.PhoneNum,
+                    city: row.City,
+                    area: row.area,
+                    createdAt: row.CreatDate,
+                    products: {}
+                };
+            }
+
+            if (!groupedOrders[orderKey].products[row.ProductId]) {
+                groupedOrders[orderKey].products[row.ProductId] = {
+                    ...row,
+                    quantity: 0,
+                    variants: []
+                };
+            }
+
+            groupedOrders[orderKey].products[row.ProductId].quantity += row.Qwnatity;
+            groupedOrders[orderKey].products[row.ProductId].variants.push({
+                VOCId: row.VOCId,
+                VOId: row.VOId,
+                quantity: row.Qwnatity
+            });
+        });
+
+        for (const key in groupedOrders) {
+            const order = groupedOrders[key];
+            for (const productId in order.products) {
+                const product = order.products[productId];
+                const colorPromises = product.variants.map(async (variant) => {
+                    if (variant.VOCId) {
+                        const [colorRows] = await db.execute('SELECT value FROM variant_options WHERE id = ?', [variant.VOCId]);
+                        return colorRows[0] ? colorRows[0].value : null;
+                    }
+                    return null;
+                });
+                const optionPromises = product.variants.map(async (variant) => {
+                    if (variant.VOId) {
+                        const [optionRows] = await db.execute('SELECT value FROM variant_options WHERE id = ?', [variant.VOId]);
+                        return optionRows[0] ? optionRows[0].value : null;
+                    }
+                    return null;
+                });
+
+                product.colors = await Promise.all(colorPromises);
+                product.options = await Promise.all(optionPromises);
+            }
+        }
+
+        res.render("users/OrdersTrack", {
+            pageTitle: "OrdersTrack",
+            path: "users/OrdersTrack",
+            groupedOrders: groupedOrders
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({error: "error in OrdersTracking "});
+    }
+}
