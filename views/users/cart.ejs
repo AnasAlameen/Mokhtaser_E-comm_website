@@ -27,10 +27,10 @@
                   <button class="delete-btn" onclick="deleteProduct('<%= product.id %>')">
                     <i class="fas fa-trash-alt text-danger"></i>
                 </button>
-                  <div class="form-check mb-2">
-                    <input type="checkbox" class="form-check-input product-checkbox" name="selectedProducts" value="<%= product.ProductId %>">
-                    <label class="form-check-label" for="product_<%= product.ProductId %>">اختر المنتج</label>
-                  </div>
+                <div class="form-check mb-2">
+                  <input type="checkbox" class="form-check-input product-checkbox" name="selectedProducts" value="<%= product.ProductId %>" id="product_<%= product.ProductId %>">
+                  <label class="form-check-label" for="product_<%= product.ProductId %>">اختر المنتج</label>
+                  <input type="hidden" id="id_<%= product.ProductId %>" value="<%= product.id %>">              </div>
                   <h4 class="card-title"><%= product.ProductName %></h4>
                   <!-- <p class="card-text product-description"><%= product.Discrption %></p> -->
                   <div class="d-flex justify-content-between align-items-center mb-2">
@@ -42,6 +42,8 @@
                     <p id="Prise_<%= product.ProductId %>" class="mb-0 fs-5 fw-bold">السعر: $<%= product.Prise %></p>
                   </div>
                   <input type="hidden" id="VOCId_<%= product.ProductId %>" value="<%= product.VOCId %>">
+                  <input type="hidden" id="id_<%= product.id %>" value="<%= product.VOCId %>">
+
                   <% if(product.VOId){ %>
 
                   <input type="hidden" id="VOId_<%= product.ProductId %>" value="<%= product.VOId %>">
@@ -92,7 +94,7 @@ function deleteProduct(productId) {
                 if (productElement) {
                     productElement.remove();
                 }
-               
+              
                 Swal.fire({
                     title: 'تم إزالة المنتج بنجاح',
                     icon: 'success',

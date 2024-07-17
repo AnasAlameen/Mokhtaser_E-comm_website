@@ -84,6 +84,7 @@ exports.addOrder = async (req, res, next) => {
         productPrice,
         selectedColorVartionID,
         selectedOptionId,
+        idElement
       } = product;
 
       if (
@@ -116,7 +117,9 @@ exports.addOrder = async (req, res, next) => {
         productPrice,
         selectedColorVartionID || null,
         selectedOptionId || null,
+        
       ]);
+      console.log("data",req.body)
 
       // تحديث الكميات بناءً على خصائص المنتج
       if (selectedOptionId && selectedColorVartionID) {
@@ -143,23 +146,15 @@ exports.addOrder = async (req, res, next) => {
           WHERE id = ?
         `;
         await db.execute(updateOptionQuery, [quantity, selectedOptionId]);
-      } else {
-        // المنتج لا يحتوي على ألوان ولا مقاسات
-        const updateProductQuery = `
-          UPDATE products
-          SET quantity = quantity - ?
-          WHERE id = ?
-        `;
-        await db.execute(updateProductQuery, [quantity, productId]);
-      }
+      } 
 
       console.log(productId, " productId" + UserId + " UserId");
       // حذف العنصر من سلة التسوق
       const deleteCartQuery = `
         DELETE FROM shopping_carts
-        WHERE UserId = ? AND ProductId = ?
+        WHERE UserId = ? AND id = ?
       `;
-      await db.execute(deleteCartQuery, [UserId, productId]);
+      await db.execute(deleteCartQuery, [UserId, idElement]);
     }
 
     res

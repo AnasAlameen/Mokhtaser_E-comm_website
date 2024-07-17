@@ -13,11 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const priceElement = document.getElementById(`Prise_${productId}`);
                 const VOCIdElement = document.getElementById(`VOCId_${productId}`);
                 const VOIdElement = document.getElementById(`VOId_${productId}`);
-
-                if (!priceElement || !VOCIdElement || !VOIdElement) {
-                    console.error(`Required element not found for product ID: ${productId}`);
-                    return;
-                }
+                const idElement = document.getElementById(`id_${productId}`);
 
                 let price = parseFloat(priceElement.textContent.replace('السعر: $', ''));
 
@@ -26,14 +22,23 @@ document.addEventListener('DOMContentLoaded', () => {
                     totalAmount += quantity * price;
                     const ElementPrise = quantity * price;
 
-                    selectedProducts.push({
+                    const selectedProduct = {
                         productId: productId,
                         productPrice: price,
                         quantity: quantity,
-                        VOCId: VOCIdElement.value,
-                        VOId: VOIdElement.value,
-                        productPrice: ElementPrise
-                    });
+                        productPrice: ElementPrise,
+                        idElement:idElement.value
+                    };
+
+                    if (VOCIdElement) {
+                        selectedProduct.VOCId = VOCIdElement.value;
+                    }
+
+                    if (VOIdElement) {
+                        selectedProduct.VOId = VOIdElement.value;
+                    }
+
+                    selectedProducts.push(selectedProduct);
                 } else {
                     console.error(`Quantity input not found for product ID: ${productId}`);
                 }
@@ -41,11 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (selectedProducts.length > 0) {
-            console.log("selectedProducts",selectedProducts)
             let formData = new FormData();
             formData.append("selectedProducts", JSON.stringify(selectedProducts));
-
-            console.log("Sending data to server:", JSON.stringify(selectedProducts));
+            console.log("from",selectedProducts)
 
             axios.post('/cart/ordered', formData, { 
                 headers: {
@@ -92,6 +95,4 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalPriceElement = document.getElementById('totalPrice');
         totalPriceElement.textContent = `المجموع: $${totalAmount.toFixed(2)}`;
     });
-   
-    
 });
