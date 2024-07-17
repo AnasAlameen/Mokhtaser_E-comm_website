@@ -41,12 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (selectedProducts.length > 0) {
+            console.log("selectedProducts",selectedProducts)
             let formData = new FormData();
             formData.append("selectedProducts", JSON.stringify(selectedProducts));
 
             console.log("Sending data to server:", JSON.stringify(selectedProducts));
 
-            axios.post('http://localhost:3000/cart/ordered', formData, { 
+            axios.post('/cart/ordered', formData, { 
                 headers: {
                     "Content-Type": "multipart/form-data",
                     "CSRF-Token": document.querySelector('input[name="_csrf"]').value,
@@ -60,8 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         text: 'سيتم تجهيز طلبك قريباً.',
                         icon: 'success',
                         confirmButtonText: 'موافق'
-                    }).then(() => {
-                        window.location.href = "/user/product/details"; // إعادة التوجيه بعد النجاح
                     });
                 } else {
                     Swal.fire({
@@ -93,4 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalPriceElement = document.getElementById('totalPrice');
         totalPriceElement.textContent = `المجموع: $${totalAmount.toFixed(2)}`;
     });
+   
+    
 });

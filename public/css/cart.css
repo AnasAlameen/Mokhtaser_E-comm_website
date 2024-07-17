@@ -73,3 +73,34 @@ body {
     background-color: #218838;
   }
   
+  .product-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+  }
+  .product-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  .product-image {
+    height: 200px;
+    object-fit: cover;
+  }
+  .delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(255,255,255,0.8);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .delete-btn:hover {
+    background-color: rgba(255,0,0,0.1);
+  }

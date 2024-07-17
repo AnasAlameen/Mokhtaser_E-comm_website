@@ -86,7 +86,9 @@ body {
     width: 100%;
     margin-top: 10px;
   }
-
+.print-all-shipping-info{
+  background-color: hsl(30, 100%, 50%);
+}
   .category-item img {
     width: 150px;
     height: 150px;

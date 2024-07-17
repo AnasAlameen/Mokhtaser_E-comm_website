@@ -34,5 +34,7 @@ router.get("/Orders", isAuth,cartControler.getOrders);
 
 router.post("/orderRedy",multable, isShop,cartControler.orderRedy);
 
+router.delete('/delete', cartControler.deleteFromCart);
+
 
 exports.router = router;

@@ -13,8 +13,8 @@ exports.postAddToCart = async (req, res, next) => {
   let UserId = req.session.userId;
   const finalSelectedColorVartionID = selectedColorVartionID || null;
   const finalSelectedOptionId = selectedOptionId || null;
-console.log(req.body)
-console.log('cart')
+  console.log(req.body);
+  console.log("cart");
   try {
     let productQuery = `
       INSERT INTO shopping_carts (
@@ -53,7 +53,6 @@ console.log('cart')
 
       await db.execute(updateQuery2, [lastQuan, selectedOptionId]);
     }
-    // يمكنك إضافة أي معالجة إضافية هنا بعد التنفيذ الناجح للاستعلام
     res.status(200).json({ message: "Product added to cart successfully" });
   } catch (error) {
     console.error("Error executing query:", error);
@@ -69,17 +68,32 @@ exports.addOrder = async (req, res, next) => {
   console.log("body");
 
   if (!selectedProducts || selectedProducts.length === 0) {
-    return res.status(400).json({ success: false, message: "No products selected" });
+    return res
+      .status(400)
+      .json({ success: false, message: "No products selected" });
   }
 
   try {
     selectedProducts = JSON.parse(selectedProducts);
 
+    console.log("selectedProducts", selectedProducts);
     for (const product of selectedProducts) {
-      const { productId, quantity, productPrice, selectedColorVartionID, selectedOptionId } = product;
+      const {
+        productId,
+        quantity,
+        productPrice,
+        selectedColorVartionID,
+        selectedOptionId,
+      } = product;
 
-      if (productId === undefined || quantity === undefined || productPrice === undefined) {
-        return res.status(400).json({ success: false, message: "Invalid product data" });
+      if (
+        productId === undefined ||
+        quantity === undefined ||
+        productPrice === undefined
+      ) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid product data" });
       }
 
       let productQuery = `
@@ -104,23 +118,39 @@ exports.addOrder = async (req, res, next) => {
         selectedOptionId || null,
       ]);
 
-      // تحديث الكميات
-      if (selectedOptionId) {
-        const updateOptionQuery = `
-        UPDATE variant_options
-        SET qty = qty - ?
-        WHERE id = ?
-      `;
-        await db.execute(updateOptionQuery, [quantity, selectedOptionId]);
-      }
-
-      if (selectedColorVartionID) {
+      // تحديث الكميات بناءً على خصائص المنتج
+      if (selectedOptionId && selectedColorVartionID) {
+        // المنتج يحتوي على ألوان ومقاسات
+        const updateQuery = `
+          UPDATE variant_options
+          SET qty = qty - ?
+          WHERE id = ?
+        `;
+        await db.execute(updateQuery, [quantity, selectedOptionId]);
+      } else if (selectedColorVartionID) {
+        // المنتج يحتوي على ألوان فقط
         const updateColorQuery = `
-        UPDATE variant_options
-        SET qty = qty - ?
-        WHERE id = ?
-      `;
+          UPDATE variant_options
+          SET qty = qty - ?
+          WHERE id = ?
+        `;
         await db.execute(updateColorQuery, [quantity, selectedColorVartionID]);
+      } else if (selectedOptionId) {
+        // المنتج يحتوي على مقاسات فقط
+        const updateOptionQuery = `
+          UPDATE variant_options
+          SET qty = qty - ?
+          WHERE id = ?
+        `;
+        await db.execute(updateOptionQuery, [quantity, selectedOptionId]);
+      } else {
+        // المنتج لا يحتوي على ألوان ولا مقاسات
+        const updateProductQuery = `
+          UPDATE products
+          SET quantity = quantity - ?
+          WHERE id = ?
+        `;
+        await db.execute(updateProductQuery, [quantity, productId]);
       }
 
       console.log(productId, " productId" + UserId + " UserId");
@@ -132,14 +162,25 @@ exports.addOrder = async (req, res, next) => {
       await db.execute(deleteCartQuery, [UserId, productId]);
     }
 
-    res.status(200).json({ success: true, message: "Order placed successfully" })
+    res
+      .status(200)
+      .json({ success: true, message: "Order placed successfully" });
   } catch (error) {
     console.error("Error executing query:", error);
     res.status(500).json({ success: false, message: "Error placing order" });
   }
 };
-
-
+exports.deleteFromCart = async (req, res, next) => {
+  const productId = req.query.productId;
+  console.log("Deleting product with ID:", productId);
+  try {
+    const deleteFromCart = await db.execute("DELETE FROM shopping_carts WHERE id = ?", [productId]);
+    res.status(200).json({ success: true, message: "Item successfully deleted" });
+  } catch (error) {
+    console.error("Error deleting item from cart:", error);
+    res.status(500).json({ success: false, error: "Error deleting item from cart" });
+  }
+};
 
 exports.getCart = async (req, res, next) => {
   const userId = req.session.userId; // الحصول على UserId من الجلسة
@@ -162,7 +203,7 @@ exports.getCart = async (req, res, next) => {
       return res.render("users/cart", {
         pageTitle: "Cart",
         path: "users/cart",
-        groupedProducts: {}
+        groupedProducts: {},
       });
     }
 
@@ -194,7 +235,7 @@ exports.getCart = async (req, res, next) => {
           sellerName,
           products: [],
           colors: [],
-          options: []
+          options: [],
         };
       }
       acc[sellerId].products.push(row);
@@ -207,14 +248,13 @@ exports.getCart = async (req, res, next) => {
     res.render("users/cart", {
       pageTitle: "Cart",
       path: "users/cart",
-      groupedProducts
+      groupedProducts,
     });
   } catch (error) {
     console.error(error);
     next(error);
   }
 };
-
 
 exports.getOrders = async (req, res, next) => {
   let sellerId = req.session.storeId;
@@ -239,7 +279,7 @@ exports.getOrders = async (req, res, next) => {
       return res.render("shop/orders", {
         pageTitle: "Orders",
         path: "shop/orders",
-        groupedProducts: {}
+        groupedProducts: {},
       });
     }
 
@@ -264,7 +304,9 @@ exports.getOrders = async (req, res, next) => {
     const userIds = rows.map((row) => row.UserId);
     const uniqueUserIds = [...new Set(userIds)];
 
-    const locationQuery = `SELECT UserId, City, area FROM location WHERE UserId IN (${uniqueUserIds.join(",")})`;
+    const locationQuery = `SELECT UserId, City, area FROM location WHERE UserId IN (${uniqueUserIds.join(
+      ","
+    )})`;
     const [locationRows] = await db.execute(locationQuery);
     console.log(locationRows);
 
@@ -278,7 +320,7 @@ exports.getOrders = async (req, res, next) => {
           products: [],
           colors: [],
           options: [],
-          locationQuery: []
+          locationQuery: [],
         };
       }
       acc[UserId].products.push(row);
@@ -294,14 +336,14 @@ exports.getOrders = async (req, res, next) => {
     }, {});
 
     // إضافة بيانات الشحن لكل مستخدم في groupedProducts
-    Object.keys(groupedProducts).forEach(userId => {
+    Object.keys(groupedProducts).forEach((userId) => {
       groupedProducts[userId].locationQuery.push(userLocations[userId]);
     });
 
     res.render("shop/orders", {
       pageTitle: "Orders",
       path: "shop/orders",
-      groupedProducts: groupedProducts
+      groupedProducts: groupedProducts,
     });
   } catch (error) {
     console.error(error);
@@ -372,23 +414,27 @@ exports.postOrder = async (req, res, next) => {
 };
 exports.orderRedy = async (req, res, next) => {
   try {
-      const productIds = JSON.parse(req.body.productIds);
+    const productIds = JSON.parse(req.body.productIds);
 
-      if (!productIds || productIds.length === 0) {
-          return res.status(400).json({ error: "Invalid product IDs" });
-      }
+    if (!productIds || productIds.length === 0) {
+      return res.status(400).json({ error: "Invalid product IDs" });
+    }
 
-      console.log(productIds + " checked");
-     
-    const updateQueries = productIds.map(id => {
-      return db.execute( `UPDATE orders SET status = 'Pending Shipping' WHERE id = ${id}`);
-  });
+    console.log(productIds + " checked");
 
-  Promise.all(updateQueries)
+    const updateQueries = productIds.map((id) => {
+      return db.execute(
+        `UPDATE orders SET status = 'Pending Shipping' WHERE id = ${id}`
+      );
+    });
 
-      res.status(200).json({ message: "Order processed successfully" });
+    Promise.all(updateQueries);
+
+    res.status(200).json({ message: "Order processed successfully" });
   } catch (error) {
-      console.error("Error executing query:", error);
-      res.status(500).json({ error: "An error occurred while processing the order" });
+    console.error("Error executing query:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while processing the order" });
   }
 };
