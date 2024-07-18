@@ -1,0 +1,246 @@
+:root {
+    --accent-color: hsl(30, 100%, 50%); /* البرتقالي */
+}
+
+body {
+    background-color: #f8f9fa;
+}
+
+.profile-header {
+    position: relative;
+    padding-top: 150px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    padding-bottom: 20px;
+}
+
+.profile-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-size: cover;
+    background-position: center;
+    height: 200px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.profile-avatar {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 150px;
+    border: 5px solid white;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-info {
+    padding: 20px;
+    margin-top: 80px; 
+}
+
+.user-stats {
+    border-top: 1px solid #e9ecef;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.product-card {
+    transition: transform 0.3s ease-in-out;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+}
+
+.product-card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.btn-primary:hover {
+    background-color: darken(var(--accent-color), 10%);
+    border-color: darken(var(--accent-color), 10%);
+}
+
+/* إضافة جديدة لآخر الوظائف */
+#latest-jobs {
+    padding: 50px 20px;
+}
+
+#latest-jobs h2 {
+    font-size: 2em;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+#latest-jobs ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+#latest-jobs li {
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    flex: 1 1 calc(33.333% - 20px); /* تعديل الكروت لتكون 3 في الصف */
+    max-width: calc(33.333% - 20px); /* تعديل الكروت لتكون 3 في الصف */
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#latest-jobs li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
+}
+
+#latest-jobs li a {
+    display: block;
+    padding: 20px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+#latest-jobs li a:hover {
+    background-color: var(--accent-color);
+    color: #fff;
+    border: 1px solid #ddd;
+}
+
+#latest-jobs li img {
+    width: 100%;
+    height: 150px; /* تعيين ارتفاع ثابت لجميع الصور */
+    object-fit: cover; /* لجعل الصور تغطي كامل الحاوية */
+    object-position: center; /* لتوسيط الصور */
+    margin-bottom: 10px;
+    border-radius: 10px;
+}
+
+#latest-jobs li h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+#latest-jobs li p {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+    color: var(--accent-color);
+}
+
+/* ضمان أن الكروت تصبح صف واحد على الشاشات الصغيرة */
+@media (max-width: 768px) {
+    #latest-jobs li {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+}
+.edit-profile-swal-container {
+    font-family: 'Arial', sans-serif;
+}
+
+.edit-profile-swal-popup {
+    background-color: #f8f9fa;
+    border-radius: 15px;
+}
+
+.edit-profile-swal-header {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.edit-profile-swal-title {
+    color: var(--accent-color);
+}
+
+.edit-profile-swal-close:hover {
+    color: var(--accent-color);
+}
+
+.edit-profile-swal-content {
+    padding: 20px;
+}
+
+.edit-profile-swal-confirm,
+.edit-profile-swal-cancel {
+    border-radius: 20px;
+    padding: 10px 20px;
+}
+
+.edit-profile-swal-confirm {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.edit-profile-swal-cancel {
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.edit-profile-container {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.profile-image-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile-image-container img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    margin-right: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    border-radius: 20px;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+}
+
+#map {
+    height: 300px;
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    border-radius: 20px;
+    padding: 10px 20px;
+}
+
+.btn-primary:hover {
+    background-color: darken(var(--accent-color), 10%);
+    border-color: darken(var(--accent-color), 10%);
+}

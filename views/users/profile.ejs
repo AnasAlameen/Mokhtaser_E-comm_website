@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <%- include('../includes/shop/head.ejs') %>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/profile.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJ3phAQVBfelG8E7PmauVNs01qkWT8euw&callback=initMap" async defer></script>
+    <title>الملف الشخصي - <%= getUserInformations[0].FirstName %></title>
+</head>
+<body>
+    <%- include('../includes/users/Navgation.ejs') %>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <div class="container mt-5">
+        <div class="profile-header">
+            <div class="profile-background" style="background-image: url('https://images.unsplash.com/photo-1496307653780-42ee777d4833?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
+                <div class="profile-avatar">
+                    <img src="../images/<%= userInfo.url.split('\\').pop() %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
+                </div>
+            </div>
+            <div class="profile-info text-center ">
+                <h2 class="mb-2"><%= getUserInformations[0].FirstName %> <%= getUserInformations[0].LastName %></h2>
+                <p class="text-muted mb-2"><%= getUserInformations[0].username %></p>
+                <p class="text-muted mb-3"><i class="fas fa-phone me-2"></i><a href="https://wa.me/<%= getUserInformations[0].Phone %>" target="_blank"><%= getUserInformations[0].Phone || 'رقم الهاتف غير متوفر' %></a></p>
+                <button class="btn btn-primary" onclick="editProfile()">
+                    <i class="fas fa-edit me-2"></i>تعديل البيانات الشخصية
+                </button>
+            </div>
+            
+            <div class="row text-center user-stats mt-4">
+                <div class="col-4">
+                    <h5>المنتجات</h5>
+                    <p class="text-primary fw-bold">0</p>
+                </div>
+                <div class="col-4">
+                    <h5>المتابعون</h5>
+                    <p class="text-primary fw-bold">0</p>
+                </div>
+                <div class="col-4">
+                    <h5>المتابَعون</h5>
+                    <p class="text-primary fw-bold">0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="latest-jobs" class="mt-5">
+        <h2>محتويات السلة </h2>
+        <ul class="row">
+            <% products.forEach(product => { %>
+                <li class="col-lg-4 col-md-6 col-sm-12">
+                    <a href="http://localhost:3000/user/product/details?product_id=<%= product.id %>">
+                        <img src="../images/<%= product.url.split('\\').pop() %>" alt="Product Image" />
+                        <h3><%= product.ProductName %></h3>
+                        <p class="prise"><%= product.Prise %></p>
+                    </a>
+                </li>
+            <% }) %>
+        </ul>
+    </section>
+
+    <script>
+        function editProfile() {
+           Swal.fire({
+    title: 'تعديل البيانات الشخصية',
+    html: `
+        <div class="edit-profile-container">
+            <div class="profile-image-container">
+                <img id="current-profile-pic" src="<%= getUserInformations[0].ProfileImage %>" alt="صورة الملف الشخصي" class="rounded-circle">
+                <input type="file" id="new-profile-pic" class="form-control-file" accept="image/*">
+                <input type="hidden" id="current-profile-image" value="<%= getUserInformations[0].ProfileImage %>">
+            </div>
+            <div class="form-group">
+                <input id="swal-input1" class="form-control" placeholder="الاسم الأول" value="<%= getUserInformations[0].FirstName %>">
+            </div>
+            <div class="form-group">
+                <input id="swal-input2" class="form-control" placeholder="الاسم الأخير" value="<%= getUserInformations[0].LastName %>">
+            </div>
+            <div class="form-group">
+                <input id="swal-input3" class="form-control" placeholder="تاريخ الميلاد" value="<%= getUserInformations[0].birth_date ? getUserInformations[0].birth_date.toISOString().split('T')[0] : '' %>" type="date">
+            </div>
+            <button class="btn btn-primary" onclick="getUserLocation()">تحديد الموقع</button>
+            <div id="location-fields" class="mt-3">
+                <div class="form-group">
+                    <input id="city" class="form-control" placeholder="المدينة" value="<%= products[0].City %>">
+                </div>
+                <div class="form-group">
+                    <input id="area" class="form-control" placeholder="المنطقة" value="<%= products[0].area %>">
+                </div>
+                <div id="map" style="height: 200px;"></div>
+                <input id="latitude" type="hidden" value="<%= products[0].lasttiud %>">
+                <input id="longitude" type="hidden" value="<%= products[0].longtiud %>">
+            </div>
+        </div>
+    `,
+    focusConfirm: false,
+    showCancelButton: true,
+    confirmButtonText: 'تحديث',
+    cancelButtonText: 'إلغاء',
+    customClass: {
+        container: 'edit-profile-swal-container',
+        popup: 'edit-profile-swal-popup',
+        header: 'edit-profile-swal-header',
+        title: 'edit-profile-swal-title',
+        closeButton: 'edit-profile-swal-close',
+        content: 'edit-profile-swal-content',
+        confirmButton: 'edit-profile-swal-confirm',
+        cancelButton: 'edit-profile-swal-cancel'
+    },
+    didOpen: () => {
+        initMap();
+    },
+    preConfirm: () => {
+    return {
+        firstName: document.getElementById('swal-input1').value,
+        lastName: document.getElementById('swal-input2').value,
+        birthDate: document.getElementById('swal-input3').value,
+        profileImage: document.getElementById('new-profile-pic').files.length > 0 ? document.getElementById('new-profile-pic').files[0] : null,
+        currentProfileImage: document.getElementById('current-profile-image').value,
+        city: document.getElementById('city').value,
+        area: document.getElementById('area').value,
+        latitude: document.getElementById('latitude').value,
+        longitude: document.getElementById('longitude').value
+    };
+},
+}).then((result) => {
+    if (result.isConfirmed) {
+        const formData = new FormData();
+        formData.append('firstName', result.value.firstName);
+        formData.append('lastName', result.value.lastName);
+        formData.append('birthDate', result.value.birthDate);
+        if (result.value.profileImage) {
+            formData.append('profileImage', result.value.profileImage);
+        } else {
+            formData.append('currentProfileImage', result.value.currentProfileImage);
+        }
+        formData.append('city', result.value.city);
+        formData.append('area', result.value.area);
+        formData.append('latitude', result.value.latitude);
+        formData.append('longitude', result.value.longitude);
+        const csrfToken = document.querySelector('input[name="_csrf"]').value;
+
+        axios.post('/user/profile/update', formData, {
+            headers: {
+                "CSRF-Token": csrfToken
+            }
+        })
+        .then(response => {
+            if (response.data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم التحديث!',
+                    text: 'تم تحديث البيانات الشخصية بنجاح.',
+                    confirmButtonText: 'حسناً'
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'خطأ',
+                    text: 'حدث خطأ أثناء التحديث.',
+                    confirmButtonText: 'حسناً'
+                });
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'خطأ',
+                text: 'حدث خطأ أثناء التحديث.',
+                confirmButtonText: 'حسناً'
+            });
+        });
+    }
+});
+        }
+        function initMap() {
+            const lat = parseFloat(document.getElementById('latitude').value) || 32.281433;
+            const lng = parseFloat(document.getElementById('longitude').value) || 14.517987;
+            const mapOptions = {
+                center: { lat, lng },
+                zoom: 12,
+                mapTypeId: "satellite",
+            };
+            
+            const map = new google.maps.Map(document.getElementById("map"), mapOptions);
+            
+            let marker = new google.maps.Marker({
+                position: { lat, lng },
+                map: map,
+                draggable: true
+            });
+
+            google.maps.event.addListener(marker, 'dragend', function(event) {
+                document.getElementById('latitude').value = event.latLng.lat();
+                document.getElementById('longitude').value = event.latLng.lng();
+            });
+
+            map.addListener("click", (e) => {
+                marker.setPosition(e.latLng);
+                document.getElementById('latitude').value = e.latLng.lat();
+                document.getElementById('longitude').value = e.latLng.lng();
+            });
+        }
+
+        function getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude,
+                        };
+                        document.getElementById('latitude').value = userLocation.lat;
+                        document.getElementById('longitude').value = userLocation.lng;
+                        initMap();
+                    },
+                    () => {
+                        alert("تعذر الوصول إلى موقعك الحالي.");
+                    }
+                );
+            } else {
+                alert("المتصفح لا يدعم الحصول على الموقع الحالي.");
+            }
+        }
+    </script>
+</body>
+</html>

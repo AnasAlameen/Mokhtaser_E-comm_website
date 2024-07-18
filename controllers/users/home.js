@@ -343,3 +343,78 @@ exports.getUserHomePage = async (req, res, next) => {
         res.status(500).send({error: "error in OrdersTracking "});
     }
 }
+exports.getProfile= async (req,res)=>{
+  const user_id=req.session.userId;
+  console.log("userId",user_id);
+  try {
+    const [getUserInformations]= await db.execute("select * from users where id =?",[user_id])
+    console.log("getUserInformations1",getUserInformations);
+
+    const [getFromCart]=await db.execute(`select p.ProductName,p.Prise	,p.Discrption ,c.ProductId,i.url,p.id,l.City
+    ,l.area,l.longtiud,l.lasttiud,l.UserId
+    from shopping_carts c
+    inner join products p on p.id=c.ProductId
+    inner join product_images i on i.ProductId=c.ProductId
+    inner join location l on l.UserId=c.UserId
+    where c.UserId=?
+    GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
+    `,[user_id]);
+    console.log("getFromCart",getFromCart);
+
+    if(getUserInformations.length >0)
+    {
+      console.log("getUserInformations",getUserInformations);
+      res.render("users/profile", {
+        pageTitle: "profile",
+        path: "users/profile",
+        getUserInformations:getUserInformations,
+        products:getFromCart
+    })
+      
+    }
+   
+  } catch (error) {
+    console.log("ther is an erorre geting data : ", error)
+    res.status(500).json({ success: false, error:"ther is an error geting user information"})
+    
+  }
+
+}
+
+exports.postProfileUpdate = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const { firstName, lastName, birthDate, city, area, latitude, longitude } = req.body;
+    
+    // تحقق من وجود ملف صورة جديد
+    let profileImageUrl;
+    if (req.files && req.files.profileImage && req.files.profileImage[0]) {
+      profileImageUrl = req.files.profileImage[0].path;
+    } else {
+      // إذا لم يتم تحميل صورة جديدة، استخدم الصورة الحالية
+      profileImageUrl = req.body.currentProfileImage;
+    }
+
+    // تحديث بيانات المستخدم في قاعدة البيانات
+    const updateUserQuery = `
+      UPDATE users 
+      SET FirstName = ?, LastName = ?, birth_date = ?, url = ?
+      WHERE id = ?
+    `;
+    await db.execute(updateUserQuery, [firstName, lastName, birthDate, profileImageUrl, userId]);
+
+    // تحديث بيانات الموقع
+    const updateLocationQuery = `
+      INSERT INTO location (UserId, City, area, longtiud, lasttiud)
+      VALUES (?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE
+      City = VALUES(City), area = VALUES(area), longtiud = VALUES(longtiud), lasttiud = VALUES(lasttiud)
+    `;
+    await db.execute(updateLocationQuery, [userId, city, area, longitude, latitude]);
+
+    res.json({ success: true, message: "تم تحديث البيانات الشخصية بنجاح" });
+  } catch (error) {
+    console.error("خطأ في تحديث الملف الشخصي:", error);
+    res.status(500).json({ success: false, error: "حدث خطأ أثناء تحديث البيانات الشخصية" });
+  }
+};

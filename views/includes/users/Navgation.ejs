@@ -27,7 +27,8 @@
     <nav class="sidebar__container">
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
       <div class="sidebar__account">
-        <img src="<%= userInfo.url %>" alt="Profile" class="sidebar__perfil">
+        <img src="../images/<%= userInfo.url.split('\\').pop() %>" alt="Product Image"  class="sidebar__perfil"/>
+
         <div class="sidebar__names">
           <h3 class="sidebar__name"><%= userInfo.FirstName %></h3>
         </div>
@@ -43,7 +44,7 @@
             <i class="ri-shopping-cart-line"></i>
             <span class="sidebar__link-name">السلة</span>
           </a>
-          <a href="http://localhost:3000/shop/profile" class="sidebar__link">
+          <a href="/user/profile" class="sidebar__link">
             <i class="ri-user-line"></i>
             <span class="sidebar__link-name">الملف الشخصي</span>
           </a>
