@@ -34,71 +34,114 @@ exports.getUserHomePage = async (req, res, next) => {
 };
 
  
-  
-  exports.getproductDetals = async (req, res, next) => {
-    const productId = req.query.product_id;
-  
-    if (!productId) {
-      return res.status(400).send("معرف المنتج مطلوب");
-    }
-  
-    try {
-      // جلب صور المنتج
-      const imageQuery = "SELECT url FROM product_images WHERE productId = ?";
-      const [imageResults] = await db.execute(imageQuery, [productId]);
-      const imageURLs = imageResults.map((row) => row.url);
-      console.log("imageResults", imageResults);
+exports.getproductDetals = async (req, res, next) => {
+  const productId = req.query.product_id;
 
-      // جلب تفاصيل المنتج
-      const productQuery =
-        "SELECT `SellerId`, `Prise`, `Discrption`, `ProductName`, `solid` FROM products WHERE id = ?";
-      const [productResults] = await db.execute(productQuery, [productId]);
-      const product = productResults[0];
-  
-      // جلب صور الألوان المتاحة
-      const variantImageQuery = `
-        SELECT vi.url ,vi.id,vo.value, vo.id as vartionId,vo.qty
-        FROM variants v
-        INNER JOIN variant_options vo ON v.id = vo.VariantsId
-        INNER JOIN variant_images vi ON vo.id = vi.variant_option_id
-        WHERE v.product_id = ? AND v.VariantsType = 'color'
-        LIMIT 1000
-      `;
-      const [variantImageResults] = await db.execute(variantImageQuery, [
-        productId,
-      ]);
-      const vartins = variantImageResults.map((row) => row.url);
-  
-      console.log("vartins", vartins);
-      console.log("variantImageResults", variantImageResults);
-      // جلب خيارات الأحجام المتاحة
-      const variantOptionsQuery = `
-        SELECT vo.value,vo.id,vo.qty
-        FROM variants v
-        INNER JOIN variant_options vo ON v.id = vo.VariantsId
-        WHERE v.product_id = ? AND v.VariantsType != 'color'
-        LIMIT 1000
-      `;
-      const [variantOptionsResults] = await db.execute(variantOptionsQuery, [
-        productId,
-      ]);
-  
-      res.render("users/productDetals", {
-        pageTitle: "تفاصيل المنتج",
-        path: "users/productDetals",
-        product: product, // تمرير تفاصيل المنتج إلى القالب
-        imageURLs: imageURLs, // تمرير صور المنتج إلى القالب
-        vartins: vartins, // تمرير صور الألوان إلى القالب
-        variantOptions: variantOptionsResults, // تمرير خيارات الأحجام إلى القالب
-        variantImageResults: variantImageResults,
-      });
-    } catch (err) {
-      console.error(err);
-      next(err);
+  if (!productId) {
+    return res.status(400).send("معرف المنتج مطلوب");
+  }
+
+  try {
+    const product = await getProductDetails(productId);
+    if (!product) {
+      return res.status(404).send("المنتج غير موجود");
     }
+
+    const imageURLs = await getProductImages(productId);
+    const { colors, sizes } = await getProductVariants(productId);
+
+    console.log('Colors:', colors); // للتحقق من البيانات
+
+    res.render("users/productDetals", {
+      pageTitle: "تفاصيل المنتج",
+      path: "users/productDetals",
+      product: product,
+      imageURLs: imageURLs,
+      colors: colors || [], // استخدم مصفوفة فارغة إذا كانت colors غير معرفة
+      sizes: sizes || {}, // استخدم كائن فارغ إذا كانت sizes غير معرفة
+      csrfToken: req.csrfToken()
+    });
+
+  } catch (err) {
+    console.error(err);
+    next(err);
+  }
+};
+
+async function getProductDetails(productId) {
+  const query = "SELECT `id`, `SellerId`, `Prise`, `Discrption`, `ProductName`, `solid`, `qty` FROM products WHERE id = ?";
+  const [results] = await db.execute(query, [productId]);
+  return results[0];
+}
+
+async function getProductImages(productId) {
+  const query = "SELECT url FROM product_images WHERE productId = ?";
+  const [results] = await db.execute(query, [productId]);
+  return results.map(row => row.url);
+}
+
+async function getProductVariants(productId) {
+  const colorQuery = `
+    SELECT vi.url, vi.id, vo.value as color, vo.id as variantId, vo.qty
+    FROM variants v
+    INNER JOIN variant_options vo ON v.id = vo.VariantsId
+    LEFT JOIN variant_images vi ON vo.id = vi.variant_option_id
+    WHERE v.product_id = ? AND v.VariantsType = 'color'
+  `;
+
+  const sizeQuery = `
+    SELECT vo.value as size, vo.id, vo.qty, v.VariantsType as unit
+    FROM variants v
+    INNER JOIN variant_options vo ON v.id = vo.VariantsId
+    WHERE v.product_id = ? AND v.VariantsType != 'color'
+  `;
+
+  const [colorResults] = await db.execute(colorQuery, [productId]);
+  const [sizeResults] = await db.execute(sizeQuery, [productId]);
+
+  console.log('Color Results:', colorResults); // للتحقق من البيانات
+
+  return { 
+    colors: colorResults, 
+    sizes: sizeResults
   };
- 
-  
+}
+
+function organizeSizesByUnit(sizes) {
+  return sizes.reduce((acc, size) => {
+    if (!acc[size.unit]) {
+      acc[size.unit] = [];
+    }
+    acc[size.unit].push(size);
+    return acc;
+  }, {});
+}
+
+async function checkAvailability(product, colors, sizes) {
+  let availability = {
+    hasColors: colors.length > 0,
+    hasSizes: sizes.length > 0,
+    availableColors: [],
+    availableSizes: [],
+    isAvailable: true,
+    message: ""
+  };
+
+  if (!colors.length && !sizes.length) {
+    availability.isAvailable = product.qty > 0;
+    availability.message = availability.isAvailable ? "" : "نفدت الكمية";
+  } else if (colors.length && !sizes.length) {
+    availability.availableColors = colors.filter(color => color.qty > 0);
+    availability.isAvailable = availability.availableColors.length > 0;
+    availability.message = availability.isAvailable ? "" : "نفدت جميع الألوان";
+  } else if (sizes.length) {
+    availability.availableSizes = sizes.filter(size => size.qty > 0);
+    availability.isAvailable = availability.availableSizes.length > 0;
+    availability.message = availability.isAvailable ? "" : "نفدت جميع المقاسات";
+  }
+
+  return availability;
+}
   
   
   exports.getCart = (req, res, next) => {
@@ -404,13 +447,10 @@ exports.postProfileUpdate = async (req, res) => {
     await db.execute(updateUserQuery, [firstName, lastName, birthDate, profileImageUrl, userId]);
 
     // تحديث بيانات الموقع
-    const updateLocationQuery = `
-      INSERT INTO location (UserId, City, area, longtiud, lasttiud)
-      VALUES (?, ?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE
-      City = VALUES(City), area = VALUES(area), longtiud = VALUES(longtiud), lasttiud = VALUES(lasttiud)
-    `;
-    await db.execute(updateLocationQuery, [userId, city, area, longitude, latitude]);
+    const updateLocationQuery = `update location
+    set City=? , lasttiud=?,longtiud=?, area=?
+    where UserId =?`
+    await db.execute(updateLocationQuery, [city, latitude, longitude, area, userId]);
 
     res.json({ success: true, message: "تم تحديث البيانات الشخصية بنجاح" });
   } catch (error) {

@@ -11,7 +11,7 @@
     
     <input id="product-name" name="ProductName" placeholder="اسم المنتج" required>
     <textarea id="product-description" name="ProductDiscrption" placeholder="وصف المنتج" required></textarea>
-    <input type="number" id="product-price" name="PrdustPrise" placeholder="السعر" required>
+    <input type="number" id="product-price" name="PrdustPrise" placeholder="السعر" required  >
     <input type="number" id="product-quantity" name="ProductQuantity" placeholder="الكمية المتوفرة" required>
 
     <select id="product-category" name="SubCategorie" required>
@@ -61,7 +61,7 @@
         <input id="TYPE_OF" name="DimensionsType" placeholder="اكتب الوحدة التي يتم بها قياس المنتج (مثلا في الملابس وحدة القياس xl xxl ,في الهواتف جيجيا ,في المجوهرات جرام ...الخ)">
           <input id="meger" name="DimensionsMeger" placeholder="القياس">
           <input type="number" id="Size_color_quantity" name="quantity" placeholder="الكمية" class="input-box">
-          <input type="number" id="variation_color_prise" name="price" placeholder="السعر" class="input-box">
+          <input type="number" id="variation_color_prise" name="price" placeholder="السعر" class="input-box" value=>
           <button type="button" id="save-variation">احفظ المقاس</button>
      </div>
 
@@ -73,15 +73,11 @@
     <button type="button" id="add-sizes">اختر الأحجام</button>
     <div id="sizes-section" class="hide">
       <div class="color_containerButtom">
-        <select id="SIZE_TYPE" name="DimensionsType">
-            <option value="" disabled selected>اختر التصنيف</option>
-            <option value="size">xl xxl ...</option>
-            <option value="weight">الوزن</option>
-            <!-- باقي التصنيفات -->
-        </select>
+        <input id="SIZE_TYPE" name="DimensionsType" placeholder="اكتب الوحدة التي يتم بها قياس المنتج (مثلا في الملابس وحدة القياس xl xxl ,في الهواتف جيجيا ,في المجوهرات جرام ...الخ)">
+
         <input id="size" name="Size" placeholder="القياس">
         <input type="number" id="size-quantity" name="quantity" placeholder="الكمية" class="input-box">
-        <input type="number" id="size-price" name="price" placeholder="السعر" class="input-box">
+        <input type="number" id="size-price" name="price" placeholder="السعر" class="input-box" $>
         <button type="button" id="save-size">احفظ الحجم</button>
       </div>
     </div>

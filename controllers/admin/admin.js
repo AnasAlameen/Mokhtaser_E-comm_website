@@ -84,6 +84,7 @@ exports.Post_Product = async (req, res, next) => {
       }
     }
 
+    console.log("parsedColors.length > ",parsedColors.length )
     // معالجة الألوان إذا كانت موجودة
     if (parsedColors.length > 0) {
       const colorVariantId = await getOrCreateVariantId('color');
@@ -125,7 +126,7 @@ exports.Post_Product = async (req, res, next) => {
         }
       }
     }
-
+console.log("parsedSizes.length",parsedSizes.length)
     // معالجة الأحجام المستقلة إذا كانت موجودة
     if (parsedSizes.length > 0 && parsedColors.length === 0) {
       const sizeVariantId = await getOrCreateVariantId('size');
@@ -558,9 +559,11 @@ exports.postDeleteProduct = async (req, res, next) => {
     // حذف المنتج نفسه
     await db.execute("DELETE FROM products WHERE id = ?", [productId]);
 
-    res.status(200).json({ message: "Product deleted successfully" });
+    // إعادة التوجيه إلى الصفحة الرئيسية بعد الحذف الناجح
+    res.redirect('/shop/prdoduct/');
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error deleting product" });
   }
 };
+

@@ -43,7 +43,6 @@ router.get('/ordersTracking', isAuth, isUser,UsersControlers.getOrdersTracking);
 
 router.get('/profile', isAuth, isUser,UsersControlers.getProfile);
 
-
 router.post('/profile/update', isAuth, multable,isUser,UsersControlers.postProfileUpdate);
 
 

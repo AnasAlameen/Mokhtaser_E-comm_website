@@ -75,7 +75,7 @@
             <img src="../images/<%= product.image_url.split('\\').pop().replace('personal', '') %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
             <h3><%= product.ProductName %></h3>
             <p class="product-description"><%= product.Discrption %></p>
-            <p><%= product.Prise %></p>
+            <h4> <p class="prise"><%= product.Prise %> د.ل</p></h4>
           </a>
         </li>
       <% }) %>
@@ -91,7 +91,7 @@
             <img src="../images/<%= product.image_url.split('\\').pop() %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
             <h3><%= product.ProductName %></h3>
             <p><%= product.Discrption %></p>
-            <p class="prise"><%= product.Prise %></p>
+            <h4> <p class="prise"><%= product.Prise %> د.ل</p></h4>
           </a>
         </li>
       <% }) %>

@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+  
   const images = document.querySelectorAll(".option img");
   const colorImages = document.querySelectorAll(".color-image img");
   const sizeLabels = document.querySelectorAll(".size-option");
@@ -25,27 +26,56 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // تحديث السعر والكمية بناءً على الاختيار الحالي
   function updatePriceAndQuantity() {
-    if (selectedOptionId) {
-      const selectedSizeOption = document.querySelector(
-        `label[data-OptionId="${selectedOptionId}"]`
-      );
-      if (selectedSizeOption) {
-        productPrice = selectedSizeOption.getAttribute("data-price");
-        qwan = selectedSizeOption.getAttribute("data-qty");
-        quantityInput.max = qwan;
+    let highestPrice = 0;
+    let lowestQuantity = Infinity;
+    const selectedOptions = document.querySelectorAll('.size-option.selected');
+  
+    selectedOptions.forEach(option => {
+      const price = parseFloat(option.getAttribute("data-price"));
+      const qty = parseInt(option.getAttribute("data-qty"));
+  
+      if (price > highestPrice) {
+        highestPrice = price;
       }
-    } else if (selectedColorVartion) {
+  
+      if (qty < lowestQuantity) {
+        lowestQuantity = qty;
+      }
+    });
+  
+    if (selectedColorVartion && selectedOptions.length === 0) {
       const selectedColorImage = document.querySelector(
         `img[data-vartionId="${selectedColorVartion}"]`
       );
       if (selectedColorImage) {
-        productPrice = selectedColorImage.getAttribute("data-price");
-        qwan = selectedColorImage.getAttribute("data-qty");
-        quantityInput.max = qwan;
+        const colorPrice = parseFloat(selectedColorImage.getAttribute("data-price"));
+        const colorQty = parseInt(selectedColorImage.getAttribute("data-qty"));
+  
+        if (colorPrice > highestPrice) {
+          highestPrice = colorPrice;
+        }
+  
+        if (colorQty < lowestQuantity) {
+          lowestQuantity = colorQty;
+        }
       }
     }
+  
+    if (highestPrice > 0) {
+      productPrice = highestPrice.toFixed(2);
+      productPriceElement.textContent = `$${productPrice}`;
+    }
+  
+    if (lowestQuantity !== Infinity) {
+      qwan = lowestQuantity;
+      quantityInput.max = qwan;
+    } else {
+      qwan = 0;
+      quantityInput.max = 0;
+    }
+  
     console.log("Updating price to:", productPrice);
-    productPriceElement.textContent = `$${productPrice}`;
+    console.log("Updating quantity to:", qwan);
   }
 
   // معالجة النقر على خيار المقاس
@@ -76,45 +106,45 @@ document.addEventListener("DOMContentLoaded", function () {
   function handleColorImageClick() {
     colorImages.forEach((image) => {
       image.addEventListener("click", () => {
+        if (image.classList.contains("disabled")) return;
+  
         colorImages.forEach((img) => (img.style.border = "none"));
         image.style.border = "2px solid black";
         selectedImage = image.src;
         selectedColor = image.getAttribute("data-color");
         selectedColorVartion = image.getAttribute("data-vartionId");
         selectedImageId = image.getAttribute("data-id");
-
-        console.log("Selected Color:", selectedColor);
-        console.log("Product Price:", productPrice);
-
+  
         document.querySelector(".main_image img").src = image.src;
-
+  
         const sizes = document.querySelectorAll(
           `.size-option[data-color-id="${selectedColorVartion}"]`
         );
+        
+        sizeLabels.forEach((label) => {
+          label.classList.add("disabled");
+          label.style.opacity = "0.5";
+          label.style.pointerEvents = "none";
+        });
+  
         if (sizes.length > 0) {
           sizeOptionsContainer.classList.remove("hide");
-          sizeLabels.forEach((label) => label.classList.add("disabled"));
-          sizes.forEach((size) => size.classList.remove("disabled"));
-
-          // إخفاء المقاسات التي نفذت كمياتها
           sizes.forEach((size) => {
+            size.classList.remove("disabled");
+            size.style.opacity = "1";
+            size.style.pointerEvents = "auto";
             if (parseInt(size.getAttribute("data-qty")) <= 0) {
-              size.classList.add("hide");
+              size.classList.add("disabled");
+              size.style.opacity = "0.5";
+              size.style.pointerEvents = "none";
             }
           });
-
-          // التحقق مما إذا كان اللون يحتوي على أي مقاسات متاحة
-          const availableSizes = Array.from(sizes).filter(
-            (size) => !size.classList.contains("hide")
-          );
-          if (availableSizes.length === 0) {
-            image.classList.add("hide");
-          }
         } else {
           sizeOptionsContainer.classList.add("hide");
         }
-
+  
         updatePriceAndQuantity();
+        checkColorAvailability();
       });
     });
   }
@@ -123,58 +153,58 @@ document.addEventListener("DOMContentLoaded", function () {
   function initializePage() {
     const sizesAvailable = sizeLabels.length > 0;
     const colorsAvailable = colorImages.length > 0;
-
-    console.log(sizesAvailable + " size available");
-    console.log(colorsAvailable + " size colorsAvailable");
-
-    // تحقق من المقاسات عند تحميل الصفحة
+  
     if (sizesAvailable) {
       sizeLabels.forEach((size) => {
         if (parseInt(size.getAttribute("data-qty")) <= 0) {
-          size.classList.add("hide");
+          size.classList.add("disabled");
+          size.style.opacity = "0.5";
+          size.style.pointerEvents = "none";
         }
       });
-    }
-
-    // تحقق من الألوان عند تحميل الصفحة
-    if (colorsAvailable) {
+    } else if (colorsAvailable) {
       colorImages.forEach((image) => {
-        const sizes = document.querySelectorAll(
-          `.size-option[data-color-id="${image.getAttribute(
-            "data-vartionId"
-          )}"]`
-        );
-        if (sizes.length > 0) {
-          const availableSizes = Array.from(sizes).filter(
-            (size) => !size.classList.contains("hide")
-          );
-          if (availableSizes.length === 0) {
-            image.classList.add("hide");
-          }
-        } else {
-          if (parseInt(image.getAttribute("data-qty")) <= 0) {
-            image.classList.add("hide");
-          }
+        if (parseInt(image.getAttribute("data-qty")) <= 0) {
+          image.classList.add("disabled");
+          image.style.opacity = "0.5";
+          image.style.pointerEvents = "none";
         }
       });
-
-      // تحديث السعر والكمية بناءً على أول لون متاح
-      const firstAvailableColor = Array.from(colorImages).find(
-        (image) => !image.classList.contains("hide")
-      );
-      if (firstAvailableColor) {
-        firstAvailableColor.click();
+    } 
+    
+    if (!colorsAvailable && !sizesAvailable) {
+      // إذا لم يكن هناك ألوان أو مقاسات، تحقق من الكمية العامة
+      const generalQuantity = parseInt(quantityInput.max);
+      if (generalQuantity <= 0) {
+        showUnavailableProductMessage();
       }
     }
-
-    // التحقق من نفاد جميع الألوان أو المقاسات
+  
     checkAvailability();
+  
+    // تحديث السعر والكمية بناءً على أول خيار متاح
+    updateInitialPriceAndQuantity();
   }
 
   function getQueryParams() {
     return new URLSearchParams(window.location.search);
   }
-
+  function checkColorAvailability() {
+    const availableSizes = Array.from(sizeLabels).filter(
+      (size) => !size.classList.contains("disabled") && size.style.display !== "none"
+    );
+    
+    if (availableSizes.length === 0) {
+      const currentColorImage = document.querySelector(`img[data-vartionId="${selectedColorVartion}"]`);
+      if (currentColorImage) {
+        currentColorImage.classList.add("disabled");
+        currentColorImage.style.opacity = "0.5";
+        currentColorImage.style.pointerEvents = "none";
+      }
+    }
+    
+    checkAvailability();
+  }
   // التعامل مع إضافة المنتج إلى السلة
   async function handleAddToCart(e) {
     e.preventDefault();
@@ -349,42 +379,50 @@ if(addToCartButton && buyNowButton){
       orderSummaryModal.style.display = "none";
     }
   };
-
+  function checkColorAvailability() {
+    const availableSizes = Array.from(sizeLabels).filter(
+      (size) => !size.classList.contains("disabled") && size.style.display !== "none"
+    );
+    
+    if (availableSizes.length === 0) {
+      const currentColorImage = document.querySelector(`img[data-vartionId="${selectedColorVartion}"]`);
+      if (currentColorImage) {
+        currentColorImage.classList.add("disabled");
+        currentColorImage.style.opacity = "0.5";
+        currentColorImage.style.pointerEvents = "none";
+      }
+    }
+    
+    checkAvailability();
+  }
   function checkAvailability() {
-    //   // التحقق مما إذا كانت هناك ألوان متاحة
     const colorsAvailable = colorImages.length > 0;
-
-    //   // التحقق مما إذا كانت هناك مقاسات متاحة
     const sizesAvailable = sizeLabels.length > 0;
-
-    //   // تحقق مما إذا كانت جميع الألوان غير متاحة إذا كانت الألوان موجودة
-    const allColorsUnavailable = colorsAvailable
-      ? Array.from(colorImages).every((image) =>
-          image.classList.contains("hide")
-        )
-      : false;
-
-    //   // تحقق مما إذا كانت جميع المقاسات غير متاحة إذا كانت المقاسات موجودة
-    const allSizesUnavailable = sizesAvailable
-      ? Array.from(sizeLabels).every((label) =>
-          label.classList.contains("hide")
-        )
-      : false;
-
-    //   // إذا كانت الألوان غير متاحة أو إذا كانت المقاسات غير متاحة، فهذا يعني أن المنتج غير متوفر
-    if (
-      (colorsAvailable && allColorsUnavailable) ||
-      (sizesAvailable && allSizesUnavailable)
-    ) {
+  
+    let allUnavailable = false;
+  
+    if (colorsAvailable) {
+      allUnavailable = Array.from(colorImages).every((image) => image.classList.contains("disabled"));
+    } else if (sizesAvailable) {
+      allUnavailable = Array.from(sizeLabels).every((label) => label.classList.contains("disabled"));
+    } else {
+      allUnavailable = parseInt(quantityInput.max) <= 0;
+    }
+  
+    if (allUnavailable) {
       addToCartButton.disabled = true;
       buyNowButton.disabled = true;
-      showError("عذراً، المنتج غير متوفر حالياً.");
+      showUnavailableProductMessage();
+    } else {
+      addToCartButton.disabled = false;
+      buyNowButton.disabled = false;
     }
   }
   addToCartButton.addEventListener("click", handleAddToCart);
   buyNowButton.addEventListener("click", handleBuyNow);
   // // استدعاء دالة التحقق من التوفر عند تحميل الصفحة
-  initializePage();
+    initializePage();
+
 });
   const mainImage = document.querySelector('.main_image img');
   const thumbnails = document.querySelectorAll('.option img');
@@ -420,12 +458,33 @@ if(addToCartButton && buyNowButton){
     openLightbox(this.src, 0);
   });
 
-  // // فتح العرض المكبر عند النقر على الصور المصغرة
-  // thumbnails.forEach((thumb, index) => {
-  //   thumb.addEventListener('click', function() {
-  //     openLightbox(this.src, index);
-  //   });
-  // });
+  function showUnavailableProductMessage() {
+    Swal.fire({
+      title: "المنتج غير متوفر",
+      text: "عذراً، هذا المنتج غير متوفر حالياً",
+      icon: "info",
+      confirmButtonText: "حسناً"
+    });
+  }
+  function updateInitialPriceAndQuantity() {
+    if (colorImages.length > 0) {
+      const firstAvailableColor = Array.from(colorImages).find(
+        (image) => !image.classList.contains("disabled")
+      );
+      if (firstAvailableColor) {
+        firstAvailableColor.click();
+      }
+    } else if (sizeLabels.length > 0) {
+      const firstAvailableSize = Array.from(sizeLabels).find(
+        (label) => !label.classList.contains("disabled")
+      );
+      if (firstAvailableSize) {
+        firstAvailableSize.click();
+      }
+    } else {
+      updatePriceAndQuantity();
+    }
+  }
 
   // إغلاق العرض المكبر
   close.addEventListener('click', closeLightbox);
@@ -439,4 +498,6 @@ if(addToCartButton && buyNowButton){
     if (e.target === this) {
       closeLightbox();
     }
+    
   });
+  

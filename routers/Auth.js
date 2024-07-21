@@ -11,13 +11,13 @@ const path = require("path");
 
 const singInControllers = require("../controllers/Auth");
 const upload = multer({
-    storage: multer.diskStorage({
-      destination: "./public/personalImages",
-      filename: function (req, file, cb) {
-        cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
-      },
-    }),
-  });
+  storage: multer.diskStorage({
+    destination: "./public/images",
+    filename: function (req, file, cb) {
+      cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
+    },
+  }),
+});
   
   const multable = upload.fields([
     { name: "personalImage", maxCount: 1 } 

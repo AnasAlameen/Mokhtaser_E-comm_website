@@ -35,6 +35,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   addColorBtn.addEventListener("click", (event) => {
+    document.getElementById("color-price").value=document.getElementById("product-price").value
+    document.getElementById("variation_color_prise").value=document.getElementById("product-price").value
+
     event.preventDefault();
     colorsCont.classList.remove("hide");
     addSizeBtn.disabled = true;
@@ -42,7 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   addSizeBtn.addEventListener("click", (event) => {
+    document.getElementById("size-price").value=document.getElementById("product-price").value
+
     event.preventDefault();
+    document.getElementById("color-price").value=document.getElementById("product-price").value
+
     sizesSection.classList.remove("hide");
     addColorBtn.disabled = true;
     addColorBtn.style.backgroundColor = 'transparent';
@@ -420,12 +427,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const ProductDiscrption = document.getElementById("product-description").value;
     const PrdustPrise = document.getElementById("product-price").value;
     const product_category = document.getElementById("product-category").value;
+    const imageInputs = document.getElementById("ProductImages");
 
+    console.log("lenthhhhhhhhhhhhhhhh", selectedImages.length )
     // التحقق من إدخال التفاصيل الأساسية للمنتج
-    if (!ProductName || !ProductDiscrption || isNaN(PrdustPrise) || !product_category) {
+    if (!ProductName || !ProductDiscrption || isNaN(PrdustPrise) || !product_category || imageInputs.files.length === 0) {
       Swal.fire(
         "الرجاء إدخال جميع تفاصيل المنتج الأساسية",
-        "تأكد من إدخال الاسم والوصف والسعر والتصنيف",
+        " تأكد من إدخال الاسم والوصف والسعر والتصنيف وصور المنتج",
         "warning"
       );
       return;

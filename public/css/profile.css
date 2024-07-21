@@ -2,10 +2,6 @@
     --accent-color: hsl(30, 100%, 50%); /* البرتقالي */
 }
 
-body {
-    background-color: #f8f9fa;
-}
-
 .profile-header {
     position: relative;
     padding-top: 150px;
@@ -80,6 +76,20 @@ body {
     border-color: darken(var(--accent-color), 10%);
 }
 
+/* ضمان أن الكروت تصبح صف واحد على الشاشات الصغيرة */
+@media (max-width: 768px) {
+    #latest-jobs li {
+        flex: 1 1 calc(50% - 20px); /* تعديل الكروت لتكون 2 في الصف */
+        max-width: calc(50% - 20px); /* تعديل الكروت لتكون 2 في الصف */
+    }
+}
+
+@media (max-width: 576px) {
+    #latest-jobs li {
+        flex: 1 1 100%; /* الكروت لتكون كارت واحد في الصف */
+        max-width: 100%; /* الكروت لتكون كارت واحد في الصف */
+    }
+}
 /* إضافة جديدة لآخر الوظائف */
 #latest-jobs {
     padding: 50px 20px;
@@ -104,7 +114,7 @@ body {
     border-radius: 10px;
     overflow: hidden;
     margin-bottom: 20px;
-    flex: 1 1 calc(33.333% - 20px); /* تعديل الكروت لتكون 3 في الصف */
+    flex: 1 1 calc(50% - 20px); /* تعديل الكروت لتكون 3 في الصف */
     max-width: calc(33.333% - 20px); /* تعديل الكروت لتكون 3 في الصف */
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
@@ -131,7 +141,7 @@ body {
 
 #latest-jobs li img {
     width: 100%;
-    height: 150px; /* تعيين ارتفاع ثابت لجميع الصور */
+    height: 250px; /* تعيين ارتفاع ثابت لجميع الصور */
     object-fit: cover; /* لجعل الصور تغطي كامل الحاوية */
     object-position: center; /* لتوسيط الصور */
     margin-bottom: 10px;
@@ -152,95 +162,14 @@ body {
 /* ضمان أن الكروت تصبح صف واحد على الشاشات الصغيرة */
 @media (max-width: 768px) {
     #latest-jobs li {
-        flex: 1 1 100%;
-        max-width: 100%;
+        flex: 1 1 calc(50% - 20px); /* تعديل الكروت لتكون 2 في الصف */
+        max-width: calc(50% - 20px); /* تعديل الكروت لتكون 2 في الصف */
     }
 }
-.edit-profile-swal-container {
-    font-family: 'Arial', sans-serif;
-}
 
-.edit-profile-swal-popup {
-    background-color: #f8f9fa;
-    border-radius: 15px;
-}
-
-.edit-profile-swal-header {
-    border-bottom: 1px solid #e9ecef;
-}
-
-.edit-profile-swal-title {
-    color: var(--accent-color);
-}
-
-.edit-profile-swal-close:hover {
-    color: var(--accent-color);
-}
-
-.edit-profile-swal-content {
-    padding: 20px;
-}
-
-.edit-profile-swal-confirm,
-.edit-profile-swal-cancel {
-    border-radius: 20px;
-    padding: 10px 20px;
-}
-
-.edit-profile-swal-confirm {
-    background-color: var(--accent-color);
-    color: white;
-}
-
-.edit-profile-swal-cancel {
-    background-color: #f8f9fa;
-    color: #333;
-    border: 1px solid #ddd;
-}
-
-.edit-profile-container {
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.profile-image-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.profile-image-container img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    margin-right: 20px;
-}
-
-.form-group {
-    margin-bottom: 15px;
-}
-
-.form-control {
-    border-radius: 20px;
-    border: 1px solid #ddd;
-    padding: 10px 15px;
-}
-
-#map {
-    height: 300px;
-    width: 100%;
-    border-radius: 10px;
-    margin-top: 15px;
-}
-
-.btn-primary {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
-    border-radius: 20px;
-    padding: 10px 20px;
-}
-
-.btn-primary:hover {
-    background-color: darken(var(--accent-color), 10%);
-    border-color: darken(var(--accent-color), 10%);
+@media (max-width: 576px) {
+    #latest-jobs li {
+        flex: 1 1 100%; /* الكروت لتكون كارت واحد في الصف */
+        max-width: 100%; /* الكروت لتكون كارت واحد في الصف */
+    }
 }

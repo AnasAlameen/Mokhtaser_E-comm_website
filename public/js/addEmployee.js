@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const resultsContainer = document.getElementById("resultsContainer");
     const searchButton = document.getElementById("searchButton");
     const searchQuery = document.getElementById("searchQuery");
+    
     const availableRoles = [
         { id: 1, name: "ادمن" },
         { id: 2, name: "مدير" },
@@ -10,9 +11,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // حدث البحث عن المستخدمين
     searchButton.addEventListener("click", () => {
+        console.log(searchQuery.value+"mmmmmmmmmm")
+
         searchUsers(searchQuery.value);
     });
-
     async function searchUsers(query) {
         try {
             const response = await axios.get(`/search?q=${encodeURIComponent(query)}`);

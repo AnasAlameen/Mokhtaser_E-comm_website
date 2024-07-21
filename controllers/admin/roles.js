@@ -8,7 +8,7 @@ exports.getAddEmploy = (req, res, next) => {
 };
 
 exports.getSearches = async (req, res, next) => {
-  const UserEmail = req.query.SearchInput.trim(); 
+  const UserEmail = req.query.q; 
   const storeId = req.session.storeId;
   let Employees = [];
   const usersMap = {};

@@ -117,9 +117,8 @@ exports.addOrder = async (req, res, next) => {
         productPrice,
         selectedColorVartionID || null,
         selectedOptionId || null,
-        
       ]);
-      console.log("data",req.body)
+      console.log("data", req.body);
 
       // تحديث الكميات بناءً على خصائص المنتج
       if (selectedOptionId && selectedColorVartionID) {
@@ -146,7 +145,14 @@ exports.addOrder = async (req, res, next) => {
           WHERE id = ?
         `;
         await db.execute(updateOptionQuery, [quantity, selectedOptionId]);
-      } 
+      }
+
+      const updateSoildQuery = `
+        UPDATE products
+        SET solid	 = solid	 + ?
+        WHERE id = ?
+      `;
+      await db.execute(updateSoildQuery, [quantity, productId]);
 
       console.log(productId, " productId" + UserId + " UserId");
       // حذف العنصر من سلة التسوق
@@ -165,6 +171,7 @@ exports.addOrder = async (req, res, next) => {
     res.status(500).json({ success: false, message: "Error placing order" });
   }
 };
+
 exports.deleteFromCart = async (req, res, next) => {
   const productId = req.query.productId;
   console.log("Deleting product with ID:", productId);
@@ -253,6 +260,7 @@ exports.getCart = async (req, res, next) => {
 
 exports.getOrders = async (req, res, next) => {
   let sellerId = req.session.storeId;
+  
   console.log(sellerId + " sellerid");
   const query = `
     SELECT o.ProductId, o.Qwnatity, o.Prise, o.VOCId, o.VOId, o.CreatDate, o.status, o.UserId, o.id,
@@ -347,39 +355,43 @@ exports.getOrders = async (req, res, next) => {
 };
 
 exports.postOrder = async (req, res, next) => {
-  console.log(JSON.parse(req.body.selectedProducts));
+  let { selectedProducts } = req.body;
+  let UserId = req.session.userId;
+  console.log(UserId + " User id");
+  console.log(req.body);
+  console.log("body");
 
-  const query = `
-    SELECT o.ProductId, o.UserId, o.id, o.qty, o.Prise, o.VOCId, o.VOId, o.CreatDate,
-           MIN(pi.url) AS image_url, p.ProductName, p.Discrption, s.id AS sellerId, s.CompanyName AS sellerName
-    FROM shopping_carts o
-    INNER JOIN product_images pi ON o.ProductId = pi.productId
-    INNER JOIN products p ON o.ProductId = p.id
-    INNER JOIN sellers s ON p.sellerId = s.id
-    WHERE o.id = ?
-  `;
+  if (!selectedProducts || selectedProducts.length === 0) {
+    return res
+      .status(400)
+      .json({ success: false, message: "No products selected" });
+  }
 
   try {
-    const selectedProducts = JSON.parse(req.body.selectedProducts);
+    selectedProducts = JSON.parse(selectedProducts);
 
-    if (!selectedProducts || selectedProducts.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "No selected products in the request" });
-    }
-    console.log(selectedProducts + " selected products");
+    console.log("selectedProducts", selectedProducts);
+    for (const product of selectedProducts) {
+      const {
+        productId,
+        quantity,
+        productPrice,
+        selectedColorVartionID,
+        selectedOptionId,
+        idElement
+      } = product;
 
-    for (const element of selectedProducts) {
-      const [rows] = await db.execute(query, [element.productId]);
-      if (rows.length === 0) {
-        console.error(`No data found for productId: ${element.productId}`);
-        continue;
+      if (
+        productId === undefined ||
+        quantity === undefined ||
+        productPrice === undefined
+      ) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid product data" });
       }
 
-      const row = rows[0];
-      console.log(row, ": first row");
-
-      const addToOrdersTable = `
+      let productQuery = `
         INSERT INTO orders (
           UserId,
           ProductId,
@@ -391,20 +403,61 @@ exports.postOrder = async (req, res, next) => {
           status
         ) VALUES (?, ?, ?, ?, ?, ?, now(), "Pending Preparation")
       `;
-      await db.execute(addToOrdersTable, [
-        row.UserId,
-        row.ProductId,
-        element.quantity,
-        element.ElementPrise,
-        row.VOCId,
-        row.VOId,
+
+      const [productResults] = await db.execute(productQuery, [
+        UserId,
+        productId,
+        quantity,
+        productPrice,
+        selectedColorVartionID || null,
+        selectedOptionId || null,
       ]);
+      console.log("data", req.body);
+
+      // تحديث الكميات بناءً على خصائص المنتج
+      if (selectedOptionId && selectedColorVartionID) {
+        // المنتج يحتوي على ألوان ومقاسات
+        const updateQuery = `
+          UPDATE variant_options
+          SET qty = qty - ?
+          WHERE id = ?
+        `;
+        await db.execute(updateQuery, [quantity, selectedOptionId]);
+      } else if (selectedColorVartionID) {
+        // المنتج يحتوي على ألوان فقط
+        const updateColorQuery = `
+          UPDATE variant_options
+          SET qty = qty - ?
+          WHERE id = ?
+        `;
+        await db.execute(updateColorQuery, [quantity, selectedColorVartionID]);
+      } else if (selectedOptionId) {
+        // المنتج يحتوي على مقاسات فقط
+        const updateOptionQuery = `
+          UPDATE variant_options
+          SET qty = qty - ?
+          WHERE id = ?
+        `;
+        await db.execute(updateOptionQuery, [quantity, selectedOptionId]);
+      }
+
+      const updateSoildQuery = `
+        UPDATE products
+        SET solid	 = solid	 + ?
+        WHERE id = ?
+      `;
+      await db.execute(updateSoildQuery, [quantity, productId]);
+
+      console.log(productId, " productId" + UserId + " UserId");
+      
     }
 
-    res.status(200).json({ message: "Order processed successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Order placed successfully" });
   } catch (error) {
     console.error("Error executing query:", error);
-    res.status(500).json({ message: "Error processing order" });
+    res.status(500).json({ success: false, message: "Error placing order" });
   }
 };
 exports.orderRedy = async (req, res, next) => {

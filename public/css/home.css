@@ -479,3 +479,6 @@ li {
   background-color: #ccc;
   cursor: not-allowed;
 }
+.prise{
+  color:var(--accent-color)
+}

@@ -19,7 +19,7 @@
     <div class="container mx-auto flex flex-wrap justify-between">
       <div class="left w-full lg:w-1/2 p-4">
         <div class="main_image">
-          <img src="/<%= imageURLs[0].replace(/\\/g, '/')%>" name="main" class="slide w-full h-auto" />
+          <img src="/<%= imageURLs[0].replace(/\\/g, '/').replace('public/', '') %>" name="main" class="slide w-full h-auto" />
         </div>
         <div class="option flex flex-wrap mt-4">
           <% imageURLs.forEach(imageUrl => { %>
@@ -72,6 +72,32 @@
             <% } %>
           </div>
 
+          <!-- <%           let allSizes=new Set(); %>
+          <% sizeTypes.forEach(sizeType => { %>
+            <div class="size-container">
+              <h3><%= sizeType.type %></h3>
+              <div class="detals mt-4" id="details1">
+                <% combinations.forEach(combination => { %>
+                  <% if (combination.sizes[sizeType.type]) { %>
+                    <% combination.sizes[sizeType.type].forEach(size => { %>
+                      <% if (!allSizes.has(size.size)){ %>
+
+                      <label class="label2 inline-block bg-white border border-green-500 text-black py-2 px-4 rounded-full text-center cursor-pointer mb-2 size-option" 
+                             data-OptionId="<%= size.id %>" 
+                             data-color-id="<%= combination.colorId %>" 
+                             data-price="<%= size.price %>" 
+                             data-qty="<%= size.qty %>">
+                        <%= size.size %>
+                      </label>
+                      <% allSizes.add(size.size) %>
+                      <% } %>
+                    <% }) %>
+                  <% } %>
+                <% }) %>
+              </div>
+            </div>
+          <% }) %> -->
+          
           <div class="plus mt-4 flex justify-center">
             <input type="number" id="number" class="number w-1/4 border border-black rounded-full text-center py-2" value="1" />
           </div>
