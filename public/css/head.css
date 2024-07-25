@@ -52,7 +52,13 @@ img {
   padding: 2rem 1.5rem;
   max-width: 1200px;
 }
-
+body, input, select, textarea {
+    direction: rtl;
+    text-align: right;
+}
+body, input, select, textarea {
+  font-family: 'Cairo', sans-serif;
+}
 header {
   position: fixed;
   top: 0;
@@ -66,7 +72,18 @@ header {
   height: var(--header-height);
   z-index: var(--z-fixed);
 }
-
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+select,
+textarea {
+    text-align: right;
+    direction: rtl;
+}
+.form-row {
+  flex-direction: row-reverse;
+}
 .header::after {
   content: "";
   position: absolute;
@@ -107,7 +124,6 @@ header {
 }
 
 .search-Button {
-  margin-top: 15px;
   padding: 10px 20px;
   border: 1px solid black;
   border-radius: 0 20px 20px 0;
@@ -189,7 +205,7 @@ header {
 }
 
 .sidebar__link {
-  color: var(--text-color);
+  color: white;
   display: grid;
   grid-template-columns: repeat(2, max-content);
   align-items: center;
@@ -199,6 +215,7 @@ header {
   transition: background .3s;
 }
 
+
 .sidebar__link i {
   color: var(--accent-color);
   font-size: 1.25rem;
@@ -207,6 +224,7 @@ header {
 .sidebar__link-name {
   font-weight: var(--font-medium);
   transition: color .4s;
+  color: black;
 }
 
 .sidebar__link:hover {

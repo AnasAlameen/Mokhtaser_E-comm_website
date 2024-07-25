@@ -311,49 +311,57 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function saveSizeDetails() {
-    const sizeType = document.getElementById("SIZE_TYPE").value;
-    const size = document.getElementById("size").value;
-    const sizeQuantity = parseInt(document.getElementById("size-quantity").value);
-    const sizePrice = parseInt(document.getElementById("size-price").value);
-    const productQuantityElement = document.getElementById("product-quantity");
-    const productQuantity = parseInt(productQuantityElement.value);
 
-    if (!sizeType || !size || isNaN(sizeQuantity) || isNaN(sizePrice)) {
-      Swal.fire(
-        "الرجاء إدخال جميع تفاصيل الحجم",
-        "تأكد من إدخال التصنيف، القياس، الكمية والسعر",
-        "warning"
-      );
-      return;
-    }
+function saveSizeDetails() {
+  const sizeType = document.getElementById("SIZE_TYPE").value;
+  const size = document.getElementById("size").value;
+  const sizeQuantity = parseInt(document.getElementById("size-quantity").value);
+  const sizePrice = parseInt(document.getElementById("size-price").value);
+  const productQuantityElement = document.getElementById("product-quantity");
+  const productQuantity = parseInt(productQuantityElement.value);
 
-    if (sizeQuantity > productQuantity) {
-      Swal.fire(
-        "الكمية غير متوفرة",
-        "عدد القطع التي أدخلتها أكثر من عدد القطع المتبقية",
-        "warning"
-      );
-      return;
-    }
-
-
-    // تحديث الكمية الخاصة بالمنتج
-    productQuantityElement.value = productQuantity - sizeQuantity;
-
-    console.log("Current Size:", {
-      DimensionsType: sizeType,
-      size: size,
-      quantity: sizeQuantity,
-      price: sizePrice,
-    });
-
-    updateSizeDisplay();
-
-    document.getElementById("size").value = "";
-    document.getElementById("size-quantity").value = "";
-    document.getElementById("size-price").value = "";
+  if (!sizeType || !size || isNaN(sizeQuantity) || isNaN(sizePrice)) {
+    Swal.fire(
+      "الرجاء إدخال جميع تفاصيل الحجم",
+      "تأكد من إدخال التصنيف، القياس، الكمية والسعر",
+      "warning"
+    );
+    return;
   }
+
+  if (sizeQuantity > productQuantity) {
+    Swal.fire(
+      "الكمية غير متوفرة",
+      "عدد القطع التي أدخلتها أكثر من عدد القطع المتبقية",
+      "warning"
+    );
+    return;
+  }
+
+  // تحديث الكمية الخاصة بالمنتج
+  productQuantityElement.value = productQuantity - sizeQuantity;
+
+  // إضافة تفاصيل الحجم إلى مصفوفة sizes
+  sizes.push({
+    DimensionsType: sizeType,
+    name: size,
+    quantity: sizeQuantity,
+    price: sizePrice
+  });
+
+  console.log("Current Size:", {
+    DimensionsType: sizeType,
+    size: size,
+    quantity: sizeQuantity,
+    price: sizePrice
+  });
+
+  updateSizeDisplay();
+
+  document.getElementById("size").value = "";
+  document.getElementById("size-quantity").value = "";
+  document.getElementById("size-price").value = "";
+}
 
   function updateSizeDisplay() {
     const sizesDisplay = document.createElement("div");
@@ -446,7 +454,9 @@ document.addEventListener('DOMContentLoaded', () => {
     formData.append("ProductDiscrption", ProductDiscrption);
     formData.append("ProductName", ProductName);
     formData.append("SubCategorie", product_category);
-
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
     console.log("Final Product Data:", {
       colors: colors,
       sizes: sizes,

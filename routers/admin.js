@@ -30,8 +30,7 @@ const upload = multer({
 
   router.post("/Post_Edite_Product", isAuth,multable,adminControls.postEdite_Products);
   
-  router.post("/DeleteProduct",isAuth,adminControls.postDeleteProduct)
-
+  router.post("/DeleteProduct", isAuth, adminControls.postDeleteProduct);
 
 exports.router = router;
 

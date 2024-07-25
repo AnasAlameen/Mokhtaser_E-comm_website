@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
             formData.append("selectedProducts", JSON.stringify(selectedProducts));
             console.log("from",selectedProducts)
 
-            axios.post('/cart/ordered', formData, { 
+            axios.post('/cart/addOrder', formData, { 
                 headers: {
                     "Content-Type": "multipart/form-data",
                     "CSRF-Token": document.querySelector('input[name="_csrf"]').value,

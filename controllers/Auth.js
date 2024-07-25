@@ -27,7 +27,7 @@ async function sendResetEmail(email, token) {
     from: 'anas2002218@gmail.com',
     to: email,
     subject: 'Password Reset',
-    text: `You requested a password reset. Please click the following link to reset your password: ${resetUrl}`,
+    text: `لقد طلبت اعادة تعيين كلمة المرور . الرجاء اضغط ع الرابط لإستكمال العملية: ${resetUrl}`,
   };
 
   await transporter.sendMail(mailOptions);

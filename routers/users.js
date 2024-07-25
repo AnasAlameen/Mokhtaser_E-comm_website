@@ -21,13 +21,14 @@ const upload = multer({
 
   ]);
   
+  const haveRole=require("../middlewear/haveRoles");
+  const shopControler=require("../controllers/shop/shop");
 
 const isAuth = require("../middlewear/isAuth");
 const isUser = require("../middlewear/isAuthUser");
 const UsersControlers = require("../controllers/users/home");
-const shopControler=require("../controllers/shop/shop");
 
-router.get("/prdoduct/detlas",isAuth,isUser,shopControler.getproductDetals);
+router.get("/prdoduct/detlas",isAuth,isUser,haveRole,shopControler.getproductDetals);
 
 router.get("/home", isAuth, isUser, UsersControlers.getUserHomePage);
 

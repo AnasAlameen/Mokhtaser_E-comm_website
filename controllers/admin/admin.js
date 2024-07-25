@@ -28,7 +28,7 @@ exports.Post_Product = async (req, res, next) => {
     sizes,
     SubCategorie,
   } = req.body;
-
+console.log("sizes",sizes)
   try {
     let parsedColors = [];
     let parsedSizes = [];
@@ -63,7 +63,6 @@ exports.Post_Product = async (req, res, next) => {
 
     // إنشاء مجموعة لتخزين أنواع المتغيرات الموجودة بالفعل
     let existingVariantTypes = new Set();
-    let existingVariantValue = new Set();
 
 
     // دالة مساعدة للحصول على معرف المتغير أو إنشاء واحد جديد إذا لم يكن موجودًا
@@ -129,7 +128,7 @@ exports.Post_Product = async (req, res, next) => {
 console.log("parsedSizes.length",parsedSizes.length)
     // معالجة الأحجام المستقلة إذا كانت موجودة
     if (parsedSizes.length > 0 && parsedColors.length === 0) {
-      const sizeVariantId = await getOrCreateVariantId('size');
+      const sizeVariantId = await getOrCreateVariantId(parsedSizes.DimensionsType!="color");
       for (const size of parsedSizes) {
         await db.execute(
           "INSERT INTO variant_options (VariantsId, value, qty, prise) VALUES (?, ?, ?, ?)",
@@ -195,7 +194,7 @@ exports.getEditProductPage = async (req, res, next) => {
             relatedVariants: [],
           };
         }
-      } else if (row.variant_type === "size") {
+      } else if (row.variant_type !="color") {
         sizes.push({
           value: row.option_value,
           qty: row.option_qty,
@@ -220,6 +219,9 @@ exports.getEditProductPage = async (req, res, next) => {
         });
       }
     });
+
+    console.log("sizes",sizes);
+    console.log("combinations",combinations);
 
     res.render("shop/admin/editeProduct", {
       pageTitle: "تعديل المنتج",
@@ -525,7 +527,7 @@ exports.postEdite_Products = async (req, res, next) => {
 };
 
 exports.postDeleteProduct = async (req, res, next) => {
-  const productId = req.query.product_id;
+  const productId = req.body.product_id;
 
   try {
     // حذف العلاقات بين المتغيرات المختلفة
@@ -560,10 +562,9 @@ exports.postDeleteProduct = async (req, res, next) => {
     await db.execute("DELETE FROM products WHERE id = ?", [productId]);
 
     // إعادة التوجيه إلى الصفحة الرئيسية بعد الحذف الناجح
-    res.redirect('/shop/prdoduct/');
+    res.redirect('/shop/Home');
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error deleting product" });
-  }
+  } 
 };
-

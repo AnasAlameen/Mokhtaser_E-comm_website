@@ -13,6 +13,16 @@ exports.getUserHomePage = async (req, res, next) => {
       INNER JOIN product_images pi ON p.id = pi.productId
       GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
     `;
+        const mostSoildQuery = `
+        SELECT p.id, p.ProductName, p.Discrption, p.solid, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
+        FROM products p
+        INNER JOIN product_images pi ON p.id = pi.productId
+        GROUP BY p.id, p.ProductName, p.Discrption, p.solid, p.Prise, p.CrationDate
+        ORDER BY p.solid DESC
+        LIMIT 5;
+    `;
+
+    const [mostSoildRows] = await db.execute(mostSoildQuery);
     const [rows, fields] = await db.execute(query);
     const [categories]= await db.execute("select name, url,id from categories where parent_id =0")
 
@@ -24,7 +34,8 @@ exports.getUserHomePage = async (req, res, next) => {
       path: "users/home",
       products: rows, 
       role:role,
-      categories:categories
+      categories:categories,
+      mostSoildQuery:mostSoildRows
 
     });
   } catch (error) {
@@ -33,7 +44,6 @@ exports.getUserHomePage = async (req, res, next) => {
   }
 };
 
- 
 exports.getproductDetals = async (req, res, next) => {
   const productId = req.query.product_id;
 
@@ -48,7 +58,7 @@ exports.getproductDetals = async (req, res, next) => {
     }
 
     const imageURLs = await getProductImages(productId);
-    const { colors, sizes } = await getProductVariants(productId);
+    const { colors, sizes, seller } = await getProductVariants(productId);
 
     console.log('Colors:', colors); // للتحقق من البيانات
 
@@ -57,6 +67,7 @@ exports.getproductDetals = async (req, res, next) => {
       path: "users/productDetals",
       product: product,
       imageURLs: imageURLs,
+      seller: seller, // عرض معلومات البائع
       colors: colors || [], // استخدم مصفوفة فارغة إذا كانت colors غير معرفة
       sizes: sizes || {}, // استخدم كائن فارغ إذا كانت sizes غير معرفة
       csrfToken: req.csrfToken()
@@ -67,6 +78,7 @@ exports.getproductDetals = async (req, res, next) => {
     next(err);
   }
 };
+
 
 async function getProductDetails(productId) {
   const query = "SELECT `id`, `SellerId`, `Prise`, `Discrption`, `ProductName`, `solid`, `qty` FROM products WHERE id = ?";
@@ -96,16 +108,31 @@ async function getProductVariants(productId) {
     WHERE v.product_id = ? AND v.VariantsType != 'color'
   `;
 
-  const [colorResults] = await db.execute(colorQuery, [productId]);
-  const [sizeResults] = await db.execute(sizeQuery, [productId]);
+  const sellerQuery = `
+    SELECT s.CompanyName, s.url, p.SellerId
+    FROM sellers s
+    INNER JOIN products p ON s.id = p.SellerId
+    WHERE p.id = ?
+  `;
 
-  console.log('Color Results:', colorResults); // للتحقق من البيانات
+  try {
+    const [colorResults] = await db.execute(colorQuery, [productId]);
+    const [sizeResults] = await db.execute(sizeQuery, [productId]);
+    const [sellerResults] = await db.execute(sellerQuery, [productId]);
 
-  return { 
-    colors: colorResults, 
-    sizes: sizeResults
-  };
+    console.log(sellerResults,"seller")
+    return {
+      colors: colorResults,
+      sizes: sizeResults,
+      seller: sellerResults[0] // يجب أن تكون نتيجة واحدة فقط للبائع
+    };
+  } catch (error) {
+    console.error('Error fetching product variants:', error);
+    throw error;
+  }
 }
+
+
 
 function organizeSizesByUnit(sizes) {
   return sizes.reduce((acc, size) => {
@@ -386,43 +413,57 @@ async function checkAvailability(product, colors, sizes) {
         res.status(500).send({error: "error in OrdersTracking "});
     }
 }
-exports.getProfile= async (req,res)=>{
-  const user_id=req.session.userId;
-  console.log("userId",user_id);
+exports.getProfile = async (req, res) => {
+  const user_id = req.session.userId;
+  console.log("userId", user_id);
   try {
-    const [getUserInformations]= await db.execute("select * from users where id =?",[user_id])
-    console.log("getUserInformations1",getUserInformations);
+    // الحصول على معلومات المستخدم
+    const [getUserInformationsResult] = await db.execute("SELECT * FROM users WHERE id = ?", [user_id]);
+    console.log("getUserInformations", getUserInformationsResult);
 
-    const [getFromCart]=await db.execute(`select p.ProductName,p.Prise	,p.Discrption ,c.ProductId,i.url,p.id,l.City
-    ,l.area,l.longtiud,l.lasttiud,l.UserId
-    from shopping_carts c
-    inner join products p on p.id=c.ProductId
-    inner join product_images i on i.ProductId=c.ProductId
-    inner join location l on l.UserId=c.UserId
-    where c.UserId=?
-    GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
-    `,[user_id]);
-    console.log("getFromCart",getFromCart);
-
-    if(getUserInformations.length >0)
-    {
-      console.log("getUserInformations",getUserInformations);
-      res.render("users/profile", {
-        pageTitle: "profile",
-        path: "users/profile",
-        getUserInformations:getUserInformations,
-        products:getFromCart
-    })
-      
+    if (getUserInformationsResult.length === 0) {
+      return res.status(404).json({ success: false, error: "لم يتم العثور على معلومات المستخدم" });
     }
-   
-  } catch (error) {
-    console.log("ther is an erorre geting data : ", error)
-    res.status(500).json({ success: false, error:"ther is an error geting user information"})
-    
-  }
 
-}
+    const getUserInformations = getUserInformationsResult[0];
+
+    // الحصول على المنتجات في سلة التسوق
+    const [getFromCart] = await db.execute(`
+      SELECT
+        p.id, p.ProductName, p.Prise, p.Discrption,
+        l.City, l.area, l.longtiud, l.lasttiud,
+        (SELECT i.url FROM product_images i WHERE i.ProductId = p.id LIMIT 1) AS url
+      FROM shopping_carts c
+      INNER JOIN products p ON p.id = c.ProductId
+      LEFT JOIN location l ON l.UserId = c.UserId
+      WHERE c.UserId = ?
+      GROUP BY p.id, p.ProductName, p.Discrption, p.Prise
+    `, [user_id]);
+
+    console.log("getFromCart", getFromCart);
+
+    // الحصول على معلومات الموقع
+    const [locationInfo] = await db.execute("SELECT * FROM location WHERE UserId = ?", [user_id]);
+    const location = locationInfo[0] || {};
+
+    // تحضير البيانات للعرض
+    const products = getFromCart;
+
+    res.render("users/profile", {
+      pageTitle: `الملف الشخصي - ${getUserInformations.FirstName}`,
+      path: "users/profile",
+      getUserInformations: getUserInformations,
+      userInfo: getUserInformations, // إضافة هذا السطر
+      products: products,
+      location: location,
+      cartItemsCount: products.length
+    });
+  } catch (error) {
+    console.log("حدث خطأ أثناء جلب البيانات: ", error);
+    res.status(500).json({ success: false, error: "حدث خطأ أثناء جلب معلومات المستخدم" });
+  }
+};
+
 
 exports.postProfileUpdate = async (req, res) => {
   try {

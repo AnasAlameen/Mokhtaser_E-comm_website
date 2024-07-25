@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJ3phAQVBfelG8E7PmauVNs01qkWT8euw&callback=initMap" async defer></script>
-    <title>الملف الشخصي - <%= getStoreInformations[0].FirstName %></title>
+    <title>الملف الشخصي - <%= getStoreInformations.FirstName %></title>
 </head>
 <body class="bg-gray-100">
     <%- include('../includes/shop/navgation.ejs') %>
@@ -21,31 +21,25 @@
         <div class="profile-header">
             <div class="profile-background" style="background-image: url('https://images.unsplash.com/photo-1496307653780-42ee777d4833?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');">
                 <div class="profile-avatar">
-                    <img src="../images/<%= getStoreInformations[0].url.split('\\').pop() %>" alt="Product Image" class="aspect-square"/>
+                    <img src="../images/<%= getStoreInformations.url.split('\\').pop() %>" alt="Product Image" class="aspect-square"/>
                 </div>
             </div>
             <div class="profile-info text-center">
-                <h2 class="mb-2 text-2xl font-bold"><%= getStoreInformations[0].CompanyName %> </h2>
-                <p class="text-muted mb-2"><%= getStoreInformations[0].username %></p>
-                <p class="text-muted mb-3"><i class="fas fa-phone me-2"></i><a href="https://wa.me/<%= getStoreInformations[0].PhoneNum %>" target="_blank"><%= getStoreInformations[0].PhoneNum || 'رقم الهاتف غير متوفر' %></a></p>
+                <h2 class="mb-2 text-2xl font-bold"><%= getStoreInformations.CompanyName %> </h2>
+                <p class="text-muted mb-2"><%= getStoreInformations.username %></p>
+                <p class="text-muted mb-3"><i class="fas fa-phone me-2"></i><a href="https://wa.me/<%= getStoreInformations.PhoneNum %>" target="_blank"><%= getStoreInformations.PhoneNum || 'رقم الهاتف غير متوفر' %></a></p>
                 <button class="btn btn-primary" onclick="editProfile()">
                     <i class="fas fa-edit me-2"></i>تعديل البيانات الشخصية
                 </button>
             </div>
             
             <div class="row text-center user-stats mt-4">
-                <div class="col-4">
-                    <h5 class="font-medium text-gray-600">المحتويات في السلة</h5>
+            
+                <div class="">
+                    <h5 class="font-medium text-gray-600">عدد منتاجات المتجر</h5>
                     <p class="text-primary fw-bold"><%= products.length %></p>
                 </div>
-                <div class="col-4">
-                    <h5 class="font-medium text-gray-600">المتابعون</h5>
-                    <p class="text-primary fw-bold">0</p>
-                </div>
-                <div class="col-4">
-                    <h5 class="font-medium text-gray-600">المتابَعون</h5>
-                    <p class="text-primary fw-bold">0</p>
-                </div>
+               
             </div>
         </div>
     </div>
@@ -53,11 +47,11 @@
     <div class="container mt-5">
         <div class="row justify-content-center">
             <section id="latest-jobs" class="mt-5">
-                <h2>محتويات السلة </h2>
+                <h2>المنتاجات</h2>
                 <ul class="row">
                     <% products.forEach(product => { %>
                         <li class="col-lg-4 col-md-6 col-sm-12">
-                            <a href="/user/product/details?product_id=<%= product.id %>">
+                            <a href="/shop/prdoduct/detlas?product_id=<%= product.product_id %>">
                                 <img src="../images/<%= product.product_url.split('\\').pop() %>" alt="Product Image" />
                                 <h3><%= product.ProductName %></h3>
                                 <p class="prise"><%= product.Prise %></p>
@@ -76,25 +70,25 @@
                 html: `
                     <div class="edit-profile-container">
                         <div class="profile-image-container">
-                            <img id="current-profile-pic" src="../images/<%= getStoreInformations[0].url.split('\\').pop() %>" alt="صورة الملف الشخصي" class="rounded-circle">
+                            <img id="current-profile-pic" src="../images/<%= getStoreInformations.url.split('\\').pop() %>" alt="صورة الملف الشخصي" class="rounded-circle">
                             <input type="file" id="new-profile-pic" class="form-control-file" accept="image/*">
-                            <input type="hidden" id="current-profile-image" value="<%= getStoreInformations[0].url.split('\\').pop() %>">
+                            <input type="hidden" id="current-profile-image" value="<%= getStoreInformations.url.split('\\').pop() %>">
                         </div>
                         <div class="form-group">
-                            <input id="swal-input2" class="form-control" placeholder=" اسم المتجر" value="<%= getStoreInformations[0].CompanyName %>">
+                            <input id="swal-input2" class="form-control" placeholder=" اسم المتجر" value="<%= getStoreInformations.CompanyName %>">
                         </div>
                      
                         <button class="btn btn-primary" onclick="getUserLocation()">تحديد الموقع</button>
                         <div id="location-fields" class="mt-3">
                             <div class="form-group">
-                                <input id="city" class="form-control" placeholder="المدينة" value="<%= getStoreInformations[0].City %>">
+                                <input id="city" class="form-control" placeholder="المدينة" value="<%= getStoreInformations.City %>">
                             </div>
                             <div class="form-group">
-                                <input id="area" class="form-control" placeholder="المنطقة" value="<%= getStoreInformations[0].area %>">
+                                <input id="area" class="form-control" placeholder="المنطقة" value="<%= getStoreInformations.area %>">
                             </div>
                             <div id="map" style="height: 200px;"></div>
-                            <input id="latitude" type="hidden" value="<%= getStoreInformations[0].lasttiud %>">
-                            <input id="longitude" type="hidden" value="<%= getStoreInformations[0].longtiud %>">
+                            <input id="latitude" type="hidden" value="<%= getStoreInformations.lasttiud %>">
+                            <input id="longitude" type="hidden" value="<%= getStoreInformations.longtiud %>">
                         </div>
                     </div>
                 `,

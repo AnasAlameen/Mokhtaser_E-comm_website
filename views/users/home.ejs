@@ -10,35 +10,21 @@
   <section id="hero">
     <h2>عالم التسوق بين يديك</h2>
     <!-- Swiper -->
+    <h3 class="moteseel">الاكثر مبيعا</h3>
+
     <div class="swiper mySwiper">
       <div class="swiper-wrapper">
-        <div class="swiper-slide">
-          <img src="/imjs/back.jpg" alt="Image 1">
-        </div>
-        <div class="swiper-slide">
-          <img src="/imjs/2.jpg" alt="Image 2">
-        </div>
-        <div class="swiper-slide">
-          <img src="/imjs/3.jpg" alt="Image 3">
-        </div>
-        <div class="swiper-slide">
-          <img src="/imjs/4.jpg" alt="Image 4">
-        </div>
-        <div class="swiper-slide">
-          <img src="/imjs/5.jpg" alt="Image 5">
-        </div>
-        <div class="swiper-slide">
-          <img src="/imjs/6.jpg" alt="Image 6">
-        </div>
-        <div class="swiper-slide">
-          <img src="/imjs/7.jpg" alt="Image 7">
-        </div>
-        <div class="swiper-slide">
-          <img src="/imjs/8.jpg" alt="Image 8">
-        </div>
-        <div class="swiper-slide">
-          <img src="/imjs/back9.jpg" alt="Image 9">
-        </div>
+        <% mostSoildQuery.forEach(product => { %>
+
+          <div class="swiper-slide">
+            <a href="http://localhost:3000/user/prdoduct/detlas?product_id=<%= product.id %>&view=<%= role %>">
+              <img src="../images/<%= product.image_url.split('\\').pop().replace('personal', '') %>" >
+            </a>
+          </div>
+      
+   
+        <% }); %>
+
       </div>
       <div class="swiper-pagination"></div>
       <div class="swiper-button-next"></div>
@@ -48,21 +34,21 @@
   
   <div id="shop-by-categories">
     <h2>تسوق حسب الفئة</h2>
-    <div class="categories-container">
-      <button id="prev-button" class="scroll-button">❮</button>
-      <ul class="categories-list">
+    <div class="swiper categorySwiper">
+      <div class="swiper-wrapper">
         <% categories.forEach(categorie => { %>
-          <li>
+          <div class="swiper-slide">
             <div class="category-item">
               <a href="/user/subCategoriesPage?subCategorieId=<%= categorie.id %>&name=<%= categorie.name %>">
                 <img src="<%= categorie.url.replace('public', '') %>" alt="<%= categorie.name %>">
               </a>
               <p><%= categorie.name %></p>
             </div>
-          </li>
+          </div>
         <% }); %>
-      </ul>
-      <button id="next-button" class="scroll-button">❯</button>
+      </div>
+      <div class="swiper-button-next"></div>
+      <div class="swiper-button-prev"></div>
     </div>
   </div>
       
@@ -90,15 +76,14 @@
           <a href="http://localhost:3000/user/prdoduct/detlas?product_id=<%= product.id %>&view=<%= role %>">
             <img src="../images/<%= product.image_url.split('\\').pop() %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
             <h3><%= product.ProductName %></h3>
-            <p><%= product.Discrption %></p>
-           <h4> <p class="prise"><%= product.Prise %> د.ل</p></h4>
+            <p class="product-description"><%= product.Discrption %></p>
+            <h4><p class="prise"><%= product.Prise %> د.ل</p></h4>
           </a>
         </li>
       <% }) %>
     </ul>
   </section>
-</main>
-
+  
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script>
   var swiper = new Swiper(".mySwiper", {
@@ -166,36 +151,47 @@
   });
 
   document.addEventListener('DOMContentLoaded', function () {
-  const container = document.querySelector('.categories-list');
-  const nextButton = document.getElementById('next-button');
-  const prevButton = document.getElementById('prev-button');
-  const itemWidth = 150; // تحديد عرض العنصر
-  let currentPosition = 0; // الموضع الحالي للعنصر
+    var swiper = new Swiper(".mySwiper", {
+    spaceBetween: 30,
+    loop: true,
+    pagination: {
+      el: '.swiper-pagination',
+      clickable: true,
+    },
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+    autoplay: {
+      delay: 2500,
+      disableOnInteraction: false,
+    },
+    effect: "coverflow",
+    grabCursor: true,
+    centeredSlides: true,
+    slidesPerView: 3,
+    coverflowEffect: {
+      rotate: 50,
+      stretch: 0,
+      depth: 100,
+      modifier: 1,
+      slideShadows: true,
+    },
+  });
 
-  function updatePosition() {
-    container.style.transform = `translateX(${currentPosition}px)`;
-  }
-
-  function moveNext() {
-    currentPosition -= itemWidth;
-    if (Math.abs(currentPosition) >= container.scrollWidth - container.clientWidth) {
-      currentPosition = 0;
-    }
-    updatePosition();
-  }
-
-  function movePrev() {
-    currentPosition += itemWidth;
-    if (currentPosition > 0) {
-      currentPosition = -(container.scrollWidth - container.clientWidth);
-    }
-    updatePosition();
-  }
-
-  nextButton.addEventListener('click', moveNext);
-  prevButton.addEventListener('click', movePrev);
-
-  setInterval(moveNext, 3000); // التمرير التلقائي كل 3 ثواني
+  var categorySwiper = new Swiper(".categorySwiper", {
+    spaceBetween: 10,
+    slidesPerView: 5,
+    loop: true,
+    navigation: {
+      nextEl: ".swiper-button-next",
+      prevEl: ".swiper-button-prev",
+    },
+    autoplay: {
+      delay: 3000,
+      disableOnInteraction: false,
+    },
+  });
 });
 
 </script>

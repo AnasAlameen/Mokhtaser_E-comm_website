@@ -26,7 +26,7 @@ const upload = multer({
   
 const shopControler=require("../controllers/shop/shop");
 router.get("/home",isAuth,isNotAuth,haveRole,shopControler.getShopeHomePage);
-
+ 
 router.get("/prdoduct/detlas",isAuth,haveRole,shopControler.getproductDetals);
 
 router.get("/orders",isAuth,haveRole,shopControler.getOrders);
@@ -35,9 +35,8 @@ router.get("/orders/detals",haveRole,isAuth,shopControler.getOrderDetals);
 
 router.get("/prdoducts",isAuth,haveRole,shopControler.getProductList);
 
-router.get("/profile",isAuth,haveRole,shopControler.getProfile);
 
-router.get("/shop",isAuth,shops,shopControler.getRoles);
+router.get("/shop",isAuth,shops,shopControler.getRoles); 
 
 
 router.get('/profile', isAuth, shops,haveRole,shopControler.getProfile);

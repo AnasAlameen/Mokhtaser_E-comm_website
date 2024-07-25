@@ -27,7 +27,7 @@
     <nav class="sidebar__container">
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
       <div class="sidebar__account">
-        <img src="../images/<%= userInfo.url.split('\\').pop() %>" alt="Product Image"  class="sidebar__perfil"/>
+        <img src="../../images/<%= userInfo.url.split('\\').pop() %>" alt="Product Image"  class="sidebar__perfil"/>
 
         <div class="sidebar__names">
           <h3 class="sidebar__name"><%= userInfo.FirstName %></h3>
@@ -63,10 +63,11 @@
           </a>
         </div>
         <% if(stores.lenght===0) {%>
-        <% } else { %>
-        <h3 class="sidebar__title">
-          <span>المتاجر</span>
-          <button id="toggleStoreButton" onclick="toggleStoreList()">Toggle Store List</button>
+          <% } else { %>
+          <h3 class="sidebar__title">
+            <span>المتاجر</span>
+            <button id="toggleStoreButton" onclick="toggleStoreList()">اظهار المتاجر</button>
+          </h3>
           <div class="sidebar__list store-list" id="storeList">
             <% stores.forEach(store => { %>
             <a href="/shop/shop?storeId=<%= store.id %>&role=<%= store.role_id %>" class="sidebar__link">
@@ -74,13 +75,12 @@
               <span class="sidebar__link-name"><%= store.CompanyName %></span>
             </a>
             <% }) %>
-          </div>
-          
-        </div>        
-        <% } %>
-      </div>
-    </nav>
-  </div>
+          </div>        
+          <% } %>
+        </div>
+      </nav>
+    </div>
+  
 
   <script src="/js/Navgation.js"></script>
 </body>

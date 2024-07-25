@@ -71,7 +71,21 @@ li {
 }
 
 .swiper-slide {
-  width: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 500px; /* تعديل العرض حسب الحاجة */
+}
+.search-Button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border: 1px solid black;
+  border-radius: 0 20px 20px 0;
+  background-color:var( --accent-color);
+  color: white;
+  font-size: 1.2em;
+  cursor: pointer;
+  width: 20%;
 }
 
 @media screen and (max-width: 768px) {
@@ -103,7 +117,9 @@ li {
     width: 50%;
   } */
 }
-
+.moteseel{
+  color: var(--accent-color);
+}
 @media screen and (max-width: 480px) {
   #featured-jobs li, #latest-jobs li {
     width: 90%; /* عرض العناصر يكون أكبر على الشاشات الصغيرة */
@@ -138,13 +154,14 @@ li {
     margin-bottom: 20px;
   }
 }
-
 .swiper-slide img {
   display: block;
   width: 100%;
+  height: auto; /* حافظ على نسبة العرض إلى الارتفاع */
+  max-height: 500px; /* يمكنك تعديل هذه القيمة حسب الحاجة */
+  object-fit: cover; /* تأكد من أن الصورة تغطي الحاوية بشكل جيد */
   -webkit-box-reflect: below 1px linear-gradient(transparent, transparent, #0002, #0004);
 }
-
 #featured-jobs {
   padding: 50px 20px;
 }
@@ -402,7 +419,7 @@ li {
     margin-right: 10px;
   }
 }
-/* إضافة جديدة لآخر الوظائف */
+
 #latest-jobs {
   padding: 50px 20px;
 }
@@ -424,7 +441,12 @@ li {
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 20px;
-  flex: 0 0 auto; /* التأكد من أن العناصر لا تتمدد */
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%; /* تعيين ارتفاع كامل للعناصر */
+  padding: 10px; /* إضافة بعض المسافة الداخلية */
 }
 
 #latest-jobs li a {
@@ -432,13 +454,13 @@ li {
   padding: 20px;
   color: #333;
   transition: all 0.3s ease;
+  flex-grow: 1; /* التأكد من أن الرابط يأخذ الحيز الأكبر */
 }
 
 #latest-jobs li a:hover {
   background-color: var(--accent-color);
   color: #fff;
   border: 1px solid #ddd;
-
 }
 
 #latest-jobs li img {
@@ -447,12 +469,15 @@ li {
   object-fit: cover; /* لجعل الصور تغطي كامل الحاوية */
   object-position: center; /* لتوسيط الصور */
   margin-bottom: 10px;
-  border-radius: 40px;
+  border-radius: 10px; /* تعديل الإطار الدائري قليلاً */
 }
 
 #latest-jobs li h3 {
   font-size: 1.5em;
   margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #latest-jobs li p {
@@ -460,10 +485,25 @@ li {
   margin-bottom: 5px;
 }
 
+#latest-jobs li .price {
+  font-size: 1.5em; /* تكبير حجم السعر */
+  font-weight: bold;
+  color: #ff4500;
+  text-align: center; /* لمحاذاة السعر في المنتصف */
+  margin-top: auto; /* دفع السعر إلى أسفل الحاوية */
+  padding-top: 10px;
+}
+
 .categories-buttons {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
+}
+/* أنماط للشاشات الكبيرة */
+@media screen and (min-width: 1024px) {
+  #latest-jobs ul {
+    grid-template-columns: repeat(4, 1fr); /* عرض 4 عناصر في كل صف */
+  }
 }
 
 .categories-buttons button {
@@ -480,5 +520,14 @@ li {
   cursor: not-allowed;
 }
 .prise{
-  color:var(--accent-color)
+  color:var(--accent-color);
+  margin-top: 40px;
+  margin-right: 35px;
+  
+}
+
+@media screen and (max-width: 480px) {
+  .category-item {
+    margin-bottom: 20px; /* فراغ بين الفئات */
+  }
 }

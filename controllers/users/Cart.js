@@ -52,7 +52,10 @@ exports.postAddToCart = async (req, res, next) => {
     `;
 
       await db.execute(updateQuery2, [lastQuan, selectedOptionId]);
+      
     }
+ 
+    
     res.status(200).json({ message: "Product added to cart successfully" });
   } catch (error) {
     console.error("Error executing query:", error);
@@ -146,6 +149,12 @@ exports.addOrder = async (req, res, next) => {
         `;
         await db.execute(updateOptionQuery, [quantity, selectedOptionId]);
       }
+        // حذف العنصر من سلة التسوق
+        const deleteCartQuery = `
+        DELETE FROM shopping_carts
+        WHERE UserId = ? AND id = ?
+      `;
+      await db.execute(deleteCartQuery, [UserId, idElement]);
 
       const updateSoildQuery = `
         UPDATE products
@@ -155,12 +164,7 @@ exports.addOrder = async (req, res, next) => {
       await db.execute(updateSoildQuery, [quantity, productId]);
 
       console.log(productId, " productId" + UserId + " UserId");
-      // حذف العنصر من سلة التسوق
-      const deleteCartQuery = `
-        DELETE FROM shopping_carts
-        WHERE UserId = ? AND id = ?
-      `;
-      await db.execute(deleteCartQuery, [UserId, idElement]);
+    
     }
 
     res

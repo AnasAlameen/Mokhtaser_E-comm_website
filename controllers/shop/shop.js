@@ -57,6 +57,14 @@ exports.getproductDetals = async (req, res, next) => {
     `;
     const [variantOptionsResults] = await db.execute(variantOptionsQuery, [productId]);
 
+    const sellerQuery = `
+    SELECT s.CompanyName, s.url, p.SellerId
+    FROM sellers s
+    INNER JOIN products p ON s.id = p.SellerId
+    WHERE p.id = ?
+  `;
+  const [sellerResults] = await db.execute(sellerQuery, [productId]);
+
     console.log("Variant Options Results:", variantOptionsResults);
 
     // تنظيم بيانات الألوان والأحجام
@@ -159,7 +167,8 @@ exports.getproductDetals = async (req, res, next) => {
         allSizes: Array.from(allSizes), // تمرير جميع المقاسات إلى العرض
         csrfToken: req.csrfToken(),
         productId: productId,
-        sizeTypes: sizeTypesArray
+        sizeTypes: sizeTypesArray,
+        sellerResults:sellerResults[0]
 
       });
     } else {
@@ -175,7 +184,9 @@ exports.getproductDetals = async (req, res, next) => {
         csrfToken: req.csrfToken(),
         productId: productId,
         type: type,
-        sizeTypes: sizeTypesArray 
+        sizeTypes: sizeTypesArray,
+                sellerResults:sellerResults[0]
+ 
       });
     }
 
@@ -188,7 +199,6 @@ exports.getproductDetals = async (req, res, next) => {
 
 exports.getShopeHomePage = async (req, res, next) => {
   try {
-    console.log("Ddddddddddddddddddd")
     const query = `
       SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
       FROM products p
@@ -197,8 +207,16 @@ exports.getShopeHomePage = async (req, res, next) => {
     `;
     const [rows, fields] = await db.execute(query);
     const [categories]= await db.execute("select name, url,id from categories where parent_id =0")
+    const mostSoildQuery = `
+    SELECT p.id, p.ProductName, p.Discrption, p.solid, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
+    FROM products p
+    INNER JOIN product_images pi ON p.id = pi.productId
+    GROUP BY p.id, p.ProductName, p.Discrption, p.solid, p.Prise, p.CrationDate
+    ORDER BY p.solid DESC
+    LIMIT 5;
+`;
 
-    console.log("categories",categories)
+const [mostSoildRows] = await db.execute(mostSoildQuery);
     let role = req.session.role || "";
 
     res.render("shop/home", {
@@ -206,7 +224,9 @@ exports.getShopeHomePage = async (req, res, next) => {
       path: "shop/home",
       products: rows, 
       role:role,
-      categories:categories
+      categories:categories,
+      mostSoildQuery:mostSoildRows
+
     });
   } catch (error) {
     console.error("Error retrieving featured products:", error);
@@ -266,8 +286,18 @@ exports.getRoles = async (req, res, next) => {
     WHERE sr.store_id = ?
 `, [storeId]);
 const [categories]= await db.execute("select name, url,id from categories where parent_id =0")
+const mostSoildQuery = `
+SELECT p.id, p.ProductName, p.Discrption, p.solid, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
+FROM products p
+INNER JOIN product_images pi ON p.id = pi.productId
+GROUP BY p.id, p.ProductName, p.Discrption, p.solid, p.Prise, p.CrationDate
+ORDER BY p.solid DESC
+LIMIT 5;
+`;
 
-console.log("stoeZZZZZZZZZw",stores)
+const [mostSoildRows] = await db.execute(mostSoildQuery);
+let role = req.session.role || "";
+
       console.log(role+"fsdf")
       if (stores.length > 0) {
       res.render("shop/home", {
@@ -275,7 +305,8 @@ console.log("stoeZZZZZZZZZw",stores)
         path: "shop/home",
         products: rows, // Passing the fetched products to the view
         role: role,
-        categories:categories
+        categories:categories,
+        mostSoildQuery :mostSoildRows
       });
      
     
@@ -289,43 +320,47 @@ console.log("stoeZZZZZZZZZw",stores)
   }
   
 }; 
+exports.getProfile = async (req, res) => {
+  const sellerId = req.session.storeId;
+  try {
+      // الحصول على معلومات البائع
+      const [sellerInfo] = await db.execute(`
+          SELECT s.LastName, s.FirstName, s.Emile, s.PhoneNum, s.CompanyName, s.url, l.City, l.area, l.longtiud, l.lasttiud, s.id AS seller_id
+          FROM sellers s
+          LEFT JOIN location l ON s.id = l.seller_id
+          WHERE s.id = ?
+      `, [sellerId]);
 
-  exports.getProfile = async (req, res) => {
-    const sellerId = req.session.storeId;
-    console.log("sellerId", sellerId);
-    try {
-        const [getSellerInformations] = await db.execute(`
-            SELECT s.LastName, s.FirstName, s.Emile, s.PhoneNum, s.CompanyName, s.url, l.City, l.area, l.longtiud, l.lasttiud, s.id AS seller_id, p.id AS product_id, p.ProductName, p.Discrption, p.Prise, i.url AS product_url
-            FROM sellers s
-            INNER JOIN location l ON s.id = l.seller_id
-            INNER JOIN products p ON s.id = p.SellerId
-            inner join product_images i on p.id=i.productId
-            WHERE s.id = ?
-        `, [sellerId]);
+      if (sellerInfo.length === 0) {
+          return res.status(404).json({ success: false, error: "لم يتم العثور على معلومات البائع" });
+      }
 
-        
-        if (getSellerInformations.length > 0) {
-            console.log("getSellerInformations", getSellerInformations);
-            res.render("shop/profile", {
-                pageTitle: "profile",
-                path: "shop/profile",
-                getStoreInformations: getSellerInformations,
-                products: getSellerInformations
-            });
-        } else {
-            res.status(404).json({ success: false, error: "No seller information found" });
-        }
-    } catch (error) {
-        console.log("there is an error getting data: ", error);
-        res.status(500).json({ success: false, error: "There is an error getting user information" });
-    }
-  };
+      // الحصول على المنتجات مع صورة واحدة لكل منتج
+      const [products] = await db.execute(`
+          SELECT p.id AS product_id, p.ProductName, p.Discrption, p.Prise, 
+                 (SELECT i.url FROM product_images i WHERE i.productId = p.id LIMIT 1) AS product_url
+          FROM products p
+          WHERE p.SellerId = ?
+      `, [sellerId]);
+
+      console.log("معلومات البائع:", sellerInfo[0]);
+      console.log("المنتجات:", products);
+
+      res.render("shop/profile", {
+          pageTitle: "الملف الشخصي",
+          path: "shop/profile",
+          getStoreInformations: sellerInfo[0],
+          products: products
+      });
+  } catch (error) {
+      console.log("حدث خطأ أثناء جلب البيانات: ", error);
+      res.status(500).json({ success: false, error: "حدث خطأ أثناء جلب معلومات المستخدم" });
+  }
+};
   exports.postProfileUpdate = async (req, res) => {
     try {
         const sellerId = req.session.storeId;
         const { lastName, birthDate, city, area, latitude, longitude } = req.body;
-
-        // تحقق من وجود ملف صورة جديد
         let profileImageUrl;
         if (req.files && req.files.profileImage && req.files.profileImage[0]) {
             profileImageUrl = req.files.profileImage[0].path;
@@ -355,4 +390,33 @@ console.log("stoeZZZZZZZZZw",stores)
         console.error("خطأ في تحديث الملف الشخصي:", error);
         res.status(500).json({ success: false, error: "حدث خطأ أثناء تحديث البيانات الشخصية" });
     }
+};
+exports.getSearchResults = async (req, res, next) => {
+  let searchInput = req.query.keyword;
+  console.log("searchInput", searchInput);
+
+  if (!searchInput) {
+    return res.status(400).send({ error: "يرجى إدخال قيمة للبحث" });
+  }
+
+  try {
+    const query = `
+      SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
+      FROM products p
+      INNER JOIN product_images pi ON p.id = pi.productId
+      WHERE p.ProductName LIKE ?
+      GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
+    `;
+
+    const [rows, fields] = await db.execute(query, [`%${searchInput}%`]);
+    console.log("rows",rows)
+    res.render("users/SerchResult", {
+      pageTitle: "صفحة البحث",
+      path: "users/subcategoriesProduct",
+      products: rows
+    });
+  } catch (error) {
+    console.error("Error retrieving search results:", error);
+    res.status(500).send({ error: "هناك خطأ في تحميل صفحة البحث" });
+  }
 };

@@ -73,6 +73,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if(add_new_size_button)
   {
     add_new_size_button.addEventListener("click",()=>{
+      event.preventDefault();
+
       addNewSizeContainer.classList.toggle("hide");
       
     })
@@ -115,6 +117,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   if(save_new_size_button){
     save_new_size_button.addEventListener("click",()=>{
+      event.preventDefault();
+
       handleAddNewSize();
       clearAddNewSize();
     //  addNewColorContainer.classList.add("hide");
@@ -501,7 +505,9 @@ document.addEventListener("DOMContentLoaded", () => {
     formData.append("ProductDiscrption", ProductDiscrption);
     formData.append("ProductName", ProductName);
     formData.append("Product_id", Product_id);
-
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
     const csrfToken = document.querySelector('input[name="_csrf"]').value;
 
     axios
