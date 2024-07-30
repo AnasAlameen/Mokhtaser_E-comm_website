@@ -62,6 +62,7 @@
 
                     <div class="buttons mt-3">
                         <button class="btn btn-primary btn-toggle-details" onclick="toggleDetails('<%= userId %>')" style="background-color: hsl(30, 100%, 50%); border: none;">عرض تفاصيل الطلبية</button>
+
                         <button class="btn btn-success btn-prepare hide" id="prepare-button-<%= userId %>" 
                             data-product-ids="<%= groupedProducts[userId].products.map(product => product.id).join(',') %>" 
                             onclick="markAsPrepared('<%= userId %>')">تم التجهيز</button>
@@ -70,10 +71,11 @@
                 </div>
             </div>
         <% }) %>
+        <div class="checkout">
+            <button id="print-all-shipping-info " style="background-color: hsl(30, 100%, 50%); margin-right: 14rem;">طباعة جميع بيانات الشحن</button>
+        </div>
     <% } %>
-    <div class="checkout">
-        <button id="print-all-shipping-info " style="background-color: hsl(30, 100%, 50%);">طباعة جميع بيانات الشحن</button>
-    </div>
+  
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
@@ -302,7 +304,6 @@ function printShippingInfo(userId) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>فاتورة الطلبية</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -440,7 +441,6 @@ function printShippingInfo(userId) {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>فاتورة الطلبية</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
@@ -542,7 +542,7 @@ function printShippingInfo(userId) {
     <body>
         <div class="container">
             <div class="invoice-header">
-                <img src="/images/logo.png" alt="منصة مختصر">
+                <img src="./imjs/back10.jpg" alt="منصة مختصر">
                 <h1>منصة مختصر</h1>
                 <h4>ابتكر لتبهر</h4>
             </div>
@@ -684,7 +684,7 @@ function printAllShippingInfo() {
         <div class="container mt-5">
             <div class="invoice-header text-center mb-4">
                 <h1>منصة مختصر</h1>
-                <img src="/imjs/hh.png" alt="منصة مختصر" class="img-fluid site-logo">
+                <img src="../../public/images/تنزيل.jpg" alt="منصة مختصر">
                 <h4>ابتكر لتبهر</h4>
             </div>
 

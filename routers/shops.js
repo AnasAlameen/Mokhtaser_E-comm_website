@@ -39,10 +39,12 @@ router.get("/prdoducts",isAuth,haveRole,shopControler.getProductList);
 router.get("/shop",isAuth,shops,shopControler.getRoles); 
 
 
-router.get('/profile', isAuth, shops,haveRole,shopControler.getProfile);
+router.get('/profile', isAuth,shops,haveRole,shopControler.getProfile);
 
-router.post('/profile/update', isAuth, multable,shopControler.postProfileUpdate);
+router.post('/profile/update', isAuth,multable,shopControler.postProfileUpdate);
 
+router.get('/subCategoriesPage', isAuth,haveRole,shopControler.getsubCategoriesPage);
 
+router.get('/subCategoriesProducts', isAuth,haveRole,shopControler.getsubCategoriesProducts);
 
 exports.router = router;

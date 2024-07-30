@@ -420,3 +420,73 @@ exports.getSearchResults = async (req, res, next) => {
     res.status(500).send({ error: "هناك خطأ في تحميل صفحة البحث" });
   }
 };
+exports.getsubCategoriesPage = async (req, res, next) => {
+  const subCategorieId = req.query.subCategorieId;
+  const name = req.query.name;
+console.log(subCategorieId+ name)
+ 
+  try {
+    const query = `
+    SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
+    FROM products p
+    INNER JOIN product_images pi ON p.id = pi.productId
+    GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
+  `;
+  const [rows, fields] = await db.execute(query);
+    // التأكد من أن الاتصال بقاعدة البيانات مفتوح
+    if (!db) {
+      throw new Error("Database connection is closed");
+    }
+
+    // استعلام لجلب الفئات
+    const [productByCategory] = await db.execute(
+      'SELECT * FROM categories WHERE parent_id = ?', [subCategorieId]
+    );
+    
+
+    // استعلام لجلب المنتجات
+    const [products] = await db.execute(
+      'SELECT * FROM products WHERE categorie = ?', [subCategorieId]
+    );
+
+    let productss = rows || [];
+    res.render("shop/subCategoriesPage", {
+      pageTitle: "الفئات الفرعية",
+      path: "shop/subCategoriesPage",
+      productByCategory: productByCategory,
+      name: name,
+      products: productss
+    });
+  } catch (error) {
+    console.log("subCategoriesPage" + error);
+    res.status(500).json({ message: "error getting subCategoriesPage" });
+  }
+}
+exports.getsubCategoriesProducts = async (req, res, next) => {
+
+  const subCategorieId=req.query.subCategorieId;
+  console.log("ffffffff1 ",subCategorieId)
+  try {
+    const query = `
+    SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url,c.id
+    FROM products p
+    INNER JOIN product_images pi ON p.id = pi.productId
+    inner join categories c on p.categorie=c.id
+    where p.categorie=?
+    GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
+  `;
+  const categorieName= db.execute(`select name from categories where id =? `,[subCategorieId]);
+  const [rows, fields] = await db.execute(query,[subCategorieId]);
+    res.render("shop/subcategoriesProduct", {
+      pageTitle: "المنتحات",
+      path: "shop/subcategoriesProduct",
+      products: rows
+    });
+    
+  } catch (error) {
+    console.log("con`t get subCategoriesProducts"+error);
+    res.status(500).json({message : "con`t get subCategoriesProducts"})
+  }
+
+
+}

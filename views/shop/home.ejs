@@ -39,7 +39,7 @@
         <% categories.forEach(categorie => { %>
           <div class="swiper-slide">
             <div class="category-item">
-              <a href="/user/subCategoriesPage?subCategorieId=<%= categorie.id %>&name=<%= categorie.name %>">
+              <a href="/shop/subCategoriesPage?subCategorieId=<%= categorie.id %>&name=<%= categorie.name %>">
                 <img src="<%= categorie.url.replace('public', '') %>" alt="<%= categorie.name %>">
               </a>
               <p><%= categorie.name %></p>

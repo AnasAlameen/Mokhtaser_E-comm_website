@@ -4,14 +4,14 @@
 </head>
 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-<%- include('../includes/users/Navgation.ejs') %>
+<%- include('../includes/shop/navgation.ejs') %>
 <div id="shop-by-categories">
     <h2><%= name %></h2>
     <div class="categories-container">
       <ul>
         <% productByCategory.forEach(product => { %>
           <li>
-            <a href="/user/subCategoriesProducts?subCategorieId=<%= product.id %>">
+            <a href="/shop/subCategoriesProducts?subCategorieId=<%= product.id %>">
               <div class="category-item">
                 <img src="..<%= product.url.split('\\').pop().replace('public', '') %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
               </div>
@@ -23,8 +23,6 @@
       </ul>
     </div>
   </div>
-
-
 
   <section id="latest-jobs">
     <h2>آخر المنتجات</h2>

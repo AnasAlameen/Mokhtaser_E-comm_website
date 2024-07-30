@@ -4,13 +4,13 @@
 </head>
 <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
-<%- include('../includes/users/Navgation.ejs') %>
+<%- include('../includes/shop/navgation.ejs') %>
 <section id="featured-jobs">
     <h2></h2>
     <ul>
       <% products.forEach(product => { %>
         <li>
-            <a href="http://localhost:3000/user/prdoduct/detlas?product_id=<%= product.id %>">
+            <a href="/shop/prdoduct/detlas?product_id=<%= product.id %>">
                 <img src="../images/<%= product.image_url.split('\\').pop() %>" alt="Product Image" style="aspect-ratio: 3 / 4;"/>
                 <h3><%= product.ProductName %></h3>
                 <p><%= product.Discrption %></p> 

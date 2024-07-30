@@ -233,6 +233,13 @@ async function checkAvailability(product, colors, sizes) {
 
    
     try {
+        const query = `
+        SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
+        FROM products p
+        INNER JOIN product_images pi ON p.id = pi.productId
+        GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
+      `;
+      const [rows, fields] = await db.execute(query);
       // التأكد من أن الاتصال بقاعدة البيانات مفتوح
       if (!db) {
         throw new Error("Database connection is closed");
@@ -255,7 +262,7 @@ async function checkAvailability(product, colors, sizes) {
         path: "users/subCategoriesPage",
         productByCategory: productByCategory,
         name: name,
-        products: productss
+        products: rows
       });
     } catch (error) {
       console.log("subCategoriesPage" + error);

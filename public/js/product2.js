@@ -275,22 +275,27 @@ document.addEventListener('DOMContentLoaded', () => {
     colors.forEach((color, index) => {
       let colorItem = document.createElement("div");
       colorItem.innerHTML = `
-        <h3>Color: ${color.name}</h3>
+      <h4 class="form-label font-semibold mt-2">  اللون : ${color.name}</h4>
+      <div class="size-item p-2 border mb-1" >
         <ul>
           <li>Quantity: ${color.quantity}</li>
           <li>Price: ${color.price}</li>
+          <h5 class="text-lg font-semibold mt-2">المقاسات المتصلة:</h5>
+
           ${color.variations ? color.variations.map((variation, vIndex) => `
             <li>
-              Type: ${variation.DimensionsType}, 
-              Measure: ${variation.DimensionsMeger}, 
-              Quantity: ${variation.quantity}, 
-              Price: ${variation.price}
+            <label class="form-label">وحدة القياس :  ${variation.DimensionsType}</label>,
+            <label class="form-label"> القياس :  ${variation.DimensionsMeger}</label>,
+            <label class="form-label">الكمية : ${variation.quantity}</label>,
+            <label class="form-label">السعر : ${variation.price}</label>,
               <button class="delete-variation" data-color-index="${index}" data-variation-index="${vIndex}">حذف</button>
             </li>
           `).join('') : ''}
         </ul>
         <button class="delete-color" data-index="${index}">حذف اللون</button>
+      </div>
       `;
+      
       displayContainer.appendChild(colorItem);
     });
 
