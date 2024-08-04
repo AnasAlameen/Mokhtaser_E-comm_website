@@ -25,7 +25,10 @@
   body {
     background-color: white;
   }
-  
+  .search-Button {
+
+    margin-top: 16px;
+  }
 .container {
   max-width: 700px;
   margin: 2rem auto;
@@ -35,60 +38,75 @@
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
 }
 
-  
 #latest-jobs {
-    padding: 50px 20px;
-  }
-  
-  #latest-jobs h2 {
-    font-size: 2em;
-    text-align: center;
-    margin-bottom: 30px;
-  }
-  
-  #latest-jobs ul {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 20px;
-  }
-  
-  #latest-jobs li {
-    background-color: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 20px;
-    flex: 0 0 auto; /* التأكد من أن العناصر لا تتمدد */
-  }
-  
-  #latest-jobs li a {
-    display: block;
-    padding: 20px;
-    color: #333;
-    transition: all 0.3s ease;
-  }
-  
-  #latest-jobs li a:hover {
-    background-color: var(--accent-color);
-    color: #fff;
-    border: 1px solid #ddd;
-  
-  }
-  
-  #latest-jobs li img {
-    width: 100%;
-    height: 150px; /* تعيين ارتفاع ثابت لجميع الصور */
-    object-fit: cover; /* لجعل الصور تغطي كامل الحاوية */
-    object-position: center; /* لتوسيط الصور */
-    margin-bottom: 10px;
-    border-radius: 40px;
-  }
-  
-  #latest-jobs li h3 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-  }
-  
-  #latest-jobs li p {
-    font-size: 1.2em;
-    margin-bottom: 5px;
-  }
+  padding: 50px 20px;
+}
+
+#latest-jobs h2 {
+  font-size: 2em;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+#latest-jobs ul {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* تحديد أربعة أعمدة في كل صف */
+  gap: 20px;
+}
+
+#latest-jobs li {
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 350px; /* تعيين ارتفاع ثابت للعناصر */
+  padding: 10px;
+}
+
+#latest-jobs li a {
+  display: block;
+  padding: 20px;
+  color: #333;
+  transition: all 0.3s ease;
+  flex-grow: 1;
+}
+
+#latest-jobs li a:hover {
+  background-color: var(--accent-color);
+  color: #fff;
+  border: 1px solid #ddd;
+}
+
+#latest-jobs li img {
+  width: 100%;
+  height: 200px; /* زيادة ارتفاع الصور */
+  object-fit: cover;
+  object-position: center;
+  margin-bottom: 10px;
+  border-radius: 10px;
+}
+
+#latest-jobs li h3 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#latest-jobs li p {
+  font-size: 1.2em;
+  margin-bottom: 5px;
+}
+
+#latest-jobs li .price {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #ff4500;
+  text-align: center;
+  margin-top: auto;
+  padding-top: 10px;
+}

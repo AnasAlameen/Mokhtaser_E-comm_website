@@ -14,9 +14,11 @@
     "axios": "^1.6.8",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
+    "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
     "cors": "^2.8.5",
     "csurf": "^1.11.0",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
     "express-mysql-session": "^3.0.2",
@@ -29,6 +31,7 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.14",
     "nodemon": "^3.1.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "vercel": "^35.2.3"
   }
 }

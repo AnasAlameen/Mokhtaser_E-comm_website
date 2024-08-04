@@ -490,3 +490,32 @@ exports.getsubCategoriesProducts = async (req, res, next) => {
 
 
 }
+exports.getSearchResults = async (req, res, next) => {
+  let searchInput = req.query.keyword;
+  console.log("searchInput", searchInput);
+
+  if (!searchInput) {
+    return res.status(400).send({ error: "يرجى إدخال قيمة للبحث" });
+  }
+
+  try {
+    const query = `
+      SELECT p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate, MIN(pi.url) AS image_url
+      FROM products p
+      INNER JOIN product_images pi ON p.id = pi.productId
+      WHERE p.ProductName LIKE ?
+      GROUP BY p.id, p.ProductName, p.Discrption, p.Prise, p.CrationDate;
+    `;
+
+    const [rows, fields] = await db.execute(query, [`%${searchInput}%`]);
+    console.log("rows",rows)
+    res.render("shop/SerchResult", {
+      pageTitle: "صفحة البحث",
+      path: "shop/subcategoriesProduct",
+      products: rows
+    });
+  } catch (error) {
+    console.error("Error retrieving search results:", error);
+    res.status(500).send({ error: "هناك خطأ في تحميل صفحة البحث" });
+  }
+};

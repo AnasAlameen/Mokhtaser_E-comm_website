@@ -2,28 +2,32 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
-const db = require("./helpers/databas");
 const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
 const csrf = require("csurf");
 const cron = require('node-cron');
-const app = express();
-const flash = require("connect-flash"); // تأكد من استدعاء المكتبة هنا
+const flash = require("connect-flash");
+const dotenv = require('dotenv');
+var compression = require('compression')
+dotenv.config({ path: 'config.env' });
 
-// إعدادات تخزين الجلسة في قاعدة البيانات
+const app = express();
+const db = require("./helpers/databas");
+
+// إعدادات تخزين الجلسة في قاعدة البيانات باستخدام القيم من config.env
 const options = {
-  host: 'localhost',
-  port: 3306,
-  user: 'root',
-  password: '',
-  database: 'Mokhtasar'
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME
 };
 
 // إعداد تخزين الجلسات باستخدام MySQL
 const sessionStore = new MySQLStore(options);
 
 app.use(session({
-  secret: 'mySecretKey',
+  secret: process.env.SESSION_SECRET || 'mySecretKey',
   store: sessionStore,
   resave: false,
   saveUninitialized: false,
@@ -36,9 +40,7 @@ app.use(flash());
 // إعداد مهمة cron لمسح الجلسات المنتهية الصلاحية كل 5 دقائق
 cron.schedule('*/5 * * * *', async () => {
   try {
-    // الحصول على الوقت الحالي بالثواني
     const currentTimeInSeconds = Math.floor(Date.now() / 1000);
-    // حذف الجلسات التي انتهت صلاحيتها
     const [rows] = await db.execute('DELETE FROM sessions WHERE expires < ?', [currentTimeInSeconds]);
     console.log(`Deleted ${rows.affectedRows} expired sessions.`);
   } catch (err) {
@@ -50,6 +52,8 @@ cron.schedule('*/5 * * * *', async () => {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+//لضغط الردود
+app.use(compression());
 
 const Auth = require("./routers/Auth");
 app.use("/", Auth.router);
@@ -74,7 +78,7 @@ app.use(express.static(path.join(__dirname, "public")));
 const erorreConntlroller = require("./controllers/errore");
 const topAdminRoutes = require("./routers/topAdmin");
 app.use("/admin", topAdminRoutes.router);
-// Import and use routers for different parts of your application
+
 const adminRoutes = require("./routers/admin");
 app.use("/admin", adminRoutes.router);
 
@@ -87,7 +91,7 @@ app.use("/shop", shopRoutes.router);
 const general = require("./routers/general");
 app.use("/general", general.router);
 
-const haveRoles =require("./middlewear/haveRoles")
+const haveRoles = require("./middlewear/haveRoles");
 app.use(haveRoles);
 
 const UsersControlers = require("./routers/users");
@@ -96,9 +100,9 @@ app.use("/user", UsersControlers.router);
 const CartRoute = require("./routers/cart");
 app.use("/cart", CartRoute.router);
 
-// Define a route for handling 404 errors
 app.use(erorreConntlroller.get404);
 
-app.listen(3000, () => {
-  console.log("Server is listening on port 3000");
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server is listening on port ${port}`);
 });

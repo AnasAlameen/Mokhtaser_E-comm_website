@@ -10,38 +10,38 @@ const transporter=nodemailer.createTransport({
   port:587,
   secure:false,
   auth:{
-    user:"anas2002218@gmail.com",
-    pass:"chhg kjfn kgbv yqok"
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   },
 })
 function generateResetToken(email) {
-  const secret = 'your_jwt_secret'; 
+  const secret = process.env.JWT_SECRET; 
   const token = jwt.sign({ email }, secret, { expiresIn: '1h' });
   return token;
 }
 
-// إرسال بريد إلكتروني لإعادة تعيين كلمة المرور
-async function sendResetEmail(email, token) {
-  const resetUrl = `http://localhost:3000/resetPassword?token=${token}`;
-  const mailOptions = {
-    from: 'anas2002218@gmail.com',
-    to: email,
-    subject: 'Password Reset',
-    text: `لقد طلبت اعادة تعيين كلمة المرور . الرجاء اضغط ع الرابط لإستكمال العملية: ${resetUrl}`,
-  };
+  // إرسال بريد إلكتروني لإعادة تعيين كلمة المرور
+  async function sendResetEmail(email, token) {
+    const resetUrl = `http://localhost:3000/resetPassword?token=${token}`;
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: 'Password Reset',
+      text: `لقد طلبت اعادة تعيين كلمة المرور . الرجاء اضغط ع الرابط لإستكمال العملية: ${resetUrl}`,
+    };
 
-  await transporter.sendMail(mailOptions);
-}
-
-function verifyResetToken(token) {
-  const secret = 'your_jwt_secret';
-  try {
-    const decoded = jwt.verify(token, secret);
-    return decoded.email;
-  } catch (error) {
-    return null;
+    await transporter.sendMail(mailOptions);
   }
-}
+
+  function verifyResetToken(token) {
+    const secret =process.env.JWT_SECRET;
+    try {
+      const decoded = jwt.verify(token, secret);
+      return decoded.email;
+    } catch (error) {
+      return null;
+    }
+  }
 
 exports.getResetPasswordPage=async (req,res,next)=>{
   let errorMessage = req.flash("error");

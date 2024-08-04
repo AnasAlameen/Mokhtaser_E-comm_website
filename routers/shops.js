@@ -35,9 +35,9 @@ router.get("/orders/detals",haveRole,isAuth,shopControler.getOrderDetals);
 
 router.get("/prdoducts",isAuth,haveRole,shopControler.getProductList);
 
+router.get('/SerchResult', isAuth, haveRole,shopControler.getSearchResults);
 
 router.get("/shop",isAuth,shops,shopControler.getRoles); 
-
 
 router.get('/profile', isAuth,shops,haveRole,shopControler.getProfile);
 
