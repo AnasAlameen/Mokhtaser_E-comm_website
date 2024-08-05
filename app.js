@@ -81,7 +81,9 @@ app.use("/admin", topAdminRoutes.router);
 
 const adminRoutes = require("./routers/admin");
 app.use("/admin", adminRoutes.router);
-
+app.get('/', (req, res) => {
+  res.send('Hello from Vercel!');
+});
 const roleRoutes = require("./routers/roles");
 app.use("/", roleRoutes.router);
 
